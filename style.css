@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Orelega+One&family=Poppins:wght@300;400&family=Raleway&family=Roboto&display=swap');
+
+.quoteblock {
+    height: 100vh;
+    width: 100%;
+    background-color: #F2F2F2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 10px;
+    }
+
+.introblock{
+    height: 100vh;
+    width: 100%;
+    background-color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 10px;
+    padding-right: 30px;
+}
+
+h1{
+    color: #2BC179;
+    font-family: 'Orelega One', cursive;
+}
+
+h2{
+    font-family: 'Orelega One', cursive;
+}
+
+.main-color{
+    color: #2BC179;
+}
+
+p{
+    font-size: 15px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.spacing{
+    padding-top: 60px;
+}
+
+.bg{
+    background-color: #60EFAA;
+    height: 30vh;
+}
+
+@media screen and (max-width: 766px) {
+    .imageright {
+        flex-direction: column-reverse;
+    }
+    .introblock{
+        margin-top: 30%;
+        padding-bottom: 30px;
+
+    }
+  }

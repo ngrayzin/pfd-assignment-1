@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged,  signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword} from "https://www.gstatic.com/firebasejs/9.12.0/firebase-auth.js";
-import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.12.0/firebase-database.js";
+import { getDatabase, ref, set, onValue, get, child} from "https://www.gstatic.com/firebasejs/9.12.0/firebase-database.js";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -33,6 +33,9 @@ onAuthStateChanged(auth, (user) => {
     const uid = user.uid;
     loggedIn.style.display = "block"
     notLoggedIn.style.display = "none"
+    if(localStorage.name){
+      document.getElementById("Nameholder").innerHTML = localStorage.getItem("name");
+    }
   } else {
     loggedIn.style.display = "none"
     notLoggedIn.style.display = "block"
@@ -56,18 +59,8 @@ button1.addEventListener("click", (e)=>{
         const inputField = document.getElementById("form");
         inputField.reset();
         myModal.hide();
-        //var nameholder = document.getElementById("Nameholder");
-        //nameholder.innerText = `${user.name}`
+        returnName();
         
-        // ...
-        const userId = auth.currentUser.uid;
-        return onValue(ref(db, '/users/' + userId), (snapshot) => {
-          const username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
-          alert(username);
-          // ...
-        }, {
-          onlyOnce: true
-        });
     })
     
     .catch((error) => {
@@ -86,6 +79,7 @@ button2.addEventListener("click", ()=>{
     var errormsg = document.getElementsByClassName("errormsg")
     createUserWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
+    var test = document.getElementById("test")
     const user = userCredential.user;
     writeUserData(user.uid,name,email);
     const inputField = document.getElementById("form");
@@ -115,6 +109,17 @@ function writeUserData(userId, name, email) {
     set(ref(db, 'users/' + userId), {
       username: name,
       email: email,
+    });
+  }
+
+  function returnName(){
+    const userId = auth.currentUser.uid;
+    return onValue(ref(db, '/users/' + userId), (snapshot) => {
+      const username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
+      localStorage.setItem = ("name", username);
+      document.getElementById("Nameholder").innerHTML = localStorage.getItem("name");
+    }, {
+      onlyOnce: true
     });
   }
 
