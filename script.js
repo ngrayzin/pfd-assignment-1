@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged,  signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword} from "https://www.gstatic.com/firebasejs/9.12.0/firebase-auth.js";
-import { getDatabase, ref, set} from "https://www.gstatic.com/firebasejs/9.12.0/firebase-database.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.12.0/firebase-database.js";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -59,7 +59,16 @@ button1.addEventListener("click", (e)=>{
         //nameholder.innerText = `${user.name}`
         
         // ...
+        const userId = auth.currentUser.uid;
+        return onValue(ref(db, '/users/' + userId), (snapshot) => {
+          const username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
+          alert(username);
+          // ...
+        }, {
+          onlyOnce: true
+        });
     })
+    
     .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
