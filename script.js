@@ -45,6 +45,7 @@ var button3 = document.getElementById("logout");
 var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('exampleModal'));
 
 button1.addEventListener("click", (e)=>{
+    e.preventDefault();
     var email = document.getElementById("exampleInputEmail1").value
     var password = document.getElementById("exampleInputPassword1").value
     var errormsg = document.getElementsByClassName("errormsg")
@@ -69,6 +70,7 @@ button1.addEventListener("click", (e)=>{
 })
 
 button2.addEventListener("click", ()=>{
+    e.preventDefault();
     var email = document.getElementById("exampleInputEmail1").value
     var password = document.getElementById("exampleInputPassword1").value
     var name = document.getElementById("name").value
