@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Orelega+One&family=Poppins:wght@300;400&family=Raleway&family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orelega+One&family=Poppins:wght@300;400&family=Raleway&family=Roboto&family=Source+Code+Pro&display=swap');
 
 .quoteblock {
     height: 100vh;
@@ -34,6 +34,10 @@ h2{
     color: #2BC179;
 }
 
+.black{
+    color: #000000;
+}
+
 p{
     font-size: 15px;
     font-family: 'Roboto', sans-serif;
@@ -48,6 +52,34 @@ p{
     height: 30vh;
 }
 
+.card, .card-img-top{
+    border: none !important;
+    border-radius: 12px !important;
+ }
+
+.btn-color{
+    background-color: #60EFAA !important;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 8px;
+    border-radius: 100px !important;
+}
+
+.card-text{
+    font-size: 11px;
+}
+
+.card-title{
+    font-size: 16px;
+}
+
+.card-text, .card-title{
+    font-family: 'Source Code Pro', monospace;
+}
+
+.store{
+    background-color: #EDEFEC;
+}
+
 @media screen and (max-width: 766px) {
     .imageright {
         flex-direction: column-reverse;
@@ -58,3 +90,14 @@ p{
 
     }
   }
+
+.modal-open {
+    overflow:hidden !important;
+    overflow-y:scroll !important;
+    padding-right:0 !important;
+}
+
+.storeitems{
+    align-items: center;
+    justify-content: center;
+}
