@@ -12,43 +12,44 @@
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 </head>
 <body>
-    <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top shadow px-3" id="navbar">
-        <div class="container">
-          <a class="navbar-brand" href="#">
-            <b>Trade</b>
-          </a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-              <li class="nav-item">
-                <a class="nav-link mx-2" aria-current="page" href="index.html"">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link active mx-2"  href="store.html">Store</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link mx-2" href="#">Donate</a>
-              </li>
-              <li class="nav-item" id = "notLoggedIn">
-                <button class="btn btn-outline-dark" type="button" style = "margin-top: 2px;margin-left: 1px;" data-bs-toggle="modal" data-bs-target="#exampleModal">Login</button>
-              </li>
-              <li class="nav-item" id = "loggedIn">
-                <span class="navbar-text" id="Nameholder">name</span>
-                <button class="btn btn-outline-dark" type="button" style = "margin-top: 2px;margin-left: 1px;" id="logout">Log out</button>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+  <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top shadow px-3" id="navbar">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <b>Trade</b>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active mx-2" aria-current="page" href="userIndex.html" id="hme">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link mx-2"  href="store.html">Store</a>
+          </li>
+          <li class="nav-item"> 
+            <a class="nav-link mx-2" id="dtn">Donate</a>
+          </li>
+          <span class=" nav-item navbar-text" id = "Nameholder"></span>
+          <li class="nav-item">
+            <button class="btn btn-outline-dark" id = "btn" type="button" style = "margin-top: 2px;margin-right: 1px; ">Login</button>
+          </li>
+          <!--<li class="nav-item" id = "loggedIn">
+            <span class=" nav-item navbar-text" id = "Nameholder"></span>
+            <button class="btn btn-outline-dark" type="button" style = "margin-top: 2px;margin-left: 1px;" id="logout">Log out</button>
+          </li>-->
+        </ul>
+      </div>
+    </div>
+  </nav>
       <!--login/signup modal-->
       <!-- Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel"><b>Trade</b></h1>
+                <h2 class="modal-title fs-5" id="exampleModalLabel"><b>Trade</b></h2>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -74,7 +75,7 @@
                             <button type="submit" class="btn btn-primary" id = "signupbutton">Sign up</button>
                         </div>
                         <div class="errormsg"></div>
-                        <div class="form-text mx-auto" ><a id = "change1">Don't have an account? Click</a> <a id = "toggle" href="#">here</a> <a id="change2">to sign up</a></div>
+                        <div class="form-text mx-auto" ><a id = "change1">Don't have an account? Click</a> <a id = "toggle" href="#dfsfd">here</a> <a id="change2">to sign up</a></div>
 
 
                     </form>
@@ -85,6 +86,8 @@
             </div>
         </div>
       <!--==========code starts below==========-->
+      
+    
 
 
 
