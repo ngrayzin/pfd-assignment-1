@@ -213,3 +213,34 @@ toggle.addEventListener("click", () => {
   }
 
 })
+
+var products = [];
+var databaseRef = database.ref("product");
+databaseRef.on('child_added', function(snapshot) {
+  var product = snapshot.val()
+  products.push({
+    claimed: product.claimed, 
+    condition: product.condition,
+    description: product.description,
+    image: product.image,
+    posted_by: product.posted_by,
+    product_name: product.product_name
+  });
+});
+
+if(PATHNAME == "viewproduct.html"){
+  let content = ""
+  for (var i = 0; i < products.length; i++) {
+    content = `${content}<div class="card-full">
+                            <div class="card">
+                              <div class="card-body">
+                                <img src="images/20220108_194432.jpg" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px;">
+                                <h5 class="card-title pt-3"><b>${products[i].product_name}</b></h5>
+                                <p class="card-text">${products[i].description}</p>
+                                <a href="#" class="btn btn-color">Request</a>
+                              </div>
+                            </div>
+                          </div>`
+  }
+  $("#storeCards div").html(content);
+}
