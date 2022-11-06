@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-auth.js";
 import { getDatabase, ref as ref_database, set, onValue, get, child } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-database.js";
 import { getStorage, ref as ref_storage, uploadBytes, getDownloadURL} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-storage.js";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -92,6 +92,7 @@ button1.addEventListener("click", (e) => {
       const user = userCredential.user;
       inputField.reset();
       myModal.hide();
+      location.href = "userIndex.html";
     })
 
     .catch((error) => {
@@ -116,8 +117,10 @@ button2.addEventListener("click", (e) => {
       writeUserData(user.uid, name, email)
       inputField.reset();
       myModal.hide();
+      location.href = "userIndex.html";
     })
     .catch((error) => {
+      localStorage.clear();
       const errorCode = error.code;
       const errorMessage = error.message;
       alert(errorMessage);
@@ -130,7 +133,7 @@ if(PATHNAME == "donation.html"){
     const ploc =  document.getElementById("location");
     const pcond = document.getElementById("condition");
     var desc = document.getElementById("desc");
-    const image = document.getElementById("img");
+    var image = document.getElementById("image");
     const submit = document.getElementById("psub");
     var files= [];
     submit.addEventListener("click", (e)=> {
@@ -139,22 +142,20 @@ if(PATHNAME == "donation.html"){
       var ddesc = desc.value;
       var loctext = ploc.options[ploc.selectedIndex].text;
       var context = pcond.options[pcond.selectedIndex].text;
-      var img = image.value;
-      /*files = e.target.files;
-      reader = new FileReader();
-      reader.onload = function(){
-        document.getElementById("img").src = reader.result;
-      }
-      reader.readAsDataURL(files[0]);*/
-      const storageRef = ref_storage(storage, user.uid + nname + "img");
+      var img = image.files[0];
+      console.log(img.name);
+      const storageRef = ref_storage(storage, img.name);
       uploadBytes(storageRef, img).then((snapshot) => {
         console.log('Uploaded a blob or file!');
       });
-
-      writeProductData(nname, user, loctext, context, ddesc, user.uid + nname)
+      //not working :((((((((((((()))))))))))))
+      /*storageRef.getDownloadURL().then(function(url) {
+        writeProductData(nname, user, loctext, context, ddesc, url)
+      });*/
+      writeProductData(nname, user, loctext, context, ddesc, img.name);
+      
     })
 }
-
 
 // Save message to firebase
 function writeUserData(userId, name, email) {
@@ -176,6 +177,7 @@ function writeProductData(name, user, location, condition, desc, img){
   });
 }
 
+
 //return user name
 function returnName() {
   const userId = auth.currentUser.uid;
@@ -186,19 +188,6 @@ function returnName() {
     onlyOnce: true
   });
 }
-
-/*function checkIfLogin(e) {
-  var user = auth.currentUser;
-  if(user){
-    //do nothing
-  }
-  else{
-    e.preventDefault();
-    //window.location.href = "/index.html";
-    myModal.show();
-  }
-}*/
-
 
 
 let toggle = document.getElementById("toggle");
