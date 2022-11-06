@@ -52,6 +52,10 @@ p{
     height: 30vh;
 }
 
+.card{
+    width: 16rem;
+}
+
 .card, .card-img-top{
     border: none !important;
     border-radius: 12px !important;
@@ -98,8 +102,14 @@ p{
 }
 
 .storeitems{
+    max-width: 900px;
+    margin: 10px auto;
     align-items: center;
-    justify-content: center;
+    justify-content: left;
+}
+
+.cards {
+    gap: 22px;
 }
 
 .donation{
