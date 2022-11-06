@@ -39,6 +39,8 @@ onAuthStateChanged(auth, (user) => {
   var btn = document.getElementById("btn");
   var donate = document.getElementById("dtn");
   var home = document.getElementById("hme");
+  var requestBtn = document.querySelectorAll("#requestBtn");
+  var toast = document.getElementsByClassName("toast");
   var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('exampleModal'));
   if (user) {
     // User is signed in, see docs for a list of available properties
@@ -54,6 +56,11 @@ onAuthStateChanged(auth, (user) => {
         // An error happened.
       });
     })
+    for(let i = 0; i < requestBtn.length; i++){
+      requestBtn[i].addEventListener("click", function() {
+        $('.toast').toast('show');
+      });
+    };
     if(PATHNAME == "index.html"){
       location.href = "userIndex.html";
     }
@@ -70,6 +77,11 @@ onAuthStateChanged(auth, (user) => {
     donate.addEventListener("click", () => {
       myModal.show();
     });
+    for (let i = 0; i < requestBtn.length; i++) {
+      requestBtn[i].addEventListener("click", function() {
+        myModal.show();
+      });
+  }
     if(PATHNAME == "donation.html" || PATHNAME == "userIndex.html"){
       location.href = "index.html";
     }
@@ -128,33 +140,35 @@ button2.addEventListener("click", (e) => {
     });
 })
 
+
 if(PATHNAME == "donation.html"){
-    var pname = document.getElementById("productname");
-    const ploc =  document.getElementById("location");
-    const pcond = document.getElementById("condition");
-    var desc = document.getElementById("desc");
-    var image = document.getElementById("image");
-    const submit = document.getElementById("psub");
-    var files= [];
-    submit.addEventListener("click", (e)=> {
-      var user = auth.currentUser;
-      var nname = pname.value;
-      var ddesc = desc.value;
-      var loctext = ploc.options[ploc.selectedIndex].text;
-      var context = pcond.options[pcond.selectedIndex].text;
-      var img = image.files[0];
-      console.log(img.name);
+  const inputFieldp = document.getElementById("donateForm");
+  const submit = document.getElementById("psub");
+  submit.addEventListener("click", (e)=> {
+    e.preventDefault();
+    var user = auth.currentUser;
+    var nname = document.getElementById("productname").value;
+    var ddesc = document.getElementById("desc").value;
+    var loctext = document.getElementById("location").options[document.getElementById("location").selectedIndex].text;
+    var context = document.getElementById("condition").options[document.getElementById("condition").selectedIndex].text;
+    var img = document.getElementById("image").files[0];
+    var imgname = ""; 
+    //console.log(img.name);
+    if(img){
+      imgname = img.name;
       const storageRef = ref_storage(storage, img.name);
       uploadBytes(storageRef, img).then((snapshot) => {
         console.log('Uploaded a blob or file!');
       });
-      //not working :((((((((((((()))))))))))))
-      /*storageRef.getDownloadURL().then(function(url) {
-        writeProductData(nname, user, loctext, context, ddesc, url)
-      });*/
-      writeProductData(nname, user, loctext, context, ddesc, img.name);
-      
-    })
+    }
+    //not working :((((((((((((()))))))))))))
+    /*storageRef.getDownloadURL().then(function(url) {
+      writeProductData(nname, user, loctext, context, ddesc, url)
+    });*/
+    writeProductData(nname, user, loctext, context, ddesc, imgname);
+    $('.p').toast('show');
+    inputFieldp.reset();
+  })
 }
 
 // Save message to firebase
