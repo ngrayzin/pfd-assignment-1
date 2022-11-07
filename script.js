@@ -195,7 +195,7 @@ function writeProductData(name, user, location, condition, desc, img){
   });
 }
 
-
+var childkeys = []
 function readProductData(){
   var storeItems = document.getElementById("storeCards");
   const dbRef = ref_database(getDatabase());
