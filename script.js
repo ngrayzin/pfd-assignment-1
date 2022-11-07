@@ -50,7 +50,7 @@ onAuthStateChanged(auth, (user) => {
     btn.innerText = "Log out"
     btn.addEventListener("click", () => {
       signOut(auth).then(() => {
-        // Sign-out successful.
+        localStorage.clear();
         myModal.hide();
       }).catch((error) => {
         // An error happened.
@@ -171,6 +171,10 @@ if(PATHNAME == "donation.html"){
   })
 }
 
+if (PATHNAME == "store.html"){
+  readProductData();
+}
+
 // Save message to firebase
 function writeUserData(userId, name, email) {
   set(ref_database(db, 'users/' + userId), {
@@ -191,6 +195,42 @@ function writeProductData(name, user, location, condition, desc, img){
   });
 }
 
+
+function readProductData(){
+  var storeItems = document.getElementById("storeCards");
+  const dbRef = ref_database(getDatabase());
+  get(child(dbRef, "product")).then((snapshot) => {
+    /*storeItems.innerHTML = `
+    <div class="card-full">
+      <div class="card">
+        <div class="card-body">
+          <img src="images/20220108_194432.jpg" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px;">
+          <h5 class="card-title pt-3"><b>${snapshot.val()}</b></h5>
+          <p class="card-text">${snapshot.val()}</p>
+          <a id="requestBtn" class="btn btn-color">Request</a>
+        </div>
+      </div>
+    </div>`*/
+    snapshot.forEach(function(_child){
+      var key = _child.key;
+      console.log(key);
+      storeItems.innerHTML = `
+      <div class="card-full">
+        <div class="card">
+          <div class="card-body">
+            <img src="images/20220108_194432.jpg" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px;">
+            <h5 class="card-title pt-3"><b>${_child.val().product_name}</b></h5>
+            <p class="card-text">${_child.val().description}</p>
+            <a id="requestBtn" class="btn btn-color">Request</a>
+          </div>
+        </div>
+      </div>
+      `
+    })
+  }).catch((error) => {
+    console.error(error);
+  });
+}
 
 //return user name
 function returnName() {
@@ -228,8 +268,8 @@ toggle.addEventListener("click", () => {
 
 })
 
-var products = [];
-var databaseRef = database.ref("product");
+/*var products = [];
+var databaseRef = db.ref("product");
 databaseRef.on('child_added', function(snapshot) {
   var product = snapshot.val()
   products.push({
@@ -240,21 +280,21 @@ databaseRef.on('child_added', function(snapshot) {
     posted_by: product.posted_by,
     product_name: product.product_name
   });
-});
+});*/
 
-if(PATHNAME == "viewproduct.html"){
-  let content = ""
-  for (var i = 0; i < products.length; i++) {
-    content = `${content}<div class="card-full">
-                            <div class="card">
-                              <div class="card-body">
-                                <img src="images/20220108_194432.jpg" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px;">
-                                <h5 class="card-title pt-3"><b>${products[i].product_name}</b></h5>
-                                <p class="card-text">${products[i].description}</p>
-                                <a href="#" class="btn btn-color">Request</a>
-                              </div>
-                            </div>
-                          </div>`
-  }
-  $("#storeCards div").html(content);
-}
+// if(PATHNAME == "viewproduct.html"){
+//   let content = ""
+//   for (var i = 0; i < products.length; i++) {
+//     content = `${content}<div class="card-full">
+//                             <div class="card">
+//                               <div class="card-body">
+//                                 <img src="images/20220108_194432.jpg" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px;">
+//                                 <h5 class="card-title pt-3"><b>${products[i].product_name}</b></h5>
+//                                 <p class="card-text">${products[i].description}</p>
+//                                 <a href="#" class="btn btn-color">Request</a>
+//                               </div>
+//                             </div>
+//                           </div>`
+//   }
+//   $("#storeCards div").html(content);
+// }
