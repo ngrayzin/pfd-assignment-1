@@ -39,8 +39,6 @@ onAuthStateChanged(auth, (user) => {
   var btn = document.getElementById("btn");
   var donate = document.getElementById("dtn");
   var home = document.getElementById("hme");
-  var requestBtn = document.querySelectorAll("#requestBtn");
-  var toast = document.getElementsByClassName("toast");
   var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('exampleModal'));
   if (user) {
     // User is signed in, see docs for a list of available properties
@@ -56,14 +54,9 @@ onAuthStateChanged(auth, (user) => {
         // An error happened.
       });
     })
-    for(let i = 0; i < requestBtn.length; i++){
-      requestBtn[i].addEventListener("click", function() {
-        $('.toast').toast('show');
-      });
-    };
-    if(PATHNAME == "index.html"){
+    /*if(PATHNAME == "index.html"){
       location.href = "userIndex.html";
-    }
+    }*/
     home.href = "userIndex.html"
     donate.href = "donation.html"
     returnName();
@@ -77,11 +70,6 @@ onAuthStateChanged(auth, (user) => {
     donate.addEventListener("click", () => {
       myModal.show();
     });
-    for (let i = 0; i < requestBtn.length; i++) {
-      requestBtn[i].addEventListener("click", function() {
-        myModal.show();
-      });
-  }
     if(PATHNAME == "donation.html" || PATHNAME == "userIndex.html"){
       location.href = "index.html";
     }
@@ -124,12 +112,15 @@ button2.addEventListener("click", (e) => {
   var name = document.getElementById("name").value
   var errormsg = document.getElementsByClassName("errormsg")
   createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
+    .then(async (userCredential) => {
       const user = userCredential.user;
-      writeUserData(user.uid, name, email)
-      inputField.reset();
-      myModal.hide();
-      location.href = "userIndex.html";
+      const x = await writeUserData(user.uid, name, email)
+      .then(() => {
+        inputField.reset();
+        myModal.hide();
+        location.href = "userIndex.html";
+      })
+
     })
     .catch((error) => {
       localStorage.clear();
@@ -159,13 +150,22 @@ if(PATHNAME == "donation.html"){
       const storageRef = ref_storage(storage, img.name);
       uploadBytes(storageRef, img).then((snapshot) => {
         console.log('Uploaded a blob or file!');
+        getDownloadURL(storageRef, img).then(function(url) {
+            if(url){
+              alert(url);
+              writeProductData(nname, user, loctext, context, ddesc, url)
+            }
+            else{
+              writeProductData(nname, user, loctext, context, ddesc, imgname)
+            }
+        });
       });
     }
+    else{
+      writeProductData(nname, user, loctext, context, ddesc, imgname)
+    }
     //not working :((((((((((((()))))))))))))
-    /*storageRef.getDownloadURL().then(function(url) {
-      writeProductData(nname, user, loctext, context, ddesc, url)
-    });*/
-    writeProductData(nname, user, loctext, context, ddesc, imgname);
+    //writeProductData(nname, user, loctext, context, ddesc, imgname);
     $('.p').toast('show');
     inputFieldp.reset();
   })
@@ -177,10 +177,16 @@ if (PATHNAME == "store.html"){
 
 // Save message to firebase
 function writeUserData(userId, name, email) {
-  set(ref_database(db, 'users/' + userId), {
-    username: name,
-    email: email,
-  });
+  return new Promise((resolve) =>{
+    setTimeout(() => {
+      resolve(
+        set(ref_database(db, 'users/' + userId), {
+          username: name,
+          email: email,
+        })
+      )
+    }, 2000)
+  })
 }
 
 function writeProductData(name, user, location, condition, desc, img){
@@ -195,42 +201,46 @@ function writeProductData(name, user, location, condition, desc, img){
   });
 }
 
-var childkeys = []
+window.change= change;
 function readProductData(){
+  var childkeys = []
   var storeItems = document.getElementById("storeCards");
   const dbRef = ref_database(getDatabase());
   get(child(dbRef, "product")).then((snapshot) => {
-    /*storeItems.innerHTML = `
-    <div class="card-full">
-      <div class="card">
-        <div class="card-body">
-          <img src="images/20220108_194432.jpg" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px;">
-          <h5 class="card-title pt-3"><b>${snapshot.val()}</b></h5>
-          <p class="card-text">${snapshot.val()}</p>
-          <a id="requestBtn" class="btn btn-color">Request</a>
-        </div>
-      </div>
-    </div>`*/
     snapshot.forEach(function(_child){
       var key = _child.key;
-      console.log(key);
-      storeItems.innerHTML = `
+      childkeys.push([key,_child.val().product_name,_child.val().description]);
+      //console.log(key);
+      var html = `
       <div class="card-full">
         <div class="card">
           <div class="card-body">
-            <img src="images/20220108_194432.jpg" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px;">
+            <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px;">
             <h5 class="card-title pt-3"><b>${_child.val().product_name}</b></h5>
             <p class="card-text">${_child.val().description}</p>
-            <a id="requestBtn" class="btn btn-color">Request</a>
+            <a id="requestBtn" class="btn btn-color" onClick="change()">Request</a>
           </div>
         </div>
       </div>
       `
+      storeItems.innerHTML += html;
     })
+    console.log(childkeys);
   }).catch((error) => {
     console.error(error);
   });
 }
+
+function change(){
+  var user = auth.currentUser;
+  if(user){
+    $('.toast').toast('show');
+  } 
+  else{
+    myModal.show();
+  } 
+}
+
 
 //return user name
 function returnName() {
