@@ -135,6 +135,7 @@ button2.addEventListener("click", (e) => {
 if(PATHNAME == "donation.html"){
   const inputFieldp = document.getElementById("donateForm");
   const submit = document.getElementById("psub");
+  const breadcrumb = document.getElementById("breadcrumb");
   submit.addEventListener("click", (e)=> {
     e.preventDefault();
     var user = auth.currentUser;
@@ -152,7 +153,6 @@ if(PATHNAME == "donation.html"){
         console.log('Uploaded a blob or file!');
         getDownloadURL(storageRef, img).then(function(url) {
             if(url){
-              alert(url);
               writeProductData(nname, user, loctext, context, ddesc, url)
             }
             else{
@@ -185,7 +185,7 @@ function writeUserData(userId, name, email) {
           email: email,
         })
       )
-    }, 2000)
+    }, 100)
   })
 }
 
