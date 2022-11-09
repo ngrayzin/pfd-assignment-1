@@ -234,7 +234,7 @@ function readProductData(){
       var html = `
       <div class="card-full">
         <div class="card">
-          <div class="card-body" onclick="sendDetails(${_child.val().product_name},${_child.val().description},${_child.val().image},${_child.val().location},${_child.val().condition},${_child.val().posted_by});">
+          <div class="card-body" onclick="sendDetails(['${_child.val().product_name}','${_child.val().description}','${_child.val().image}','${_child.val().location}','${_child.val().condition}','${_child.val().posted_by}']);">
             <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px;">
             <h5 class="card-title pt-3"><b>${_child.val().product_name}</b></h5>
             <p class="card-text">${_child.val().description}</p>
