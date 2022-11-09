@@ -235,8 +235,8 @@ function readProductData(){
       var html = `
       <div class="card-full">
         <div class="card">
-          <div class="card-body" onclick="sendDetails(['${_child.val().product_name}','${_child.val().description}','${_child.val().image}','${_child.val().location}','${_child.val().condition}','${_child.val().posted_by}']);">
-            <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px;">
+          <div class="card-body">
+            <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;" onclick = "sendDetails('${key}','${_child.val().posted_by}')"> 
             <h5 class="card-title pt-3"><b>${_child.val().product_name}</b></h5>
             <p class="card-text">${_child.val().description}</p>
             <a id="requestBtn" class="btn btn-color" onClick="change()">Request</a>
@@ -252,48 +252,57 @@ function readProductData(){
   });
 }
 
-function sendDetails(name, desc, img, loc, con, user){
-  var productdetail = document.getElementById("productDetails");
-  location.href="viewproduct.html";
-  var html = `<section class="container">
-                <div class="row">
-                    <div class="col bordered d-flex justify-content-center">
-                        <h1>${img}</h1>
-                    </div>
-                    <div class="col-6  bordered">
-                        <h2>${name}</h2>
-                        <br>
-                        <h5>${desc}</h5>
-                        <br>
-                        <br>
-                        <a id="requestBtn" class="btn btn-color">Request</a>
-                        <br>
-                    </div>
-                    <div class="col-sm bordered">
-                        <br>
-                        <div class="row" style="text-align: center;">
-                            <h5>Posted by: ${user}</h5>
-                        </div>
-                        <br>
-                        <br>
-                        <div class="row" style="text-align: center;">
-                            <h5>Condition: ${con}</h5>
-                        </div>
-                        <br>
-                        <br>
-                        <div class="row" style="text-align: center;">
-                            <h5>Location (Meet-up): ${loc}</h5>
-                        </div>
-                        <br>
-                        <br>
-                        <div style="text-align: center;">
-                            <a id="chatBtn" class="btn btn-color">Chat</a>
-                        </div>
-                        <br>
-                    </div>
-                </div>
-              </section>`
-  productdetail.innerHTML = html;
+function sendDetails(product, user){
+  window.location.href="viewproduct.html";
+  console.log(product,user);
+  //onclick="sendDetails('${_child.val().product_name}','${_child.val().description}','${_child.val().image}','${_child.val().location}','${_child.val().condition}','${_child.val().posted_by}');"
+  var fullDetails = document.getElementById("fullDetails");
+  //var productdetail = document.getElementById("productDetails");
+  
+  //console.log(name, desc, img, loc, con, user);
+  if(PATHNAME == "viewproduct.html"){
+    
+        /*var html = `<div class="row">
+        <div class="col bordered d-flex justify-content-center">
+            <h1>${img}</h1>
+        </div>
+        <div class="col-6  bordered">
+            <h2>${name}</h2>
+            <br>
+            <h5>${desc}</h5>
+            <br>
+            <br>
+            <a id="requestBtn" class="btn btn-color">Request</a>
+            <br>
+        </div>
+        <div class="col-sm bordered">
+            <br>
+            <div class="row" style="text-align: center;">
+                <h5 id="productnameholder">Posted by: ${user}</h5>
+            </div>
+            <br>
+            <br>
+            <div class="row" style="text-align: center;">
+                <h5>Condition: ${con}</h5>
+            </div>
+            <br>
+            <br>
+            <div class="row" style="text-align: center;">
+                <h5>Location (Meet-up): ${loc}</h5>
+            </div>
+            <br>
+            <br>
+            <div style="text-align: center;">
+                <a id="chatBtn" class="btn btn-color">Chat</a>
+            </div>
+            <br>
+        </div>
+    </div>`
+    fullDetails.innerHTML = html;*/
+    
+    returnUser(user);
+  }
+
 }
 
 function change(){
@@ -316,6 +325,17 @@ function returnName() {
   }, {
     onlyOnce: true
   });
+}
+
+function returnUser(userKey){
+  return onValue(ref_database(db, '/users/' + userKey), (snapshot) => {
+    var username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
+    var email = (snapshot.val() && snapshot.val().email) || 'Anonymous';
+    document.getElementById("productnameholder").innerText = username;
+  }, {
+    onlyOnce: true
+  });
+
 }
 
 

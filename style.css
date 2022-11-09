@@ -93,6 +93,13 @@ p{
         padding-bottom: 30px;
 
     }
+    .vr {
+        height: 100%;
+        width: 1px;
+        border-left: 1px solid gray;
+        display: none;
+        margin: 0 auto;
+    }
   }
 
 .modal-open {
@@ -125,6 +132,28 @@ p{
     padding: 30px;
     border-radius: 12px;
 }
+
+.productDetail{
+    background-color: #FFFFFF;
+    display: flex;
+    margin: 0 80px 0px 80px;  
+    width: auto;
+    padding: 10px;
+    border-radius: 12px;
+}
+
+.vr {
+    height: 100%;
+    width: 1px;
+    border-left: 1px solid black;
+    /*display: inline-block;*/    
+    /*margin: 0 auto;*/
+}
+@media screen and (min-width: 767px) {
+    .vr {
+        display: none;
+    }
+  }
 
 .viewproduct{
     background-color: #FFFFFF;
