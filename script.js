@@ -175,6 +175,26 @@ if (PATHNAME == "store.html"){
   readProductData();
 }
 
+window.search= search;
+function search(){
+  var input, filter, div, divCard, a, b, i, txtValue;
+  input = document.getElementById("searchBar");
+  filter = input.value.toUpperCase();
+  div = document.getElementById("storeCards");
+  divCard = div.getElementsByTagName("div");
+  for (i = 0; i < divCard.length; i++) {
+      a = divCard[i].getElementsByTagName("h5")[0];
+      //b = divCard[i].getElementsByTagName("p")[0];
+      txtValue = a.textContent || a.innerText; //|| b.textContent || b.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        divCard[i].style.display = "";
+      } else {
+        divCard[i].style.display = "none";
+      }
+  }
+
+}
+
 // Save message to firebase
 function writeUserData(userId, name, email) {
   return new Promise((resolve) =>{
@@ -203,18 +223,18 @@ function writeProductData(name, user, location, condition, desc, img){
 
 window.change= change;
 function readProductData(){
-  var childkeys = []
+  //var childkeys = []
   var storeItems = document.getElementById("storeCards");
   const dbRef = ref_database(getDatabase());
   get(child(dbRef, "product")).then((snapshot) => {
     snapshot.forEach(function(_child){
       var key = _child.key;
-      childkeys.push([key,_child.val().product_name,_child.val().description]);
+      //childkeys.push([key,_child.val().product_name,_child.val().description]);
       //console.log(key);
       var html = `
       <div class="card-full">
         <div class="card">
-          <div class="card-body">
+          <div class="card-body" onclick="sendDetails(${_child.val().product_name},${_child.val().description},${_child.val().image},${_child.val().location},${_child.val().condition},${_child.val().posted_by});">
             <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px;">
             <h5 class="card-title pt-3"><b>${_child.val().product_name}</b></h5>
             <p class="card-text">${_child.val().description}</p>
@@ -225,10 +245,14 @@ function readProductData(){
       `
       storeItems.innerHTML += html;
     })
-    console.log(childkeys);
+    //console.log(childkeys);
   }).catch((error) => {
     console.error(error);
   });
+}
+
+function sendDetails(name, desc, img, loc, con, user){
+
 }
 
 function change(){
