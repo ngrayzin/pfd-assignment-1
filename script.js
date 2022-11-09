@@ -222,6 +222,7 @@ function writeProductData(name, user, location, condition, desc, img){
 }
 
 window.change= change;
+window.sendDetails= sendDetails;
 function readProductData(){
   //var childkeys = []
   var storeItems = document.getElementById("storeCards");
@@ -252,7 +253,47 @@ function readProductData(){
 }
 
 function sendDetails(name, desc, img, loc, con, user){
-
+  var productdetail = document.getElementById("productDetails");
+  location.href="viewproduct.html";
+  var html = `<section class="container">
+                <div class="row">
+                    <div class="col bordered d-flex justify-content-center">
+                        <h1>${img}</h1>
+                    </div>
+                    <div class="col-6  bordered">
+                        <h2>${name}</h2>
+                        <br>
+                        <h5>${desc}</h5>
+                        <br>
+                        <br>
+                        <a id="requestBtn" class="btn btn-color">Request</a>
+                        <br>
+                    </div>
+                    <div class="col-sm bordered">
+                        <br>
+                        <div class="row" style="text-align: center;">
+                            <h5>Posted by: ${user}</h5>
+                        </div>
+                        <br>
+                        <br>
+                        <div class="row" style="text-align: center;">
+                            <h5>Condition: ${con}</h5>
+                        </div>
+                        <br>
+                        <br>
+                        <div class="row" style="text-align: center;">
+                            <h5>Location (Meet-up): ${loc}</h5>
+                        </div>
+                        <br>
+                        <br>
+                        <div style="text-align: center;">
+                            <a id="chatBtn" class="btn btn-color">Chat</a>
+                        </div>
+                        <br>
+                    </div>
+                </div>
+              </section>`
+  productdetail.innerHTML = html;
 }
 
 function change(){
