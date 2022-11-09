@@ -121,4 +121,13 @@ p{
     padding: 30px;
 }
 
+.viewproduct{
+    background-color: #FFFFFF;
+    display: flex;
+}
+
 li { cursor: pointer; }
+
+.bordered {
+    border: 2px solid #cccccc;
+}
