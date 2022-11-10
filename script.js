@@ -234,7 +234,7 @@ function readProductData(){
       //console.log(key);
       var html = `
       <div class="card-full">
-        <div class="card">
+        <div class="card cardhover">
           <div class="card-body">
             <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;" onclick = "sendDetails('${key}','${_child.val().posted_by}')"> 
             <h5 class="card-title pt-3"><b>${_child.val().product_name}</b></h5>
@@ -362,6 +362,25 @@ toggle.addEventListener("click", () => {
   }
 
 })
+
+window.addEventListener("scroll", reveal);
+
+// To check the scroll position on page load
+reveal();
+
+function reveal() {
+  var reveals = document.querySelectorAll(".reveal");
+  for (var i = 0; i < reveals.length; i++) {
+    var windowHeight = window.innerHeight;
+    var elementTop = reveals[i].getBoundingClientRect().top;
+    var elementVisible = 150;
+    if (elementTop < windowHeight - elementVisible) {
+      reveals[i].classList.add("active");
+    } else {
+      reveals[i].classList.remove("active");
+    }
+  }
+}
 
 /*var products = [];
 var databaseRef = db.ref("product");

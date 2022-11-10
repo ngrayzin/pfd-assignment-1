@@ -52,9 +52,29 @@ p{
     height: 30vh;
 }
 
+.reveal{
+    position: relative;
+    transform: translateY(-100px);
+    opacity: 0;
+    transition: 1s all ease;
+  }
+  
+  .reveal.active{
+    transform: translateY(0);
+    opacity: 1;
+  }
+
 .card{
     width: 16rem;
 }
+
+.cardhover{transition: all .2s ease-in-out;}
+
+.cardhover:hover { transform: scale(1.1); }
+
+#requestBtn{transition: all .2s ease-in-out;}
+
+#requestBtn:hover { transform: scale(1.1); }
 
 .card, .card-img-top{
     border: none !important;
