@@ -23,10 +23,10 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a class="nav-link active mx-2" aria-current="page" href="userIndex.html" id="hme">Home</a>
+            <a class="nav-link mx-2" aria-current="page" href="userIndex.html" id="hme">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link mx-2"  href="store.html">Store</a>
+            <a class="nav-link active mx-2"  href="store.html">Store</a>
           </li>
           <li class="nav-item"> 
             <a class="nav-link mx-2" id="dtn">Donate</a>
@@ -97,64 +97,28 @@
             </nav>
         </div>
         <div class="card mb-3 productDetail">
-          <div class="card-body row g-0 " style="width: 100%;">
+          <div class="card-body row g-0 " style="width: 100%; height: auto;">
             <div class="col-md-4 col-sm-12">
-              <img src="images/20220108_194432.jpg" class="img-fluid rounded-start" alt="..." style="width: 20rem;height:100%;border-radius: 5px;">
+              <img src="" id="pdimg" class="img-fluid rounded-start" alt="..." style="width: auto;height: 360px;border-radius: 5px;">
             </div>
             <div class="col-md-3 ms-md-4 me-5">
-              <h5 class="card-title" style="font-size: 32px;">Card title</h5>
-              <p class="card-text pt-3">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+              <h5 class="card-title" style="font-size: 32px;" id="pdname"></h5>
+              <p class="card-text pt-3 ps-2" id="pddesc"></p>
               <a id="requestBtn" class="btn btn-color">Request</a>
               <!--<p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>-->
             </div>  
             <div class="col-md-1 ps-md-5">
-              <div class="vr d-sm-none d-xs-none d-md-block"></div>
+              <div class="vr d-none d-sm-none d-xs-none d-md-block"></div>
               <hr class="d-md-none d-sm-block">
             </div>
             <div class="col-md-2 ms-sm-12 ps-2">
-              <p class="card-text">test: by this gyu</p>
-              <p class="card-text">condition: aoebfuiaebfuoebfu</p>
-              <p class="card-text">location: aoebfuiaebfuoebfu</p>
+              <p class="card-text" id="pduser"></p>
+              <p class="card-text" id="pdcon"></p>
+              <p class="card-text" id="pdloc"></p>
               <a id="requestBtn" class="btn btn-color align-items-end">Chat</a>
             </div>
         </div>
-            <!--<div class="row">
-                <div class="col bordered d-flex justify-content-center">
-                   
-                </div>
-                <div class="col-6  bordered">
-                    <h2>Headline</h2>
-                    <br>
-                    <h5>Description</h5>
-                    <br>
-                    <br>
-                    <a id="requestBtn" class="btn btn-color">Request</a>
-                    <br>
-                </div>
-                <div class="col-sm bordered">
-                    <br>
-                    <div class="row" style="text-align: center;">
-                        <h5>Posted by: xxxxx</h5>
-                    </div>
-                    <br>
-                    <br>
-                    <div class="row" style="text-align: center;">
-                        <h5>Condition: lightly used</h5>
-                    </div>
-                    <br>
-                    <br>
-                    <div class="row" style="text-align: center;">
-                        <h5>Location (Meet-up): Blk 58, Makan Place</h5>
-                    </div>
-                    <br>
-                    <br>
-                    <div style="text-align: center;">
-                        <a id="chatBtn" class="btn btn-color">Chat</a>
-                    </div>
-                    <br>
-                </div>
-            </div>-->
-        </section>
+      </section>
     
 
 
