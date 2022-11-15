@@ -24,6 +24,15 @@ const app = initializeApp(firebaseConfig);
 
 const db = getDatabase();
 const storage = getStorage();
+const msgRef = db.ref("/msgs");
+
+const msgScreen = document.getElementById("messages"); 
+const msgForm = document.getElementById("messageForm");
+const msgInput = document.getElementById("msg-input"); 
+const msgBtn = document.getElementById("msg-btn");
+
+msgForm.addEventListener('submit', sendMessage);
+msgRef.on('child_added', updateMsgs);
 
 let PATHNAME = "";
 let x = window.location.pathname.split("/");
@@ -447,3 +456,82 @@ function reveal() {
     }
   }
 }
+
+/*const updateMsgs = data =>{
+  const {email: userEmail , user, text} = data.val();
+  //Check the encrypting mode
+  var encryptMode = fetchJson();
+  var outputText = text;
+  
+  if(encryptMode == "nr"){
+    outputText = normalEncrypt(outputText);
+  }else if(encryptMode == "cr"){
+    outputText = crazyEncrypt(outputText);
+  }
+  
+  //load messages
+  const msg = `<li class="${email == userEmail ? "msg my": "msg"}"><span class = "msg-span">
+    <i class = "name">${user}: </i>${outputText}
+    </span>
+  </li>`
+  msgScreen.innerHTML += msg;
+  document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
+  //auto scroll to bottom
+}
+
+function sendMessage(e){
+  e.preventDefault();
+  const text = msgInput.value;
+    if(!text.trim()) return alert('Please type your message'); //no msg submitted
+    const msg = {
+        email,
+        name,
+        text: text
+    };
+    msgRef.push(msg);
+    msgInput.value = "";
+}*/
+
+/*function writemessage(userid, name, text){
+  set(ref_database(db, 'msg/' + userid), {
+    //index of the msg to find out order of msgs 
+    index: index,
+    name: name,
+    user: userid,
+    text : text,
+  });
+}
+*/
+
+
+
+/*var products = [];
+var databaseRef = db.ref("product");
+databaseRef.on('child_added', function(snapshot) {
+  var product = snapshot.val()
+  products.push({
+    claimed: product.claimed, 
+    condition: product.condition,
+    description: product.description,
+    image: product.image,
+    posted_by: product.posted_by,
+    product_name: product.product_name
+  });
+});*/
+
+// if(PATHNAME == "viewproduct.html"){
+//   let content = ""
+//   for (var i = 0; i < products.length; i++) {
+//     content = `${content}<div class="card-full">
+//                             <div class="card">
+//                               <div class="card-body">
+//                                 <img src="images/20220108_194432.jpg" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px;">
+//                                 <h5 class="card-title pt-3"><b>${products[i].product_name}</b></h5>
+//                                 <p class="card-text">${products[i].description}</p>
+//                                 <a href="#" class="btn btn-color">Request</a>
+//                               </div>
+//                             </div>
+//                           </div>`
+//   }
+//   $("#storeCards div").html(content);
+// }
