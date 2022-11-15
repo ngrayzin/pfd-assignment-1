@@ -24,15 +24,6 @@ const app = initializeApp(firebaseConfig);
 
 const db = getDatabase();
 const storage = getStorage();
-const msgRef = db.ref("/msgs");
-
-const msgScreen = document.getElementById("messages"); 
-const msgForm = document.getElementById("messageForm");
-const msgInput = document.getElementById("msg-input"); 
-const msgBtn = document.getElementById("msg-btn");
-
-msgForm.addEventListener('submit', sendMessage);
-msgRef.on('child_added', updateMsgs);
 
 let PATHNAME = "";
 let x = window.location.pathname.split("/");
@@ -456,6 +447,16 @@ function reveal() {
     }
   }
 }
+
+//const msgRef = db.ref("/msgs");
+
+/*const msgScreen = document.getElementById("messages"); 
+const msgForm = document.getElementById("messageForm");
+const msgInput = document.getElementById("msg-input"); 
+const msgBtn = document.getElementById("msg-btn");
+
+msgForm.addEventListener('submit', sendMessage);
+msgRef.on('child_added', updateMsgs);*/
 
 /*const updateMsgs = data =>{
   const {email: userEmail , user, text} = data.val();
