@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-auth.js";
-import { getDatabase, ref as ref_database, set, onValue, get, child } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-database.js";
+import { getDatabase, ref as ref_database, set, onValue, get, child, push, update} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-database.js";
 import { getStorage, ref as ref_storage, uploadBytes, getDownloadURL} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-storage.js";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -169,7 +169,18 @@ if(PATHNAME == "donation.html"){
   })
 }
 
+
 if (PATHNAME == "store.html"){
+  const urlParams = new URLSearchParams(window.location.search);
+  const deleteSuccess = urlParams.get('deleteSuccess');
+  if (deleteSuccess === '1') {
+    // The page was just reloaded, display the toast:
+    //console.log($('.toast').toast('show'))
+    $(document).ready(function(){
+      $('.toast').toast('show');
+      });
+  }
+  //
   readProductData();
 }
 
@@ -227,23 +238,25 @@ function readProductData(){
   const dbRef = ref_database(getDatabase());
   get(child(dbRef, "product")).then((snapshot) => {
     snapshot.forEach(function(_child){
-      var key = _child.key;
-      //childkeys.push([key,_child.val().product_name,_child.val().description]);
-      //console.log(key);
-      products.push([key,_child.val().product_name,_child.val().description,_child.val().image,_child.val().location,_child.val().condition,_child.val().posted_by])
-      var html = `
-      <div class="card-full">
-        <div class="card cardhover">
-          <div class="card-body">
-            <a href="/viewproduct.html?product=${key}"><img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;"></a> 
-            <h5 class="card-title pt-3"><b>${_child.val().product_name}</b></h5>
-            <p class="card-text">${_child.val().description}</p>
-            <a id="requestBtn" class="btn btn-color" onClick="change()">Request</a>
+      if(_child.val().claimed == false){
+        var key = _child.key;
+        //childkeys.push([key,_child.val().product_name,_child.val().description]);
+        //console.log(key);
+        products.push([key,_child.val().product_name,_child.val().description,_child.val().image,_child.val().location,_child.val().condition,_child.val().posted_by])
+        var html = `
+        <div class="card-full">
+          <div class="card cardhover">
+            <div class="card-body">
+              <a href="/viewproduct.html?product=${key}"><img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;"></a> 
+              <h5 class="card-title pt-3"><b>${_child.val().product_name}</b></h5>
+              <p class="card-text">${_child.val().description}</p>
+              <a id="requestBtn" class="btn btn-color" onClick="change('${key}')">Request</a>
+            </div>
           </div>
         </div>
-      </div>
-      `
-      storeItems.innerHTML += html;
+        `
+        storeItems.innerHTML += html;
+      }
     })
     //console.log(products);
     localStorage.setItem("list", JSON.stringify(products));
@@ -292,18 +305,20 @@ if (PATHNAME == "viewproduct.html"){
   }
 }
 
-if (PATHNAME == "userIndex.html"){
-  returnName();
-  displayProductByUser()
-}
-
 function change(){
   var user = auth.currentUser;
+  const newPostKey = push(child(ref_database(db), 'product')).key;
+  const updates = {};
+  updates['/product/' + key + '/claimed/'] = true;
   if(user){
+    update(ref_database(db), updates);
+    //location.reload();
     $('.toast').toast('show');
-  } 
+    window.location.href = window.location.pathname + '?deleteSuccess=1';
+  }
   else{
     myModal.show();
+    return false
   } 
 }
 
