@@ -53,6 +53,7 @@ onAuthStateChanged(auth, (user) => {
     // User is signed in, see docs for a list of available properties
     // https://firebase.google.com/docs/reference/js/firebase.User
     const uid = user.uid;
+    localStorage.setItem("uid",uid);
     loggedIn.style.display = "block"
     btn.innerText = "Log out"
     btn.addEventListener("click", () => {
@@ -193,6 +194,28 @@ if (PATHNAME == "store.html"){
   readProductData();
 }
 
+if (PATHNAME == "viewproduct.html"){
+  const urlParams = new URLSearchParams(window.location.search);
+  const product = urlParams.get('product');
+  const list =JSON.parse(localStorage.getItem('list'));
+  for (let i = 0; i < list.length; i++) {
+      var item = list[i][0];
+      if (item == product) {
+        $("#pdname").text(list[i][1]);
+        $("#pddesc").text(list[i][2]);
+        $("#pdimg").attr("src", list[i][3]);
+        $("#pdloc").text("location: " + list[i][4]);
+        $("#pdcon").text("condition: " + list[i][5]);
+        returnUser(list[i][6]);
+      }
+  }
+}
+
+if(PATHNAME == "userIndex.html"){
+  const userId = localStorage.getItem("uid");
+  displayProductByUser(userId);
+}
+
 window.search= search;
 function search(){
   var input, filter, div, divCard, a, b, i, txtValue;
@@ -236,6 +259,8 @@ function writeProductData(name, user, location, condition, desc, img){
     description: desc,
     image: img,
     claimed : false,
+    requested : false,
+    requested_by: null,
   });
 }
 
@@ -259,7 +284,7 @@ function readProductData(){
               <a href="/viewproduct.html?product=${key}"><img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;"></a> 
               <h5 class="card-title pt-3"><b>${_child.val().product_name}</b></h5>
               <p class="card-text">${_child.val().description}</p>
-              <a id="requestBtn" class="btn btn-color" onClick="change('${key}')">Request</a>
+              <a id="requestBtn" class="btn btn-color" onClick="change('${key,_child.val().posted_by}')">Request</a>
             </div>
           </div>
         </div>
@@ -274,62 +299,61 @@ function readProductData(){
   });
 }
 
-function displayProductByUser(){
-  var productItems = document.getElementById("productList");
-  const list =JSON.parse(localStorage.getItem('list'));
-  for (let i = 0; i < list.length; i++) {
-      var item = list[i][0];
-      if (item == key) {
+function displayProductByUser(uid){
+  //console.log(uid);
+  var storeItems = document.getElementById("productList");
+  const dbRef = ref_database(getDatabase());
+  get(child(dbRef, "product")).then((snapshot) => {
+    snapshot.forEach(function(_child){
+      if(_child.val().posted_by == uid){
+        var key = _child.key;
+        //childkeys.push([key,_child.val().product_name,_child.val().description]);
+        //console.log(key);
         var html = `
         <div class="card-full">
           <div class="card cardhover">
             <div class="card-body">
-              <a href="/viewproduct.html?product=${list[i][0]}"><img src="${list[i][3]}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;"></a> 
-              <h5 class="card-title pt-3"><b>${list[i][1]}</b></h5>
-              <p class="card-text">${list[i][2]}</p>
-              <a id="requestBtn" class="btn btn-color" onClick="change()">Request</a>
+              <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;">
+              <h5 class="card-title pt-3"><b>${_child.val().product_name}</b></h5>
+              <p class="card-text">${_child.val().description}</p>
+              <a id="deleteBtn" class="btn btn-color" onClick="">Delete</a>
             </div>
           </div>
         </div>
         `
-        productItems.innerHTML += html;
+        storeItems.innerHTML += html;
       }
-    }
+    })
+  }).catch((error) => {
+    console.error(error);
+  });
 }
 
-if (PATHNAME == "viewproduct.html"){
-  const urlParams = new URLSearchParams(window.location.search);
-  const product = urlParams.get('product');
-  const list =JSON.parse(localStorage.getItem('list'));
-  for (let i = 0; i < list.length; i++) {
-      var item = list[i][0];
-      if (item == product) {
-        $("#pdname").text(list[i][1]);
-        $("#pddesc").text(list[i][2]);
-        $("#pdimg").attr("src", list[i][3]);
-        $("#pdloc").text("location: " + list[i][4]);
-        $("#pdcon").text("condition: " + list[i][5]);
-        returnUser(list[i][6]);
-      }
-  }
-}
-
-function change(){
-  var user = auth.currentUser;
+function change(key,poster){
+  var userId = auth.currentUser.uid;
   const newPostKey = push(child(ref_database(db), 'product')).key;
   const updates = {};
-  updates['/product/' + key + '/claimed/'] = true;
+  updates['/product/' + key + '/requested/'] = true;
+  updates['/product/' + key + '/requested_by/'] = userId;
   if(user){
-    update(ref_database(db), updates);
-    //location.reload();
-    $('.toast').toast('show');
-    window.location.href = window.location.pathname + '?deleteSuccess=1';
+    if(userId == poster){
+      //show modal
+      alert("error");
+    }
+    else{
+      update(ref_database(db), updates);
+      update(ref_database(db), updates);
+      //location.reload();
+      $('.toast').toast('show');
+      window.location.href = window.location.pathname + '?deleteSuccess=1';
+    }
   }
   else{
     myModal.show();
     return false
   } 
 }
+
 
 
 //return user name
@@ -339,7 +363,7 @@ function returnName() {
     var username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
     document.getElementById("Nameholder").innerText = username;
     if(PATHNAME == "userIndex.html"){
-      document.getElementById("pdusername").innerText = "Welcome back " + username;
+      document.getElementById("pdusername").innerText = "Welcome back " + username+"!👋";
     }
   }, {
     onlyOnce: true
@@ -357,18 +381,6 @@ function returnUser(userKey){
   });
 
 }
-
-/*function returnNameInIndex() {
-  // var temp = auth.currentUser;
-  // console.log(temp.uid)
-  var userId = auth.currentUser.uid;
-  return onValue(ref_database(db, '/users/' + userId), (snapshot) => {
-    var username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
-    document.getElementById("pdusername").innerText += username;
-  }, {
-    onlyOnce: true
-  });
-}*/
 
 
 let toggle = document.getElementById("toggle");
@@ -413,56 +425,6 @@ function reveal() {
     }
   }
 }
-
-/*const updateMsgs = data =>{
-  const {email: userEmail , user, text} = data.val();
-
-  //Check the encrypting mode
-  var encryptMode = fetchJson();
-  var outputText = text;
-  
-  if(encryptMode == "nr"){
-    outputText = normalEncrypt(outputText);
-  }else if(encryptMode == "cr"){
-    outputText = crazyEncrypt(outputText);
-  }
-  
-  //load messages
-  const msg = `<li class="${email == userEmail ? "msg my": "msg"}"><span class = "msg-span">
-    <i class = "name">${user}: </i>${outputText}
-    </span>
-  </li>`
-  msgScreen.innerHTML += msg;
-  document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
-  //auto scroll to bottom
-}
-
-function sendMessage(e){
-  e.preventDefault();
-  const text = msgInput.value;
-
-    if(!text.trim()) return alert('Please type your message'); //no msg submitted
-    const msg = {
-        email,
-        name,
-        text: text
-    };
-
-    msgRef.push(msg);
-    msgInput.value = "";
-}*/
-
-/*function writemessage(userid, name, text){
-  set(ref_database(db, 'msg/' + userid), {
-    //index of the msg to find out order of msgs 
-    index: index,
-    name: name,
-    user: userid,
-    text : text,
-  });
-}
-*/
-
 
 /*var products = [];
 var databaseRef = db.ref("product");
