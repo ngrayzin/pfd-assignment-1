@@ -252,6 +252,29 @@ function readProductData(){
   });
 }
 
+function displayProductByUser(){
+  var productItems = document.getElementById("productList");
+  const list =JSON.parse(localStorage.getItem('list'));
+  for (let i = 0; i < list.length; i++) {
+      var item = list[i][0];
+      if (item == key) {
+        var html = `
+        <div class="card-full">
+          <div class="card cardhover">
+            <div class="card-body">
+              <a href="/viewproduct.html?product=${list[i][0]}"><img src="${list[i][3]}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;"></a> 
+              <h5 class="card-title pt-3"><b>${list[i][1]}</b></h5>
+              <p class="card-text">${list[i][2]}</p>
+              <a id="requestBtn" class="btn btn-color" onClick="change()">Request</a>
+            </div>
+          </div>
+        </div>
+        `
+        productItems.innerHTML += html;
+      }
+    }
+}
+
 if (PATHNAME == "viewproduct.html"){
   const urlParams = new URLSearchParams(window.location.search);
   const product = urlParams.get('product');
@@ -267,6 +290,11 @@ if (PATHNAME == "viewproduct.html"){
         returnUser(list[i][6]);
       }
   }
+}
+
+if (PATHNAME == "userIndex.html"){
+  returnName();
+  displayProductByUser()
 }
 
 function change(){
@@ -286,6 +314,9 @@ function returnName() {
   return onValue(ref_database(db, '/users/' + userId), (snapshot) => {
     var username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
     document.getElementById("Nameholder").innerText = username;
+    if(PATHNAME == "userIndex.html"){
+      document.getElementById("pdusername").innerText = "Welcome back " + username;
+    }
   }, {
     onlyOnce: true
   });
@@ -302,6 +333,18 @@ function returnUser(userKey){
   });
 
 }
+
+/*function returnNameInIndex() {
+  // var temp = auth.currentUser;
+  // console.log(temp.uid)
+  var userId = auth.currentUser.uid;
+  return onValue(ref_database(db, '/users/' + userId), (snapshot) => {
+    var username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
+    document.getElementById("pdusername").innerText += username;
+  }, {
+    onlyOnce: true
+  });
+}*/
 
 
 let toggle = document.getElementById("toggle");
