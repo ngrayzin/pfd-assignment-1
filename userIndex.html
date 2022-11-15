@@ -15,7 +15,7 @@
   <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top shadow px-3" id="navbar">
     <div class="container">
       <a class="navbar-brand" href="#">
-        <b>EDonate</b>
+        <img src="images/TradeIMG.png" alt="Trade" height="36">
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -45,7 +45,7 @@
   </nav>
       <!--login/signup modal-->
       <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="exampleModal" tabindex="-1" data-bs-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -85,6 +85,24 @@
             </div>
             </div>
         </div>
+
+        <div class="modal fade" id="delete" tabindex="-1" aria-hidden="false">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h2 class="modal-title fs-5" >Woah</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                Are you sure you want to delete this product?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" id="deleteBtn">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
       <!--==========code starts below==========-->
       <div class="spacing"></div>
       <section class="container" id="">
@@ -93,6 +111,7 @@
         </div>
         <div class="spacing"></div>
         <h3 style="text-align: center;">Product posted:</h3>
+        <div class="spacing"></div>
         <div class="card-group cards container g-4 mx-auto justify-content-center" id="productList">
           <!--here is where all the items are going-->
         </div>
@@ -100,6 +119,12 @@
       <section class="container" id="">
         <div class="spacing"></div>
         <h3 style="text-align: center;">Requests:</h3>
+        <br>
+        <table class="table mx-auto" style="text-align: center;">
+          <tbody id="requests">
+            <!--here is where the requests are-->
+          </tbody>
+        </table>
         
       </section>
     
