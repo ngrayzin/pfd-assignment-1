@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trade</title>
     <link href="style.css" rel="stylesheet" type="text/css" />
-    <link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet"  type='text/css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 </head>
-<body  class="store">
+<body class="store"> 
   <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top shadow px-3" id="navbar">
     <div class="container">
       <a class="navbar-brand" href="#">
@@ -23,7 +23,7 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a class="nav-link mx-2" aria-current="page" href="index.html" id="hme">Home</a>
+            <a class="nav-link mx-2" aria-current="page" href="userIndex.html" id="hme">Home</a>
           </li>
           <li class="nav-item">
             <a class="nav-link active mx-2"  href="store.html">Store</a>
@@ -45,7 +45,7 @@
   </nav>
       <!--login/signup modal-->
       <!-- Modal -->
-        <div class="modal fade" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -85,43 +85,31 @@
             </div>
             </div>
         </div>
-      <!--==========code starts below==========-->
-      <br>
-        <div class="container">
-          <div class="row ps-3">
-            <div class="spacing"></div>
-            <div class="col-6 col-md-6">
-              <h1 class="black">What are you looking for?</h1>
-            </div>
-        
-            <!-- Force next columns to break to new line -->
-            <div class="w-100"></div>
-            <br>
-            <div class="col-6 col-md-4">
-              <input class="form-control" id="searchBar" type="text" placeholder="&#xF002; Search" aria-label="default input example" onkeyup="search()" style="background-color: #FAFAFA;font-family:Arial, FontAwesome">
-            </div>
-          </div>
-          <div class="spacing"></div>
-          <div class="card-group cards container g-4" id="storeCards">
-            <!--here is where all the items are going-->
-          </div>
-
-        </div>
+        <!--==========code starts below==========-->
         <div class="spacing"></div>
-        <div class="toast-container position-fixed bottom-0 end-0 p-3">
-          <div class="toast" role="alert" data-autohide="true" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-              <!-- <img src="..." class="rounded me-2" alt="..."> -->
-              <strong class="me-auto">&#127881; Success!</strong>
-              <small class="text-muted">just now</small>
-              <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        <div class="card mb-3 productDetail">
+            <div class = "chat">
+                <div class = "chat-window" id = "chat-window">
+                  <ul id = "messages">
+                    <li class="msg">
+                      <span class = "msg-span">
+                        <i class = "name">Host: </i>Hello and welcome to the chat!
+                      </span>
+                    </li>
+                    <li class="msg my">
+                      <span class = "msg-span">
+                        <i class = "name">Me: </i>My message is on the right
+                      </span>
+                    </li>
+                  </ul>
+                  <form id = "messageForm" autocomplete="off">
+                    <input type = "text" id = "msg-input" placeholder="Enter a message">
+                    <button id = "msg-btn" type = "submit">Send</button>
+                  </form>
+                </div>
             </div>
-            <div class="toast-body">
-              Request has been sent!
-            </div>
-          </div>
-
-      
+        </div>
+      </section>
     
 
 
