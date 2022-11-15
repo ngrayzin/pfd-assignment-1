@@ -29,6 +29,9 @@ h1{
 h2{
     font-family: 'Orelega One', cursive;
 }
+h3{
+    font-family: 'Orelega One', cursive;
+}
 
 .main-color{
     color: #2BC179;
@@ -72,9 +75,10 @@ p{
 
 .cardhover:hover { transform: scale(1.1); }
 
-#requestBtn{transition: all .2s ease-in-out;}
+#requestBtn,#deleteBtn{transition: all .2s ease-in-out;}
 
 #requestBtn:hover { transform: scale(1.1); }
+#deleteBtn:hover { transform: scale(1.1); }
 
 .card, .card-img-top{
     border: none !important;
