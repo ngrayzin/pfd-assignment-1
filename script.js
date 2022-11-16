@@ -28,8 +28,9 @@ const db = getDatabase();
 const storage = getStorage();
 
 let PATHNAME = "";
-let x = window.location.pathname.split("/");
-PATHNAME = x[1]
+let x = window.location.pathname.split("/").pop();;
+
+PATHNAME = x
 
 console.log(PATHNAME);
 
