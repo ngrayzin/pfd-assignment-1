@@ -331,6 +331,7 @@ function displayProductByUser(uid){
   var requestExist = false;
   const storeItems = document.getElementById("productList");
   const requesters = document.getElementById("requests"); 
+  let asd = document.getElementById("empty"); 
   const dbRef = ref_database(getDatabase());
   get(child(dbRef, "product")).then((snapshot) => {
     var i = 1;
@@ -356,6 +357,7 @@ function displayProductByUser(uid){
         productExist = true;
 
         if(_child.val().requested == true){
+          asd.style.display = "none";
           onValue(ref_database(db, '/users/' + _child.val().requested_by), (snapshot) => {
             var username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
             var rhtml = `
@@ -381,13 +383,6 @@ function displayProductByUser(uid){
                     <h5>Wow how empty...</h5>
                   </div>`
       storeItems.innerHTML += empty;
-    }
-    if(requestExist == false){
-      var empty = `<div style="text-align: center;">
-                    <img src="images/SPOILER_unknown.png" height="200px" width="auto">
-                    <h5>Wow how empty...</h5>
-                  </div>`
-      requesters.innerHTML += empty;
     }
   }).catch((error) => {
     console.error(error);
