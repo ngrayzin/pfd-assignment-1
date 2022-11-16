@@ -209,6 +209,7 @@ if (PATHNAME == "viewproduct.html"){
 if(PATHNAME == "userIndex.html"){
   const userId = localStorage.getItem("uid");
   displayProductByUser(userId);
+  move();
 }
 
 window.search= search;
@@ -259,10 +260,31 @@ function writeProductData(name, user, location, condition, desc, img){
   });
 }
 
+var i = 0;
+function move() {
+  if (i == 0) {
+    i = 1;
+    var elem = document.getElementById("myBar");
+    var width = 10;
+    var id = setInterval(frame, 10);
+    function frame() {
+      if (width >= 100) {
+        clearInterval(id);
+        i = 0;
+      } else {
+        width++;
+        elem.style.width = width + "%";
+        elem.innerHTML = width + "%";
+      }
+    }
+  }
+}
+
 var products = [];
 window.change= change;
 function readProductData(){
   //var childkeys = []
+  var productExists = false;
   var storeItems = document.getElementById("storeCards");
   const dbRef = ref_database(getDatabase());
   get(child(dbRef, "product")).then((snapshot) => {
@@ -285,10 +307,18 @@ function readProductData(){
         </div>
         `
         storeItems.innerHTML += html;
+        productExists = true;
       }
     })
     //console.log(products);
     localStorage.setItem("list", JSON.stringify(products));
+    if(productExists == false){
+      var empty = `<div style="text-align: center;">
+                    <img src="images/SPOILER_unknown.png" height="200px" width="auto">
+                    <h5>Wow how empty...</h5>
+                  </div>`
+      storeItems.innerHTML += empty;
+    }
   }).catch((error) => {
     console.error(error);
   });
@@ -297,6 +327,8 @@ function readProductData(){
 window.modal=modal;
 function displayProductByUser(uid){
   //console.log(uid);
+  var productExist = false;
+  var requestExist = false;
   const storeItems = document.getElementById("productList");
   const requesters = document.getElementById("requests"); 
   const dbRef = ref_database(getDatabase());
@@ -321,6 +353,7 @@ function displayProductByUser(uid){
         `
         //onClick="deleteRef('${key}'
         storeItems.innerHTML += html;
+        productExist = true;
 
         if(_child.val().requested == true){
           onValue(ref_database(db, '/users/' + _child.val().requested_by), (snapshot) => {
@@ -335,12 +368,27 @@ function displayProductByUser(uid){
             `
             requesters.innerHTML +=  rhtml;
             i++;
+            requestExist = true;
           });
           //returnUser(_child.val().requested_by);
           //$("#rName").text(name);
         }
       }
     })
+    if(productExist == false){
+      var empty = `<div style="text-align: center;">
+                    <img src="images/SPOILER_unknown.png" height="200px" width="auto">
+                    <h5>Wow how empty...</h5>
+                  </div>`
+      storeItems.innerHTML += empty;
+    }
+    if(requestExist == false){
+      var empty = `<div style="text-align: center;">
+                    <img src="images/SPOILER_unknown.png" height="200px" width="auto">
+                    <h5>Wow how empty...</h5>
+                  </div>`
+      requesters.innerHTML += empty;
+    }
   }).catch((error) => {
     console.error(error);
   });
@@ -453,61 +501,15 @@ function reveal() {
   }
 }
 
-//const msgRef = db.ref("/msgs");
+//set(ref_database(db, 'product/' + user.uid + name)
 
-/*const msgScreen = document.getElementById("messages"); 
+const msgScreen = document.getElementById("messages"); 
 const msgForm = document.getElementById("messageForm");
 const msgInput = document.getElementById("msg-input"); 
 const msgBtn = document.getElementById("msg-btn");
 
-if(PATHNAME == "chat.html"){
-  var reciever = localStorage.getItem("chat");
-  var sender = auth.currentUser.uid;
-
-
-}
-
-function chatBtn(){
-  var user = auth.currentUser;
-  if(user){
-    window.location.href = "/chat.html"
-  }
-  else{
-    myModal.show();
-  }
-}
-
-
-function writeMsgData(uid1, uid2, msg){
-  set(ref_database(db, 'chats/' + uid1 + uid2), {
-    sender:uid1,
-    reciever:uid2,
-    msg:msg,
-  });
-}
-
-function sendMessage(e){
-  e.preventDefault();
-  var user = auth.currentUser;
-  if(user){
-    var uid = localStorage.getItem("uid");
-    const text = msgInput.value;
-    if(!text.trim()) return alert('Please type your message'); //no msg submitted
-    const msg = {
-        uid,
-        text: text
-    };
-    msgRef.push(msg);
-    msgInput.value = "";
-  }
-  else{
-
-  }
-  
-}*/
-
-//msgForm.addEventListener('submit', sendMessage);
-//msgRef.on('child_added', updateMsgs);
+msgForm.addEventListener('submit', sendMessage);
+msgRef.on('child_added', updateMsgs);*/
 
 /*const updateMsgs = data =>{
   const {email: userEmail , user, text} = data.val();
@@ -522,16 +524,27 @@ function sendMessage(e){
   }
   
   //load messages
-  const msg = `<li class="${email == userEmail ? "msg my": "msg"}"><span class = "msg-span">
-    <i class = "name">${user}: </i>${outputText}
-    </span>
+  const msg = `<li class="${dataName == name ? "msg my": "msg"}"><span class = "msg-span">
+  <i class = "name">${name}: </i>${text}
+  </span>
   </li>`
   msgScreen.innerHTML += msg;
   document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
   //auto scroll to bottom
 }
 
-*/
+function sendMessage(e){
+  e.preventDefault();
+  const text = msgInput.value;
+    if(!text.trim()) return alert('Please type your message'); //no msg submitted
+    const msg = {
+        email,
+        name,
+        text: text
+    };
+    msgRef.push(msg);
+    msgInput.value = "";
+}*/
 
 /*function writemessage(userid, name, text){
   set(ref_database(db, 'msg/' + userid), {
