@@ -209,7 +209,7 @@ if (PATHNAME == "viewproduct.html"){
 if(PATHNAME == "userIndex.html"){
   const userId = localStorage.getItem("uid");
   displayProductByUser(userId);
-  move();
+  calculatePoints(userId);
 }
 
 window.search= search;
@@ -260,24 +260,56 @@ function writeProductData(name, user, location, condition, desc, img){
   });
 }
 
-var i = 0;
-function move() {
-  if (i == 0) {
-    i = 1;
-    var elem = document.getElementById("myBar");
-    var width = 10;
-    var id = setInterval(frame, 10);
-    function frame() {
-      if (width >= 100) {
-        clearInterval(id);
-        i = 0;
-      } else {
-        width++;
-        elem.style.width = width + "%";
-        elem.innerHTML = width + "%";
+var noOfVouchers = 0;
+function calculatePoints(uid) {
+  var numberOfClaimed = 0
+  const dbRef = ref_database(getDatabase());
+  get(child(dbRef, "product")).then((snapshot) => {
+    snapshot.forEach(function(_child){
+      if(_child.val().posted_by == uid){
+        var key = _child.key;
+        //childkeys.push([key,_child.val().product_name,_child.val().description]);
+        //console.log(key);
+        if(_child.val().claimed == true){
+          numberOfClaimed = numberOfClaimed + 1;
+        }
       }
+    })
+    if (numberOfClaimed > 0) {
+      //i = 1;
+      var width = 0
+      var elem = document.getElementById("myBar");
+      var vouch = document.getElementById("noOfVouch");
+      if (numberOfClaimed > 4){
+        while (numberOfClaimed >= 5){
+          noOfVouchers = noOfVouchers + 1;
+          numberOfClaimed = numberOfClaimed - 4;
+        }
+        width = numberOfClaimed*25;
+      }
+      else {
+        width = numberOfClaimed*25;
+        if (width == 100){
+          noOfVouchers = noOfVouchers + 1;
+        }
+      }
+      //var id = setInterval(frame, 10);
+      /*function frame() {
+        if (width >= 100) {
+          clearInterval(id);
+          i = 0;
+        } else {
+          width++;
+          elem.style.width = width + "%";
+          elem.innerHTML = width + "%";
+        }
+      }*/
+      elem.style.width = width + "%";
+      elem.innerHTML = width + "p";
+      //console.log(numberOfClaimed);
     }
-  }
+    vouch.innerHTML = "Number of vouchers that can be claimed: " + noOfVouchers;
+  })
 }
 
 var products = [];
