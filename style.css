@@ -311,3 +311,22 @@ li { cursor: pointer; }
 #chat-window::-webkit-scrollbar-thumb:hover {
     background:rgb(5, 190, 144); 
 }
+
+#myBar {
+    width: 10%;
+    height: 25px;
+    background-color: #04AA6D;
+    text-align: center; /* To center it horizontally (if you want) */
+    line-height: 30px; /* To center it vertically */
+  }
+
+#fullBar {
+    height: 30px;
+    background-color: white;
+    text-align: center; /* To center it horizontally (if you want) */
+    line-height: 30px; /* To center it vertically */
+    margin-left:15%; 
+    margin-right: 15%;
+    color: black;
+    border-style: solid;
+}
