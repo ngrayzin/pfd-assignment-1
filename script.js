@@ -503,7 +503,7 @@ function reveal() {
 
 //set(ref_database(db, 'product/' + user.uid + name)
 
-const msgScreen = document.getElementById("messages"); 
+/*const msgScreen = document.getElementById("messages"); 
 const msgForm = document.getElementById("messageForm");
 const msgInput = document.getElementById("msg-input"); 
 const msgBtn = document.getElementById("msg-btn");
