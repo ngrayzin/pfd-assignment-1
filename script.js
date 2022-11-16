@@ -86,6 +86,7 @@ var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('examp
 
 button1.addEventListener("click", (e) => {
   e.preventDefault();
+  $('#overlay').fadeIn();
   const inputField = document.getElementById("form");
   var email = document.getElementById("exampleInputEmail1").value
   var password = document.getElementById("exampleInputPassword1").value
@@ -94,6 +95,7 @@ button1.addEventListener("click", (e) => {
     .then((userCredential) => {
       // Signed in 
       const user = userCredential.user;
+      $('#overlay').fadeOut();
       inputField.reset();
       myModal.hide();
       location.href = "userIndex.html";
@@ -110,6 +112,7 @@ button1.addEventListener("click", (e) => {
 
 button2.addEventListener("click", (e) => {
   e.preventDefault();
+  $('#overlay').fadeIn();
   const inputField = document.getElementById("form");
   var email = document.getElementById("exampleInputEmail1").value
   var password = document.getElementById("exampleInputPassword1").value
@@ -118,13 +121,8 @@ button2.addEventListener("click", (e) => {
   createUserWithEmailAndPassword(auth, email, password)
     .then(async (userCredential) => {
       const user = userCredential.user;
-      const x = await writeUserData(user.uid, name, email)
-      .then(() => {
-        inputField.reset();
-        myModal.hide();
-        location.href = "userIndex.html";
-      })
-
+      writeUserData(user.uid, name, email);
+      inputField.reset();
     })
     .catch((error) => {
       localStorage.clear();
@@ -142,6 +140,8 @@ if(PATHNAME == "donation.html"){
   const breadcrumb = document.getElementById("breadcrumb");
   submit.addEventListener("click", (e)=> {
     e.preventDefault();
+    $('#overlay').fadeIn();
+    var done = false;
     var user = auth.currentUser;
     var nname = document.getElementById("productname").value;
     var ddesc = document.getElementById("desc").value;
@@ -168,7 +168,6 @@ if(PATHNAME == "donation.html"){
     else{
       writeProductData(nname, user, loctext, context, ddesc, imgname)
     }
-    $('.p').toast('show');
     inputFieldp.reset();
   })
 }
@@ -255,16 +254,14 @@ function search(){
 
 // Save message to firebase
 function writeUserData(userId, name, email) {
-  return new Promise((resolve) =>{
-    setTimeout(() => {
-      resolve(
-        set(ref_database(db, 'users/' + userId), {
-          username: name,
-          email: email,
-        })
-      )
-    }, 100)
-  })
+  set(ref_database(db, 'users/' + userId), {
+    username: name,
+    email: email,
+  }).then(() => {
+    $('#overlay').fadeOut();
+    myModal.hide();
+    location.href = "userIndex.html";
+  });
 }
 
 function writeProductData(name, user, location, condition, desc, img){
@@ -278,6 +275,10 @@ function writeProductData(name, user, location, condition, desc, img){
     claimed : false,
     requested : false,
     requested_by: "",
+  }).then(() => {
+    $('#overlay').fadeOut();
+    $('.p').toast('show');
+    return true;
   });
 }
 
@@ -352,7 +353,7 @@ function readProductData(){
           <div class="card cardhover">
             <div class="card-body">
               <a href="/viewproduct.html?product=${key}"><img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;"></a> 
-              <h5 class="card-title pt-3"><b>${_child.val().product_name}</b></h5>
+              <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
               <p class="card-text text-truncate">${_child.val().description}</p>
               <a id="requestBtn" class="btn btn-color" onClick="change('${key}', '${_child.val().posted_by}')">Request</a>
             </div>
@@ -411,7 +412,7 @@ function displayProductByUser(uid){
             <div class="card cardhover">
               <div class="card-body">
                 <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;">
-                <h5 class="card-title pt-3"><b>${_child.val().product_name}</b></h5>
+                <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
                 <p class="card-text text-truncate">${_child.val().description}</p>
                 <a id="deleteBtn"class="btn btn-color">Claimed</a>
               </div>
@@ -425,8 +426,8 @@ function displayProductByUser(uid){
           <div class="card cardhover">
             <div class="card-body">
               <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;">
-              <h5 class="card-title pt-3"><b>${_child.val().product_name}</b></h5>
-              <p class="card-text">${_child.val().description}</p>
+              <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
+              <p class="card-text text-truncate">${_child.val().description}</p>
               <a id="deleteBtn" class="btn btn-color" onclick = "modal('${key}')" data-bs-toggle="modal" data-bs-target="#delete">Delete</a>
             </div>
           </div>
@@ -559,6 +560,7 @@ toggle.addEventListener("click", () => {
   }
 
 })
+
 
 window.addEventListener("scroll", reveal);
 
