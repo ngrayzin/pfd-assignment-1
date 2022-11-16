@@ -78,12 +78,12 @@ p{
 
 .cardhover:hover { transform: scale(1.1); }
 
-#requestBtn,#deleteBtn,#acceptBtn{transition: all .2s ease-in-out;}
+#requestBtn,#deleteBtn,#acceptBtn,#chatBtn{transition: all .2s ease-in-out;}
 
 #requestBtn:hover { transform: scale(1.1); }
 #deleteBtn:hover { transform: scale(1.1); }
 #acceptBtn:hover { transform: scale(1.1); }
-
+#chatBtn:hover { transform: scale(1.1); }
 .table{
     align-items: center;
     justify-content: center;

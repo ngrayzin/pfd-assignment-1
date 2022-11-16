@@ -324,6 +324,18 @@ function readProductData(){
   });
 }
 
+window.claimProduct = claimProduct;
+function claimProduct(key){
+  const claimBtn = document.getElementById("claimBtn");
+  const updates = {};
+  claimBtn.addEventListener("click", () => {
+    const updates = {};
+    updates['/product/' + key + '/claimed/'] = true;
+    update(ref_database(db), updates);
+    location.reload();
+    })
+}
+
 window.modal=modal;
 function displayProductByUser(uid){
   //console.log(uid);
@@ -340,6 +352,22 @@ function displayProductByUser(uid){
         var key = _child.key;
         //childkeys.push([key,_child.val().product_name,_child.val().description]);
         //console.log(key);
+        if(_child.val().claimed == true){
+          var html = `
+          <div class="card-full">
+            <div class="card cardhover">
+              <div class="card-body">
+                <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;">
+                <h5 class="card-title pt-3"><b>${_child.val().product_name}</b></h5>
+                <p class="card-text">${_child.val().description}</p>
+                <a id="deleteBtn"class="btn btn-color">Claimed</a>
+                <a id="deleteBtn" class="btn btn-color" onclick = "modal('${key}')" data-bs-toggle="modal" data-bs-target="#delete">Delete</a>
+              </div>
+            </div>
+          </div>
+          `
+        }
+        else{
         var html = `
         <div class="card-full">
           <div class="card cardhover">
@@ -352,11 +380,12 @@ function displayProductByUser(uid){
           </div>
         </div>
         `
+        }
         //onClick="deleteRef('${key}'
         storeItems.innerHTML += html;
         productExist = true;
 
-        if(_child.val().requested == true){
+        if(_child.val().requested == true && _child.val().claimed == false){
           asd.style.display = "none";
           onValue(ref_database(db, '/users/' + _child.val().requested_by), (snapshot) => {
             var username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
@@ -365,7 +394,8 @@ function displayProductByUser(uid){
               <th scope="row">${i}</th>
               <td id="rName">${username}</td>
               <td>${_child.val().product_name}</td>
-              <td><a id="acceptBtn" class="btn btn-color">Accept</a></td>
+              <td><a id="chatBtn" href = "https://t.me/NgRayZin" target = "_blank" class="btn btn-color">Chat</a></td>
+              <td><a id="acceptBtn" class="btn btn-color" onClick = "claimProduct('${key}');" data-bs-toggle="modal" data-bs-target="#claim");">Accept</a></td>
             </tr>
             `
             requesters.innerHTML +=  rhtml;
