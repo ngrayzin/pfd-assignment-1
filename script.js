@@ -3,6 +3,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.13.0/firebas
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-auth.js";
 import { getDatabase, ref as ref_database, set, onValue, get, child, push, update} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-database.js";
 import { getStorage, ref as ref_storage, uploadBytes, getDownloadURL} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-storage.js";
+import { getMessaging } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-messaging.js";
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -186,6 +188,7 @@ if (PATHNAME == "store.html"){
 }
 
 if (PATHNAME == "viewproduct.html"){
+  var requestBtn = document.getElementById("requestBtn");
   const urlParams = new URLSearchParams(window.location.search);
   const product = urlParams.get('product');
   const list =JSON.parse(localStorage.getItem('list'));
@@ -198,6 +201,7 @@ if (PATHNAME == "viewproduct.html"){
         $("#pdloc").text("location: " + list[i][4]);
         $("#pdcon").text("condition: " + list[i][5]);
         returnUser(list[i][6]);
+        requestBtn.addEventListener("click", function(){ change(product,list[i][6]); });
       }
   }
 }
@@ -356,6 +360,7 @@ function modal(key){
 
 function change(key,poster){
   //console.log(key);
+  //console.log(poster);
   var user = auth.currentUser;
   if(user){
     var userId = auth.currentUser.uid;
@@ -370,7 +375,7 @@ function change(key,poster){
       update(ref_database(db), updates);
       //location.reload();
       $('.toast').toast('show');
-      window.location.href = window.location.pathname + '?deleteSuccess=1';
+      window.location.href = "/store.html" + '?deleteSuccess=1';
     }
   }
   else{
@@ -455,8 +460,54 @@ const msgForm = document.getElementById("messageForm");
 const msgInput = document.getElementById("msg-input"); 
 const msgBtn = document.getElementById("msg-btn");
 
-msgForm.addEventListener('submit', sendMessage);
-msgRef.on('child_added', updateMsgs);*/
+if(PATHNAME == "chat.html"){
+  var reciever = localStorage.getItem("chat");
+  var sender = auth.currentUser.uid;
+
+
+}
+
+function chatBtn(){
+  var user = auth.currentUser;
+  if(user){
+    window.location.href = "/chat.html"
+  }
+  else{
+    myModal.show();
+  }
+}
+
+
+function writeMsgData(uid1, uid2, msg){
+  set(ref_database(db, 'chats/' + uid1 + uid2), {
+    sender:uid1,
+    reciever:uid2,
+    msg:msg,
+  });
+}
+
+function sendMessage(e){
+  e.preventDefault();
+  var user = auth.currentUser;
+  if(user){
+    var uid = localStorage.getItem("uid");
+    const text = msgInput.value;
+    if(!text.trim()) return alert('Please type your message'); //no msg submitted
+    const msg = {
+        uid,
+        text: text
+    };
+    msgRef.push(msg);
+    msgInput.value = "";
+  }
+  else{
+
+  }
+  
+}*/
+
+//msgForm.addEventListener('submit', sendMessage);
+//msgRef.on('child_added', updateMsgs);
 
 /*const updateMsgs = data =>{
   const {email: userEmail , user, text} = data.val();
@@ -480,18 +531,7 @@ msgRef.on('child_added', updateMsgs);*/
   //auto scroll to bottom
 }
 
-function sendMessage(e){
-  e.preventDefault();
-  const text = msgInput.value;
-    if(!text.trim()) return alert('Please type your message'); //no msg submitted
-    const msg = {
-        email,
-        name,
-        text: text
-    };
-    msgRef.push(msg);
-    msgInput.value = "";
-}*/
+*/
 
 /*function writemessage(userid, name, text){
   set(ref_database(db, 'msg/' + userid), {
