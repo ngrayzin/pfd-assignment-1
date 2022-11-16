@@ -28,7 +28,7 @@ const db = getDatabase();
 const storage = getStorage();
 
 let PATHNAME = "";
-let x = window.location.pathname.split("/").pop();;
+let x = window.location.pathname.split("/").pop();
 
 PATHNAME = x
 
@@ -199,7 +199,7 @@ if (PATHNAME == "viewproduct.html"){
         $("#pdname").text(list[i][1]);
         $("#pddesc").text(list[i][2]);
         $("#pdimg").attr("src", list[i][3]);
-        $("#pdloc").text("location: " + list[i][4]);
+        $("#pdloc").text("meet-up: " + list[i][4]);
         $("#pdcon").text("condition: " + list[i][5]);
         returnUser(list[i][6]);
         requestBtn.addEventListener("click", function(){ change(product,list[i][6]); });
@@ -209,8 +209,28 @@ if (PATHNAME == "viewproduct.html"){
 
 if(PATHNAME == "userIndex.html"){
   const userId = localStorage.getItem("uid");
+  var point = document.getElementById("noOfVouch").innerHTML;
+  let reward = document.querySelectorAll("#rewardBtn");
+  let collect = document.querySelectorAll("#collect");
   displayProductByUser(userId);
-  calculatePoints(userId);
+  var points = calculatePoints(userId);
+  for(var i = 0; i< reward.length; i++){
+    reward[i].addEventListener("click", ()=> {
+      var value = collect[i];
+      console.log(value);
+      console.log(points);
+      console.log(point);
+      /*if(collect[i].innerHTML == "1 point" && points >= 1){
+        alert("claimed!");
+      }
+      else if(collect[i].innerHTML == "2 point" && points >= 2){
+        alert("claimed!")
+      }
+      else{
+        alert("not enought points")
+      }*/
+    });  
+  }
 }
 
 window.search= search;
@@ -291,7 +311,7 @@ function calculatePoints(uid) {
       else {
         width = numberOfClaimed*25;
         if (width == 100){
-          noOfVouchers = noOfVouchers + 1;
+          noOfVouchers += 1;
         }
       }
       //var id = setInterval(frame, 10);
@@ -306,7 +326,7 @@ function calculatePoints(uid) {
         }
       }*/
       elem.style.width = width + "%";
-      elem.innerHTML = width + "p";
+      elem.innerHTML = width + "%";
       //console.log(numberOfClaimed);
     }
     vouch.innerHTML = "Number of vouchers that can be claimed: " + noOfVouchers;
@@ -333,7 +353,7 @@ function readProductData(){
             <div class="card-body">
               <a href="/viewproduct.html?product=${key}"><img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;"></a> 
               <h5 class="card-title pt-3"><b>${_child.val().product_name}</b></h5>
-              <p class="card-text">${_child.val().description}</p>
+              <p class="card-text text-truncate">${_child.val().description}</p>
               <a id="requestBtn" class="btn btn-color" onClick="change('${key}', '${_child.val().posted_by}')">Request</a>
             </div>
           </div>
@@ -392,9 +412,8 @@ function displayProductByUser(uid){
               <div class="card-body">
                 <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;">
                 <h5 class="card-title pt-3"><b>${_child.val().product_name}</b></h5>
-                <p class="card-text">${_child.val().description}</p>
+                <p class="card-text text-truncate">${_child.val().description}</p>
                 <a id="deleteBtn"class="btn btn-color">Claimed</a>
-                <a id="deleteBtn" class="btn btn-color" onclick = "modal('${key}')" data-bs-toggle="modal" data-bs-target="#delete">Delete</a>
               </div>
             </div>
           </div>
@@ -515,6 +534,7 @@ function returnUser(userKey){
   });
 
 }
+
 
 let toggle = document.getElementById("toggle");
 let signup = document.getElementById("signup");

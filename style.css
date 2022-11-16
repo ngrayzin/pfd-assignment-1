@@ -78,12 +78,13 @@ p{
 
 .cardhover:hover { transform: scale(1.1); }
 
-#requestBtn,#deleteBtn,#acceptBtn,#chatBtn{transition: all .2s ease-in-out;}
+#requestBtn,#deleteBtn,#acceptBtn,#chatBtn,#rewardBtn{transition: all .2s ease-in-out;}
 
 #requestBtn:hover { transform: scale(1.1); }
 #deleteBtn:hover { transform: scale(1.1); }
 #acceptBtn:hover { transform: scale(1.1); }
 #chatBtn:hover { transform: scale(1.1); }
+#rewardBtn:hover { transform: scale(1.1); }
 .table{
     align-items: center;
     justify-content: center;
@@ -317,10 +318,11 @@ li { cursor: pointer; }
 
 #myBar {
     width: 0%;
-    height: 25px;
+    height: 30px;
     background-color: #04AA6D;
     text-align: center; /* To center it horizontally (if you want) */
     line-height: 30px; /* To center it vertically */
+    border-radius: 25px;
   }
 
 #fullBar {
@@ -331,5 +333,6 @@ li { cursor: pointer; }
     margin-left:15%; 
     margin-right: 15%;
     color: black;
-    border-style: solid;
+    border-style: none;
+    border-radius: 25px;
 }
