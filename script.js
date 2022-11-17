@@ -28,11 +28,14 @@ const db = getDatabase();
 const storage = getStorage();
 
 let PATHNAME = "";
+let FIRSTPATHNAME = "";
 let x = window.location.pathname.split("/").pop();
-
 PATHNAME = x
+FIRSTPATHNAME = window.location.pathname.split("/");
+
 
 console.log(PATHNAME);
+console.log(FIRSTPATHNAME);
 
 
 const auth = getAuth();
