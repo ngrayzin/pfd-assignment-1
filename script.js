@@ -102,6 +102,7 @@ button1.addEventListener("click", (e) => {
     })
 
     .catch((error) => {
+      $('#overlay').fadeOut();
       const errorCode = error.code;
       const errorMessage = error.message;
       alert(errorMessage);
@@ -129,6 +130,7 @@ button2.addEventListener("click", (e) => {
       const errorCode = error.code;
       const errorMessage = error.message;
       alert(errorMessage);
+      $('#overlay').fadeOut();
       inputField.reset();
     });
 })
@@ -505,7 +507,7 @@ function change(key,poster){
       update(ref_database(db), updates);
       //location.reload();
       $('.toast').toast('show');
-      window.location.href = "/store.html" + '?deleteSuccess=1';
+      location.href = "/store.html" + '?deleteSuccess=1';
     }
   }
   else{
