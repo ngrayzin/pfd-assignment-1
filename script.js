@@ -208,18 +208,19 @@ if (PATHNAME == "viewproduct.html"){
 
 if(PATHNAME == "userIndex.html"){
   const userId = localStorage.getItem("uid");
-  var point = document.getElementById("noOfVouch").innerHTML;
-  let reward = document.querySelectorAll("#rewardBtn");
-  let collect = document.querySelectorAll("#collect");
+  //var point = document.getElementById("noOfVouch").innerHTML;
   displayProductByUser(userId);
-  var points = calculatePoints(userId);
+  calculatePoints(userId);
+
+  /*let reward = document.querySelectorAll("#rewardBtn");
+  let collect = document.querySelectorAll("#collect");
   for(var i = 0; i< reward.length; i++){
     reward[i].addEventListener("click", ()=> {
       var value = collect[i];
       console.log(value);
       console.log(points);
       console.log(point);
-      /*if(collect[i].innerHTML == "1 point" && points >= 1){
+      if(collect[i].innerHTML == "1 point" && points >= 1){
         alert("claimed!");
       }
       else if(collect[i].innerHTML == "2 point" && points >= 2){
@@ -227,9 +228,9 @@ if(PATHNAME == "userIndex.html"){
       }
       else{
         alert("not enought points")
-      }*/
+      }
     });  
-  }
+  }*/
 }
 
 window.search= search;
@@ -282,9 +283,12 @@ function writeProductData(name, user, location, condition, desc, img){
   });
 }
 
-var noOfVouchers = 0;
+
 function calculatePoints(uid) {
+  var noOfVouchers = 0;
   var numberOfClaimed = 0
+  var elem = document.getElementById("myBar");
+  var vouch = document.getElementById("asdfgh");
   const dbRef = ref_database(getDatabase());
   get(child(dbRef, "product")).then((snapshot) => {
     snapshot.forEach(function(_child){
@@ -300,8 +304,7 @@ function calculatePoints(uid) {
     if (numberOfClaimed > 0) {
       //i = 1;
       var width = 0
-      var elem = document.getElementById("myBar");
-      var vouch = document.getElementById("noOfVouch");
+      
       if (numberOfClaimed > 4){
         while (numberOfClaimed >= 5){
           noOfVouchers = noOfVouchers + 1;
@@ -328,7 +331,8 @@ function calculatePoints(uid) {
       }*/
       elem.style.width = width + "%";
       elem.innerHTML = width + "%";
-      //console.log(numberOfClaimed);
+      console.log(noOfVouchers);
+      console.log(numberOfClaimed);
     }
     vouch.innerHTML = "Number of vouchers that can be claimed: " + noOfVouchers;
   })
