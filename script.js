@@ -61,6 +61,7 @@ onAuthStateChanged(auth, (user) => {
         // An error happened.
       });
     })
+    location.href = "userIndex.html";
     /*if(PATHNAME == "index.html"){
       location.href = "userIndex.html";
     }*/
@@ -510,7 +511,7 @@ function change(key,poster){
       update(ref_database(db), updates);
       //location.reload();
       $('.toast').toast('show');
-      var newpath = window.location.pathname.substr(1) + '?deleteSuccess=1';
+      var newpath = "store.html" + '?deleteSuccess=1';
       window.location.replace(newpath);
     }
   }
