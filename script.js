@@ -510,8 +510,8 @@ function change(key,poster){
       update(ref_database(db), updates);
       //location.reload();
       $('.toast').toast('show');
-      var newpath = window.location.pathname.substr(1) + '?deleteSuccess=1';
-      location.href = newpath//"store.html" + '/?deleteSuccess=1';
+      //var newpath = window.location.pathname.substr(1) + '?deleteSuccess=1';
+      location.href = "store.html" + '?deleteSuccess=1';
     }
   }
   else{
