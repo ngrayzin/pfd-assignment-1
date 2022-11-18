@@ -361,7 +361,7 @@ function readProductData(){
         <div class="card-full">
           <div class="card cardhover">
             <div class="card-body">
-              <a href="/viewproduct.html?product=${key}"><img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;"></a> 
+              <a href="viewproduct.html?product=${key}"><img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;"></a> 
               <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
               <p class="card-text text-truncate">${_child.val().description}</p>
               <a id="requestBtn" class="btn btn-color" onClick="change('${key}', '${_child.val().posted_by}')">Request</a>
@@ -510,7 +510,8 @@ function change(key,poster){
       update(ref_database(db), updates);
       //location.reload();
       $('.toast').toast('show');
-      location.href = "/store.html" + '?deleteSuccess=1';
+      var newpath = window.location.pathname.substr(1) + '?deleteSuccess=1';
+      location.href = newpath//"store.html" + '/?deleteSuccess=1';
     }
   }
   else{
