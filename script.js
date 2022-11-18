@@ -511,7 +511,7 @@ function change(key,poster){
       //location.reload();
       $('.toast').toast('show');
       //var newpath = window.location.pathname.substr(1) + '?deleteSuccess=1';
-      location.href = "store.html" + '?deleteSuccess=1';
+      window.location.href = "store.html" + '?deleteSuccess=1';
     }
   }
   else{
