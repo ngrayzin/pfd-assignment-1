@@ -61,7 +61,6 @@ onAuthStateChanged(auth, (user) => {
         // An error happened.
       });
     })
-    location.href = "userIndex.html";
     /*if(PATHNAME == "index.html"){
       location.href = "userIndex.html";
     }*/
@@ -508,11 +507,15 @@ function change(key,poster){
       alert("cant claim your own product");
     }
     else{
-      update(ref_database(db), updates);
+      update(ref_database(db), updates).then(() =>{
+        window.location.href = "store.html" + '?deleteSuccess=1';
+      });
       //location.reload();
-      $('.toast').toast('show');
-      var newpath = "store.html" + '?deleteSuccess=1';
-      window.location.replace(newpath);
+      /*$('.toast').toast('show');
+      const url = new URL(window.location.href);
+      url.searchParams.set('deleteSuccess', 1);
+      //var newpath = "store.html" + '?deleteSuccess=1';
+      //window.location.replace(newpath);*/
     }
   }
   else{
