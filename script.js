@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, browserSessionPersistence, setPersistence} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-auth.js";
 import { getDatabase, ref as ref_database, set, onValue, get, child, push, update} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-database.js";
 import { getStorage, ref as ref_storage, uploadBytes, getDownloadURL} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-storage.js";
 import { getMessaging } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-messaging.js";
@@ -39,6 +39,7 @@ console.log(FIRSTPATHNAME);
 
 
 const auth = getAuth();
+
 onAuthStateChanged(auth, (user) => {
   var notLoggedIn = document.getElementById("notLoggedIn");
   var loggedIn = document.getElementById("Nameholder");
@@ -94,7 +95,14 @@ button1.addEventListener("click", (e) => {
   var email = document.getElementById("exampleInputEmail1").value
   var password = document.getElementById("exampleInputPassword1").value
   var errormsg = document.getElementsByClassName("errormsg")
-  signInWithEmailAndPassword(auth, email, password)
+  setPersistence(auth, browserSessionPersistence)
+  .then(() => {
+    // Existing and future Auth states are now persisted in the current
+    // session only. Closing the window would clear any existing state even
+    // if a user forgets to sign out.
+    // ...
+    // New sign-in will be persisted with session persistence.
+    return signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       // Signed in 
       const user = userCredential.user;
@@ -111,6 +119,12 @@ button1.addEventListener("click", (e) => {
       alert(errorMessage);
       inputField.reset();
     });
+  })
+  .catch((error) => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+  });
 
 })
 
@@ -122,7 +136,14 @@ button2.addEventListener("click", (e) => {
   var password = document.getElementById("exampleInputPassword1").value
   var name = document.getElementById("name").value
   var errormsg = document.getElementsByClassName("errormsg")
-  createUserWithEmailAndPassword(auth, email, password)
+  setPersistence(auth, browserSessionPersistence)
+  .then(() => {
+    // Existing and future Auth states are now persisted in the current
+    // session only. Closing the window would clear any existing state even
+    // if a user forgets to sign out.
+    // ...
+    // New sign-in will be persisted with session persistence.
+    return createUserWithEmailAndPassword(auth, email, password)
     .then(async (userCredential) => {
       const user = userCredential.user;
       writeUserData(user.uid, name, email);
@@ -136,6 +157,12 @@ button2.addEventListener("click", (e) => {
       $('#overlay').fadeOut();
       inputField.reset();
     });
+  })
+  .catch((error) => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+  });
 })
 
 
