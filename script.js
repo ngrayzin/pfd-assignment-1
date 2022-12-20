@@ -591,13 +591,13 @@ toggle.addEventListener("click", () => {
     signup.style.display = "block"
     loginbutton.style.display = "none"
     change1.innerText = "Already have an account? Click"
-    change2.innerText = "login"
+    change2.innerText = "to login"
   }
   else {
     signup.style.display = "none"
     loginbutton.style.display = "block"
     change1.innerText = "Don't have an account? Click"
-    change2.innerText = "sign up"
+    change2.innerText = "to sign up"
   }
 
 })
