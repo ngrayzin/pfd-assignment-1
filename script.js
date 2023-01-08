@@ -298,7 +298,8 @@ function writeUserData(userId, name, email) {
 }
 
 function writeProductData(name, user, location, condition, desc, img){
-  set(ref_database(db, 'product/' + user.uid + name), {
+  const newPostKey = push(child(ref_database(db), 'product')).key;
+  set(ref_database(db, 'product/' + newPostKey), {
     product_name: name,
     posted_by: user.uid,
     location : location,
@@ -558,7 +559,7 @@ function returnName() {
     var username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
     document.getElementById("Nameholder").innerText = username;
     if(PATHNAME == "userIndex.html"){
-      document.getElementById("pdusername").innerText = "Welcome back " + username+"!👋";
+      document.getElementById("pdusername").innerText = username; //"Welcome back " + username+"!👋";
     }
   }, {
     onlyOnce: true
