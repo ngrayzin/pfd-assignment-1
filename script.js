@@ -221,6 +221,7 @@ if (PATHNAME == "store.html"){
 
 if (PATHNAME == "viewproduct.html"){
   var requestBtn = document.getElementById("requestBtn");
+  var chatBtn = document.getElementById("chatBtn");
   const urlParams = new URLSearchParams(window.location.search);
   const product = urlParams.get('product');
   const list =JSON.parse(localStorage.getItem('list'));
@@ -234,6 +235,7 @@ if (PATHNAME == "viewproduct.html"){
         $("#pdcon").text("condition: " + list[i][5]);
         returnUser(list[i][6]);
         requestBtn.addEventListener("click", function(){ change(product,list[i][6]); });
+        chatBtn.addEventListener("click", function(){ openChat(product,list[i][6]); });
       }
   }
 }
@@ -621,6 +623,77 @@ function reveal() {
       reveals[i].classList.remove("active");
     }
   }
+}
+
+function openChat(userId)
+{
+  location.href = "chat.html";
+  retrieveMessages(userId);
+}
+
+function writeMessage(userId, message) {
+  const currentId = auth.currentUser.uid;
+  const chatId = userId + currentId;
+  const currentDate = Date().toLocaleString().replace(",","").replace(/:.. /," ");
+  set(ref_database(db, 'messages/' + chatId), {
+    sender: currentId,
+    receiver: userId,
+    msg: message,
+    dateAndTime: currentDate,
+
+  }).then(() => {
+    location.reload();
+  });
+}
+function retrieveMessages(userId)
+{
+  const currentId = auth.currentUser.uid;
+  const chatId = userId + currentId;
+  //Array to store messages containing the same chat id
+  const msgs = [];
+  get(child(dbRef, "messages")).then((snapshot) => {
+    var i = 1;
+    //Appending children into array if the chatId matches
+    snapshot.forEach(function(_child){
+      if(_child.key == (userId + currentId) || _child.key == (currentId + userId)){
+        msg.push(_child);
+      }
+    })
+  })
+  //Sorting array of messages by DateTime
+  msgs.sort(function(a, b) {
+    return b[3].date.getTime() - a[3].date.getTime();
+  });
+
+  const msgScreen = document.getElementById("messages"); 
+  const msgForm = document.getElementById("messageForm");
+  const msgBtn = document.getElementById("msg-btn");
+
+  for( var i = 0; i < msgs.length; i++)
+  {
+    if(msgs[i].sender == currentId)
+    {
+      const msg = `<li class="msg my"}"><span class = "msg-span">
+                    <i class = "name"></i>${msgs[i].msg}
+                    </span>
+                    </li>`
+      msgScreen.innerHTML += msg;
+      document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
+    }
+    else
+    {
+      const msg = `<li class="msg"}"><span class = "msg-span">
+                    <i class = "name"></i>${msgs[i].msg}
+                    </span>
+                    </li>`
+      msgScreen.innerHTML += msg;
+      document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
+    }
+  }
+  chatBtn.addEventListener("click", function(){ 
+    const msgInput = document.getElementById("msg-input"); 
+    writeMessage(userId, msgInput); 
+  });
 }
 
 //set(ref_database(db, 'product/' + user.uid + name)
