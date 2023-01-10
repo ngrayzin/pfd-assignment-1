@@ -34,7 +34,6 @@
           <li class="nav-item"> 
             <a class="nav-link mx-2" id="dtn">Donate</a>
           </li>
-          <span class=" nav-item navbar-text" id = "Nameholder"></span>
           <li class="nav-item px-2">
             <button class="btn btn-outline-dark" id = "btn" type="button" style = "margin-top: 2px;margin-right: 1px; ">Login</button>
           </li>
@@ -127,8 +126,8 @@
       <!--==========code starts below==========-->
       <!-- https://bootdey.com/img/Content/avatar/avatar6.png -->
       <div class="spacing"></div>
-      <section style="margin: 70px;">
-        <div class="row donation ms-5 me-5">
+      <section style="margin-top: 70px;margin-right: 70px;margin-left: 70px;">
+        <div class="row userProfile ms-5 me-5">
           <div class="col-md-3 col-sm-6">
             <img src="images/default.jpg" class="img-fluid" style="width: auto;height: 210px;border-radius: 13%;"/>
           </div>
@@ -159,14 +158,14 @@
                 <a class="square">
                   <img src="images/compost_FILL0_wght400_GRAD200_opsz48.png" alt="..." style="height: 28px;width: auto;margin:auto;">
                 </a>
-                <h5 class="scores">16</h5>
+                <h5 class="scores" id="productClaimed">0</h5>
                 <h5 class="icon">Product(s) Claimed</h5>
               </div>
               <div class="col-md-4 col-sm-12">
                 <a class="square">
                   <img src="images/volunteer_activism_FILL0_wght400_GRAD200_opsz48.png" alt="..." style="height: 28px;width: auto;margin:auto;">
                 </a>
-                <h5 class="scores">4</h5>
+                <h5 class="scores" id="productPosted">0</h5>
                 <h5 class="icon">Product(s) Posted</h5>
               </div>
             </div>
@@ -187,10 +186,19 @@
           </div>
         </div>
       </section>
-      <section class="container" id="">
-        <div style="margin-left:5%;margin-top:3%;">
-          <h3 id="pdusername"></h3>
+      <section style="margin-right: 70px;margin-left: 70px;">
+        <div class="userProfile m-5 p-5">
+          <h2>Requests <span class="badge bg-secondary" id="requestCount">0</span></h2>
+          <br>
+          <div id="requests">
+            <div id="empty"style="text-align: center;">
+              <img src="images/SPOILER_unknown.png" height="200px" width="auto">
+              <h5>Wow how empty...</h5>
+            </div>
+          </div>
         </div>
+      </section>
+      <section class="container" id="">
         <div class="spacing"></div>
         <h3 style="text-align: center;">Product posted:</h3>
         <div class="spacing"></div>
@@ -198,7 +206,7 @@
           <!--here is where all the items are going-->
         </div>
       </section>
-      <section class="container" id="">
+      <!-- <section class="container" id="">
         <div class="spacing"></div>
         <h3 style="text-align: center;">Requests:</h3>
         <br>
@@ -208,12 +216,12 @@
         </div>
         <table class="table mx-auto" style="text-align: center;">
           <tbody id="requests">
-            <!--here is where the requests are-->
+            here is where the requests are
           </tbody>
         </table>
         
-      </section>
-      <div class="spacing"></div>
+      </section> -->
+      <!-- <div class="spacing"></div>
       <h3 style="text-align: center;">Current Points:</h3>
       <div class="spacing"></div>
       <section class="container">
@@ -322,7 +330,7 @@
             <a id="rewardBtn"class="btn btn-color">Claim</a>
           </div>
         </div>
-      </div>
+      </div> -->
       <div class="spacing"></div>
 
       <!--<iframe src="https://web.whatsapp.com/" name="iframe_a" height="300px" width="60%" title="Iframe Example" ></iframe>-->

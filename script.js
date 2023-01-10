@@ -42,7 +42,7 @@ const auth = getAuth();
 
 onAuthStateChanged(auth, (user) => {
   var notLoggedIn = document.getElementById("notLoggedIn");
-  var loggedIn = document.getElementById("Nameholder");
+  //var loggedIn = document.getElementById("Nameholder");
   var btn = document.getElementById("btn");
   var donate = document.getElementById("dtn");
   var home = document.getElementById("hme");
@@ -52,7 +52,7 @@ onAuthStateChanged(auth, (user) => {
     // https://firebase.google.com/docs/reference/js/firebase.User
     const uid = user.uid;
     localStorage.setItem("uid",uid);
-    loggedIn.style.display = "block"
+    //loggedIn.style.display = "block"
     btn.innerText = "Log out"
     btn.addEventListener("click", () => {
       signOut(auth).then(() => {
@@ -70,7 +70,7 @@ onAuthStateChanged(auth, (user) => {
     returnName();
   } else {
     home.href = "index.html"
-    loggedIn.style.display = "none"
+    //loggedIn.style.display = "none"
     btn.innerText = "Login"
     btn.addEventListener("click", () => {
       myModal.show();
@@ -364,12 +364,12 @@ function calculatePoints(uid) {
           elem.innerHTML = width + "%";
         }
       }*/
-      elem.style.width = width + "%";
-      elem.innerHTML = width + "%";
+      //elem.style.width = width + "%";
+      //elem.innerHTML = width + "%";
       console.log(noOfVouchers);
       console.log(numberOfClaimed);
     }
-    vouch.innerHTML = "Number of vouchers that can be claimed: " + noOfVouchers;
+    //vouch.innerHTML = "Number of vouchers that can be claimed: " + noOfVouchers;
   })
 }
 
@@ -434,18 +434,26 @@ function displayProductByUser(uid){
   //console.log(uid);
   var productExist = false;
   var requestExist = false;
+  var productName = "";
   const storeItems = document.getElementById("productList");
   const requesters = document.getElementById("requests"); 
+  const requestCount = document.getElementById("requestCount"); 
+  const productCount = document.getElementById("productPosted"); 
+  const productClaimed = document.getElementById("productClaimed");
   let asd = document.getElementById("empty"); 
   const dbRef = ref_database(getDatabase());
+  var request = 0;
+  var posted = 0;
+  var claimed = 0;
   get(child(dbRef, "product")).then((snapshot) => {
-    var i = 1;
     snapshot.forEach(function(_child){
       if(_child.val().posted_by == uid){
+        posted++;
         var key = _child.key;
         //childkeys.push([key,_child.val().product_name,_child.val().description]);
         //console.log(key);
         if(_child.val().claimed == true){
+          claimed++;
           var html = `
           <div class="card-full">
             <div class="card cardhover">
@@ -454,6 +462,21 @@ function displayProductByUser(uid){
                 <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
                 <p class="card-text text-truncate">${_child.val().description}</p>
                 <a id="deleteBtn"class="btn btn-color">Claimed</a>
+              </div>
+            </div>
+          </div>
+          `
+        }
+        else if(_child.val().claimed == false && _child.val().requested == true){
+          productName = _child.val().product_name;
+          var html = `
+          <div class="card-full">
+            <div class="card cardhover">
+              <div class="card-body">
+                <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;">
+                <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
+                <p class="card-text text-truncate">${_child.val().description}</p>
+                <a id="deleteBtn"class="btn btn-color">Requested</a>
               </div>
             </div>
           </div>
@@ -476,29 +499,43 @@ function displayProductByUser(uid){
         //onClick="deleteRef('${key}'
         storeItems.innerHTML += html;
         productExist = true;
-
         if(_child.val().requested == true && _child.val().claimed == false){
           asd.style.display = "none";
           onValue(ref_database(db, '/users/' + _child.val().requested_by), (snapshot) => {
             var username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
             var rhtml = `
-            <tr>
-              <th scope="row">${i}</th>
-              <td id="rName">${username}</td>
-              <td>${_child.val().product_name}</td>
-              <td><a id="chatBtn" href = "https://t.me/NgRayZin" target = "_blank" class="btn btn-color">Chat</a></td>
-              <td><a id="acceptBtn" class="btn btn-color" onClick = "claimProduct('${key}');" data-bs-toggle="modal" data-bs-target="#claim");">Accept</a></td>
-            </tr>
+            <div class="alert alert-success mt-3 p-4">
+              <div class="row center-block justify-content-around">
+                <div class="col-md-1">
+                  <img src="images/default.jpg" class="img-fluid" style="width: auto;height:40px;border-radius: 13%;"/>
+                </div>
+                <div class="col center-block text-center pt-2">
+                  <h5>${username} requested for ${productName}</h5>
+                </div>
+                <div class="col-md-1 center-block text-center offset-lg-5 offset-md-1 pt-2">
+                  <button type="button" class="btn btn-success btn-sm">Chat</button>
+                </div>
+                <div class="col-md-1 center-block text-center pt-2">
+                  <button type="button" class="btn btn-success btn-sm disabled">Accept</button>
+                </div>
+                <div class="col-md-1 center-block text-center pt-2">
+                  <button type="button" class="btn btn-danger btn-sm">Cancel</button>
+                </div>
+              </div>
+            </div>
             `
             requesters.innerHTML +=  rhtml;
-            i++;
+            request++;
             requestExist = true;
+            requestCount.innerHTML = request;
+            productClaimed.innerHTML = claimed;
           });
           //returnUser(_child.val().requested_by);
           //$("#rName").text(name);
         }
       }
     })
+    productCount.innerHTML = posted;
     if(productExist == false){
       var empty = `<div style="text-align: center;">
                     <img src="images/SPOILER_unknown.png" height="200px" width="auto">
@@ -559,7 +596,6 @@ function returnName() {
   const userId = auth.currentUser.uid;
   return onValue(ref_database(db, '/users/' + userId), (snapshot) => {
     var username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
-    document.getElementById("Nameholder").innerText = username;
     if(PATHNAME == "userIndex.html"){
       document.getElementById("pdusername").innerText = username; //"Welcome back " + username+"!👋";
     }

@@ -167,6 +167,16 @@ p{
     border-radius: 12px;
 }
 
+.userProfile{
+    background-color: #FFFFFF;
+    display: block;
+    line-height: 20px;
+    margin: 0 100px 0px 100px;  
+    width: auto;
+    padding: 30px;
+    border-radius: 12px;
+}
+
 .square{
     background-color: #60EFAA;
     display: flex;
@@ -178,11 +188,12 @@ p{
 }
 
 .scores{
-    padding-left: 30%;
+    padding-left: 60px;
+    padding-top: 4px;
 }
 
 .icon{
-    padding-left: 30%;
+    padding-left: 60px;
     color: #BBC3D7;
     line-height: 10px;
     font-size: 12px;
