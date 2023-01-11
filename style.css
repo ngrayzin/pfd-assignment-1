@@ -207,6 +207,18 @@ p{
     padding: 10px;
     border-radius: 12px;
 }
+.google {
+    width: 100%; 
+    text-align: center; 
+    border-bottom: 1px solid #000; 
+    line-height: 0.1em;
+    margin: 10px 0 20px; 
+ } 
+ 
+ .google span { 
+     background:#fff; 
+     padding:0 10px; 
+ }
 
 .vr {
     height: 100%;
@@ -406,3 +418,4 @@ li { cursor: pointer; }
           transform: rotate(360deg);
       }
   }
+

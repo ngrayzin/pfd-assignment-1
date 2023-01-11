@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, browserSessionPersistence, setPersistence} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, browserSessionPersistence, setPersistence,signInWithPopup, GoogleAuthProvider} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-auth.js";
 import { getDatabase, ref as ref_database, set, onValue, get, child, push, update} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-database.js";
 import { getStorage, ref as ref_storage, uploadBytes, getDownloadURL} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-storage.js";
 import { getMessaging } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-messaging.js";
@@ -26,6 +26,7 @@ const app = initializeApp(firebaseConfig);
 
 const db = getDatabase();
 const storage = getStorage();
+const provider = new GoogleAuthProvider();
 
 let PATHNAME = "";
 let FIRSTPATHNAME = "";
@@ -87,6 +88,7 @@ onAuthStateChanged(auth, (user) => {
 var button1 = document.getElementById("loginbutton");
 var button2 = document.getElementById("signupbutton");
 var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('exampleModal'));
+var googleBtn = document.getElementById("googleLogin");
 
 button1.addEventListener("click", (e) => {
   e.preventDefault();
@@ -162,8 +164,35 @@ button2.addEventListener("click", (e) => {
     // Handle Errors here.
     const errorCode = error.code;
     const errorMessage = error.message;
+    console.log(errorMessage);
+    console.log(errorMessage);
   });
 })
+
+googleBtn.addEventListener("click", (e) => {
+  e.preventDefault
+  signInWithPopup(auth, provider)
+  .then((result) => {
+    // This gives you a Google Access Token. You can use it to access the Google API.
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const token = credential.accessToken;
+    // The signed-in user info.
+    const user = result.user;
+    console.log(user);
+    writeUserData(user.uid, user.displayName, user.email)
+    // ...
+  }).catch((error) => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    //const email = error.customData.email;
+    // The AuthCredential type that was used.
+    const credential = GoogleAuthProvider.credentialFromError(error);
+    // ...
+  });
+})
+
 
 
 if(PATHNAME == "donation.html"){
@@ -242,7 +271,17 @@ if (PATHNAME == "viewproduct.html"){
 
 if(PATHNAME == "userIndex.html"){
   const userId = localStorage.getItem("uid");
-  //var point = document.getElementById("noOfVouch").innerHTML;
+  const dbRef = ref_database(getDatabase());
+  var user = [];
+  // onValue(ref_database(db, '/users/' + userId), (snapshot) => {
+  //   user.add(snapshot.val().username);
+  //   // user.add(snapshot.val().username);
+  //   // user.add(snapshot.val().currentExp);
+  //   // user.add(snapshot.val().level);
+  //    //user.add(snapshot.val().score);
+  // }, {
+  //   onlyOnce: true
+  // });
   displayProductByUser(userId);
   calculatePoints(userId);
 
@@ -292,10 +331,15 @@ function writeUserData(userId, name, email) {
   set(ref_database(db, 'users/' + userId), {
     username: name,
     email: email,
+    // currentExp: 0,
+    // level: 0,
+    // score: 0,
   }).then(() => {
     $('#overlay').fadeOut();
     myModal.hide();
     location.href = "userIndex.html";
+  }).catch((error) => {
+    console.error(error);
   });
 }
 
@@ -566,7 +610,7 @@ function change(key,poster){
   var user = auth.currentUser;
   if(user){
     var userId = auth.currentUser.uid;
-    const newPostKey = push(child(ref_database(db), 'product')).key;
+    //const newPostKey = push(child(ref_database(db), 'product')).key;
     const updates = {};
     updates['/product/' + key + '/requested/'] = true;
     updates['/product/' + key + '/requested_by/'] = userId;
@@ -590,6 +634,7 @@ function change(key,poster){
     return false
   } 
 }
+
 
 //return user name
 function returnName() {
@@ -732,91 +777,3 @@ function retrieveMessages(userId)
   });
 }
 
-//set(ref_database(db, 'product/' + user.uid + name)
-
-/*const msgScreen = document.getElementById("messages"); 
-const msgForm = document.getElementById("messageForm");
-const msgInput = document.getElementById("msg-input"); 
-const msgBtn = document.getElementById("msg-btn");
-
-msgForm.addEventListener('submit', sendMessage);
-msgRef.on('child_added', updateMsgs);*/
-
-/*const updateMsgs = data =>{
-  const {email: userEmail , user, text} = data.val();
-  //Check the encrypting mode
-  var encryptMode = fetchJson();
-  var outputText = text;
-  
-  if(encryptMode == "nr"){
-    outputText = normalEncrypt(outputText);
-  }else if(encryptMode == "cr"){
-    outputText = crazyEncrypt(outputText);
-  }
-  
-  //load messages
-  const msg = `<li class="${dataName == name ? "msg my": "msg"}"><span class = "msg-span">
-  <i class = "name">${name}: </i>${text}
-  </span>
-  </li>`
-  msgScreen.innerHTML += msg;
-  document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
-  //auto scroll to bottom
-}
-
-function sendMessage(e){
-  e.preventDefault();
-  const text = msgInput.value;
-    if(!text.trim()) return alert('Please type your message'); //no msg submitted
-    const msg = {
-        email,
-        name,
-        text: text
-    };
-    msgRef.push(msg);
-    msgInput.value = "";
-}*/
-
-/*function writemessage(userid, name, text){
-  set(ref_database(db, 'msg/' + userid), {
-    //index of the msg to find out order of msgs 
-    index: index,
-    name: name,
-    user: userid,
-    text : text,
-  });
-}
-*/
-
-
-
-/*var products = [];
-var databaseRef = db.ref("product");
-databaseRef.on('child_added', function(snapshot) {
-  var product = snapshot.val()
-  products.push({
-    claimed: product.claimed, 
-    condition: product.condition,
-    description: product.description,
-    image: product.image,
-    posted_by: product.posted_by,
-    product_name: product.product_name
-  });
-});*/
-
-// if(PATHNAME == "viewproduct.html"){
-//   let content = ""
-//   for (var i = 0; i < products.length; i++) {
-//     content = `${content}<div class="card-full">
-//                             <div class="card">
-//                               <div class="card-body">
-//                                 <img src="images/20220108_194432.jpg" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px;">
-//                                 <h5 class="card-title pt-3"><b>${products[i].product_name}</b></h5>
-//                                 <p class="card-text">${products[i].description}</p>
-//                                 <a href="#" class="btn btn-color">Request</a>
-//                               </div>
-//                             </div>
-//                           </div>`
-//   }
-//   $("#storeCards div").html(content);
-// }
