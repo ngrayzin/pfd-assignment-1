@@ -270,18 +270,23 @@ if (PATHNAME == "viewproduct.html"){
 }
 
 if(PATHNAME == "userIndex.html"){
+  var scores = document.getElementById("score");
+  var exp = document.getElementById("XP");
   const userId = localStorage.getItem("uid");
   const dbRef = ref_database(getDatabase());
   var user = [];
-  // onValue(ref_database(db, '/users/' + userId), (snapshot) => {
-  //   user.add(snapshot.val().username);
-  //   // user.add(snapshot.val().username);
-  //   // user.add(snapshot.val().currentExp);
-  //   // user.add(snapshot.val().level);
-  //    //user.add(snapshot.val().score);
-  // }, {
-  //   onlyOnce: true
-  // });
+  get(child(dbRef, "users/" + userId)).then((snapshot) => {
+    if(snapshot.exists()){
+      var s = snapshot.val().score;
+      var xp = snapshot.val().currentExp;
+      console.log(snapshot.val().score);
+      console.log(snapshot.val().level);
+      scores.innerText = s;
+      exp.innerText = xp + "/10"
+
+    }
+     
+  });
   displayProductByUser(userId);
   calculatePoints(userId);
 
@@ -368,35 +373,24 @@ function writeProductData(name, user, location, condition, desc, img){
     requested_by: "",
   }).then(() => {
     var userId = auth.currentUser.uid;
-    //const newPostKey = push(child(ref_database(db), 'product')).key;
-    var user = ref_database(db, "users/" + userId);
-    //var exp = ref_database(db, `/users/${userId}/currentExp`);
-    runTransaction(user, (u) => {
-      console.log(u);
-      if (u) {
-        u.currentExp += 20;
-        u.score += 100;
+    const dbRef = ref_database(getDatabase());
+    get(child(dbRef, "users/" + userId)).then((snapshot) => {
+      if(snapshot.exists()){
+        var s = snapshot.val().score;
+        var xp = snapshot.val().currentExp;
+        const updates = {};
+        updates[`/users/${userId}/currentExp`] = xp + 20;
+        updates[`/users/${userId}/score`] = s + 100;
+        update(ref_database(db), updates).then(() =>{
+          $('#overlay').fadeOut();
+          $('.p').toast('show');
+          return true;
+        });
+        // console.log(snapshot.val().score);
+        // console.log(snapshot.val().level);
       }
-    }).then(()=>{
-      $('#overlay').fadeOut();
-      $('.p').toast('show');
-      return true;
-      // runTransaction(exp, (e) => {
-      //   if (e) {
-      //     e = e + 20;
-      //   }
-      // }).then(()=>{
-      //   $('#overlay').fadeOut();
-      //   $('.p').toast('show');
-      //   return true;
-      // });
-    })
-    // const updates = {};
-    // updates[`/users/${userId}/currentExp`] + 20;
-    // updates[`/users/${userId}/score`] + 100;
-    // update(ref_database(db), updates).then(() =>{
-      
-    //});
+       
+    });
   });
 }
 
