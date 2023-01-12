@@ -270,8 +270,10 @@ if (PATHNAME == "viewproduct.html"){
 }
 
 if(PATHNAME == "userIndex.html"){
+  var data = []
   var scores = document.getElementById("score");
   var exp = document.getElementById("XP");
+  var userLevel = document.getElementById("userLevel");
   const userId = localStorage.getItem("uid");
   const dbRef = ref_database(getDatabase());
   var user = [];
@@ -279,13 +281,15 @@ if(PATHNAME == "userIndex.html"){
     if(snapshot.exists()){
       var s = snapshot.val().score;
       var xp = snapshot.val().currentExp;
+      var lvl = snapshot.val().level;
       console.log(snapshot.val().score);
       console.log(snapshot.val().level);
       scores.innerText = s;
-      exp.innerText = xp + "/10"
-
+      data = progressBar(xp,lvl);
+      console.log(data);
+      exp.innerText = data[1] + "/" + data[2]
+      userLevel.innerText = "Level "+data[0];
     }
-     
   });
   displayProductByUser(userId);
   calculatePoints(userId);
@@ -309,6 +313,54 @@ if(PATHNAME == "userIndex.html"){
       }
     });  
   }*/
+}
+
+function progressBar(currentExp, lvl){
+  var data = [];
+  var userId = auth.currentUser.uid;
+  var XP = document.getElementsByClassName("progress-bar")[0]
+  var total;
+  if(lvl >= 0 || lvl <= 10){
+    total = 100;
+  }
+  else if(lvl >= 11 || lvl <= 20){
+    total = 200;
+  }
+  else if(lvl >= 21 || lvl <= 30){
+    total = 300;
+  }
+  else if(lvl >= 31 || lvl <= 40){
+    total = 400;
+  }
+  else{
+    total = 500;
+  }
+  console.log(total);
+  console.log(currentExp);
+  if(currentExp >= total){
+    lvl++;
+    currentExp = currentExp - total;
+    var startListening = function() {
+      const updates = {};
+      updates[`/users/${userId}/currentExp`] = currentExp;
+      updates[`/users/${userId}/level`] = lvl;
+      update(ref_database(db), updates).then(()=>{
+        XP.style.width = (currentExp/total * 100) + "%";
+        alert("level up!");
+      })
+    }
+    data.push(lvl);
+    data.push(currentExp);
+    data.push(total);
+    startListening();
+    return data;
+  }else{
+    XP.style.width = (currentExp/total * 100) + "%";
+    data.push(lvl);
+    data.push(currentExp);
+    data.push(total);
+    return data;
+  }
 }
 
 window.search= search;
