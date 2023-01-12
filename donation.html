@@ -45,46 +45,53 @@
   </nav>
       <!--login/signup modal-->
       <!-- Modal -->
-        <div class="modal fade" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                  <img src="images/TradeIMG.png" alt="Trade" height="36">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id = "form">
-                        <div class="mb-3">
-                            <label for="exampleInputEmail1" class="form-label">Email address</label>
-                            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                        </div>
-                        <div class="mb-3">
-                            <label for="exampleInputPassword1" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="exampleInputPassword1">
-                        </div>
-                        <div id = "login">
-                            <br>
+      <div class="modal fade" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+              <div class="modal-header">
+              <img src="images/TradeIMG.png" alt="Trade" height="36">
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  <form id = "form">
+                      <div class="mb-3">
+                          <label for="exampleInputEmail1" class="form-label">Email address</label>
+                          <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      </div>
+                      <div class="mb-3">
+                          <label for="exampleInputPassword1" class="form-label">Password</label>
+                          <input type="password" class="form-control" id="exampleInputPassword1">
+                      </div>
+                      <div id = "login">
+                          <br>
+                          <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary" id="loginbutton">Login</button>
-                        </div>
-                        <div id = "signup">
-                            <div class="mb-3">
-                                <label for="name" class="form-label">Name</label>
-                                <input type="text" class="form-control" id="name">
-                            </div>
-                            <br>
+                          </div>
+                      </div>
+                      <div id = "signup">
+                          <div class="mb-3">
+                              <label for="name" class="form-label">Name</label>
+                              <input type="text" class="form-control" id="name">
+                          </div>
+                          <br>
+                          <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary" id = "signupbutton">Sign up</button>
-                        </div>
-                        <div class="errormsg"></div>
-                        <div class="form-text mx-auto" ><a id = "change1">Don't have an account? Click</a> <a id = "toggle" href="#dfsfd">here</a> <a id="change2">to sign up</a></div>
-
-
-                    </form>
-                </div>
-                <div class="modal-footer">
-                </div>
-            </div>
-            </div>
+                          </div>
+                      </div>
+                      <div class="errormsg"></div>
+                      <div class="form-text mx-auto text-center" style="padding-bottom:2%;"><a id = "change1">Don't have an account? Click</a> <a id = "toggle" href="#dfsfd">here</a> <a id="change2">to sign up</a></div>
+                      <p class="google"><span>OR</span></p>
+                      <div class="d-grid gap-2">
+                        <a type="button" class="btn btn-outline-dark" id="googleLogin">
+                          <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
+                          Login with Google
+                        </a>
+                      </div>
+                  </form>
+              </div>
+          </div>
         </div>
+      </div>
       <!--==========code starts below==========-->
       <div id="overlay" style="display:none;">
         <div class="spinner"></div>

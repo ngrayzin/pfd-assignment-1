@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, browserSessionPersistence, setPersistence,signInWithPopup, GoogleAuthProvider} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-auth.js";
-import { getDatabase, ref as ref_database, set, onValue, get, child, push, update} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-database.js";
+import { getDatabase, ref as ref_database, set, onValue, get, child, push, update, runTransaction} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-database.js";
 import { getStorage, ref as ref_storage, uploadBytes, getDownloadURL} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-storage.js";
 import { getMessaging } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-messaging.js";
 
@@ -328,18 +328,29 @@ function search(){
 
 // Save message to firebase
 function writeUserData(userId, name, email) {
-  set(ref_database(db, 'users/' + userId), {
-    username: name,
-    email: email,
-    // currentExp: 0,
-    // level: 0,
-    // score: 0,
-  }).then(() => {
-    $('#overlay').fadeOut();
-    myModal.hide();
-    location.href = "userIndex.html";
-  }).catch((error) => {
-    console.error(error);
+  const dbRef = ref_database(getDatabase());
+  get(child(dbRef, "users/" + userId)).then((snapshot) => {
+    if(!snapshot.exists()){
+      set(ref_database(db, 'users/' + userId), {
+        username: name,
+        email: email,
+        currentExp: 0,
+        level: 0,
+        score: 0,
+      }).then(() => {
+        $('#overlay').fadeOut();
+        myModal.hide();
+        location.href = "userIndex.html";
+      }).catch((error) => {
+        console.error(error);
+      });
+    }
+    else{
+      $('#overlay').fadeOut();
+      myModal.hide();
+      location.href = "userIndex.html";
+    }
+     
   });
 }
 
@@ -356,9 +367,36 @@ function writeProductData(name, user, location, condition, desc, img){
     requested : false,
     requested_by: "",
   }).then(() => {
-    $('#overlay').fadeOut();
-    $('.p').toast('show');
-    return true;
+    var userId = auth.currentUser.uid;
+    //const newPostKey = push(child(ref_database(db), 'product')).key;
+    var user = ref_database(db, "users/" + userId);
+    //var exp = ref_database(db, `/users/${userId}/currentExp`);
+    runTransaction(user, (u) => {
+      console.log(u);
+      if (u) {
+        u.currentExp += 20;
+        u.score += 100;
+      }
+    }).then(()=>{
+      $('#overlay').fadeOut();
+      $('.p').toast('show');
+      return true;
+      // runTransaction(exp, (e) => {
+      //   if (e) {
+      //     e = e + 20;
+      //   }
+      // }).then(()=>{
+      //   $('#overlay').fadeOut();
+      //   $('.p').toast('show');
+      //   return true;
+      // });
+    })
+    // const updates = {};
+    // updates[`/users/${userId}/currentExp`] + 20;
+    // updates[`/users/${userId}/score`] + 100;
+    // update(ref_database(db), updates).then(() =>{
+      
+    //});
   });
 }
 
