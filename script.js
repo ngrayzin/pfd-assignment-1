@@ -745,6 +745,28 @@ function returnUser(userKey){
 
 }
 
+if(PATHNAME == "index.html"){
+  window.onscroll = function () {
+    const header_navbar = document.querySelector(".navbar");
+    const sticky = header_navbar.offsetTop;
+    const colour = document.querySelector(".fixed-top");
+  
+    if (window.pageYOffset > sticky) {
+      header_navbar.classList.add("bg-light");
+      header_navbar.classList.add("shadow");
+      header_navbar.classList.add("scrolled");
+      header_navbar.classList.remove("navbar-custom");
+    } else {
+      //header_navbar.classList.remove("bg-light");
+      header_navbar.classList.remove("shadow");
+      colour.classList.remove("scrolled");
+      header_navbar.classList.remove("bg-light");
+      header_navbar.classList.add("navbar-custom");
+    }
+  
+  };  
+
+}
 
 let toggle = document.getElementById("toggle");
 let signup = document.getElementById("signup");
