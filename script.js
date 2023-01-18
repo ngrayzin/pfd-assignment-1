@@ -518,11 +518,21 @@ function readProductData(){
         var html = `
         <div class="card-full">
           <div class="card cardhover">
+            <div class="card-header">
+    
+            </div>
             <div class="card-body">
-              <a href="viewproduct.html?product=${key}"><img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;"></a> 
+              <div class="row justify-content-between">
+                <div class="col-2">
+                  <img src="images/default.jpg" alt="" width="42" height="42" class="rounded-circle">
+                </div>
+                <div class="col-3">
+                  <a onClick="change('${key}', '${_child.val().posted_by}')"><img src="images/request.png" id="requestBtn" height ="42" width="42"/></a>
+                </div>
+              </div>
               <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
               <p class="card-text text-truncate">${_child.val().description}</p>
-              <a id="requestBtn" class="btn btn-color" onClick="change('${key}', '${_child.val().posted_by}')">Request</a>
+              <a href="viewproduct.html?product=${key}"><img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;"></a> 
             </div>
           </div>
         </div>
@@ -566,7 +576,7 @@ function displayProductByUser(uid){
   const storeItems = document.getElementById("productList");
   const requesters = document.getElementById("requests"); 
   const requestCount = document.getElementById("requestCount"); 
-  const productCount = document.getElementById("productPosted"); 
+  const productCount = document.querySelectorAll("[id='productPosted']");//document.getElementById("productPosted"); 
   const productClaimed = document.getElementById("productClaimed");
   let asd = document.getElementById("empty"); 
   const dbRef = ref_database(getDatabase());
@@ -584,41 +594,71 @@ function displayProductByUser(uid){
           claimed++;
           var html = `
           <div class="card-full">
-            <div class="card cardhover">
-              <div class="card-body">
-                <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;">
-                <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
-                <p class="card-text text-truncate">${_child.val().description}</p>
-                <a id="deleteBtn"class="btn btn-color">Claimed</a>
+          <div class="card cardhover">
+            <div class="card-header">
+    
+            </div>
+            <div class="card-body">
+              <div class="row justify-content-between">
+                <div class="col-2">
+                  <img src="images/default.jpg" alt="" width="42" height="42" class="rounded-circle">
+                </div>
+                <div class="col-3">
+                  <img src="images/claim.png" height ="42" width="42"/>
+                </div>
               </div>
+              <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
+              <p class="card-text text-truncate">${_child.val().description}</p>
+              <a href="viewproduct.html?product=${key}"><img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;"></a> 
             </div>
           </div>
+        </div>
           `
         }
         else if(_child.val().claimed == false && _child.val().requested == true){
           productName = _child.val().product_name;
           var html = `
           <div class="card-full">
-            <div class="card cardhover">
-              <div class="card-body">
-                <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;">
-                <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
-                <p class="card-text text-truncate">${_child.val().description}</p>
-                <a id="deleteBtn"class="btn btn-color">Requested</a>
+          <div class="card cardhover">
+            <div class="card-header">
+    
+            </div>
+            <div class="card-body">
+              <div class="row justify-content-between">
+                <div class="col-2">
+                  <img src="images/default.jpg" alt="" width="42" height="42" class="rounded-circle">
+                </div>
+                <div class="col-3">
+                  <img src="images/requested.png" height ="42" width="42"/>
+                </div>
               </div>
+              <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
+              <p class="card-text text-truncate">${_child.val().description}</p>
+              <a href="viewproduct.html?product=${key}"><img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;"></a> 
             </div>
           </div>
+        </div>
           `
         }
         else{
         var html = `
         <div class="card-full">
           <div class="card cardhover">
+            <div class="card-header">
+    
+            </div>
             <div class="card-body">
-              <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;">
+              <div class="row justify-content-between">
+                <div class="col-2">
+                  <img src="images/default.jpg" alt="" width="42" height="42" class="rounded-circle">
+                </div>
+                <div class="col-3">
+                  <a onclick ="modal('${key}')" data-bs-toggle="modal" data-bs-target="#delete"><img src="images/delete.png" id="deleteBtn" height ="42" width="42"/></a>
+                </div>
+              </div>
               <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
               <p class="card-text text-truncate">${_child.val().description}</p>
-              <a id="deleteBtn" class="btn btn-color" onclick = "modal('${key}')" data-bs-toggle="modal" data-bs-target="#delete">Delete</a>
+              <a href="viewproduct.html?product=${key}"><img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;"></a> 
             </div>
           </div>
         </div>
@@ -663,7 +703,10 @@ function displayProductByUser(uid){
         }
       }
     })
-    productCount.innerHTML = posted;
+    for(var i = 0; i < productCount.length; i++) {
+      productCount[i].innerHTML = posted; // <-- whatever you need to do here.
+      //productCount.innerHTML = posted;
+    }
     if(productExist == false){
       var empty = `<div style="text-align: center;">
                     <img src="images/SPOILER_unknown.png" height="200px" width="auto">
@@ -745,7 +788,7 @@ function returnUser(userKey){
 
 }
 
-if(PATHNAME != "donation.html" || PATHNAME != "userIndex.html" ){
+if(PATHNAME == "index.html" || PATHNAME == "store.html" ){
   window.onscroll = function () {
     const header_navbar = document.querySelector(".navbar");
     const sticky = header_navbar.offsetTop;
@@ -762,6 +805,36 @@ if(PATHNAME != "donation.html" || PATHNAME != "userIndex.html" ){
       colour.classList.remove("scrolled");
       header_navbar.classList.remove("bg-light");
       header_navbar.classList.add("navbar-custom");
+    }
+  
+  };  
+
+}
+
+if(PATHNAME == "store.html"){
+  window.onscroll = function () {
+    const header_navbar = document.querySelector(".navbar");
+    const sticky = header_navbar.offsetTop;
+    const colour = document.querySelector(".fixed-top");
+    const button = document.getElementById("btn");
+  
+    if (window.pageYOffset > sticky) {
+      //when not on top
+      header_navbar.classList.add("bg-light");
+      header_navbar.classList.add("shadow");
+      header_navbar.classList.add("scrolled");
+      header_navbar.classList.remove("navbar-dark");
+      header_navbar.classList.add("navbar-light");
+      button.classList.remove("btn-outline-light");
+      button.classList.add("btn-outline-dark");
+    } else {
+      header_navbar.classList.remove("shadow");
+      colour.classList.remove("scrolled");
+      header_navbar.classList.remove("bg-light");
+      header_navbar.classList.add("navbar-dark");
+      header_navbar.classList.remove("navbar-light");
+      button.classList.remove("btn-outline-dark");
+      button.classList.add("btn-outline-light");
     }
   
   };  

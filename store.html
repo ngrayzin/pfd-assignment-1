@@ -14,7 +14,7 @@
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 </head>
 <body  class="store">
-  <nav class="navbar navbar-expand-md navbar-light navbar-custom fixed-top px-3" id="navbar">
+  <nav class="navbar navbar-expand-md navbar-dark navbar-custom fixed-top px-3" id="navbar">
     <div class="container">
       <a class="navbar-brand" href="#">
         <img src="images/Logo.png" alt="Trade" height="36">
@@ -34,7 +34,7 @@
             <a class="nav-link mx-2" id="dtn">Donate</a>
           </li>
           <li class="nav-item px-2">
-            <button class="btn btn-outline-dark" id = "btn" type="button" style = "margin-top: 2px;margin-right: 1px; ">Login</button>
+            <button class="btn btn-outline-light" id = "btn" type="button" style = "margin-top: 2px;margin-right: 1px; ">Login</button>
           </li>
           <!--<li class="nav-item" id = "loggedIn">
             <span class=" nav-item navbar-text" id = "Nameholder"></span>
@@ -99,28 +99,63 @@
         <br/>
         Loading...
       </div>
-      <br>
+      <img src="images/storeImg.png" class="pb-5" width = "auto" height="80%" style="position:absolute;top: 0;right: 0;">
         <div class="container">
+          <div class="spacing"></div>
+          <div class="spacing"></div>
           <div class="row ps-3">
             <div class="spacing"></div>
-            <div class="col-6 col-md-6">
+            <div class="col-6 col-md-3">
               <h1 class="black">What are you looking for?</h1>
             </div>
-        
             <!-- Force next columns to break to new line -->
             <div class="w-100"></div>
             <br>
             <div class="col-6 col-md-4">
-              <input class="form-control" id="searchBar" type="text" placeholder="&#xF002; Search" aria-label="default input example" onkeyup="search()" style="background-color: #FAFAFA;font-family:Arial, FontAwesome">
+              <br><br>
+              <input class="form-control search" id="searchBar" type="text" placeholder="&#128269; Search here" aria-label="default input example" onkeyup="search()">
             </div>
           </div>
           <div class="spacing"></div>
+          <br>
           <div class="card-group cards container g-4" id="storeCards">
             <!--here is where all the items are going-->
+            <!-- old design v -->
+            <!-- <div class="card-full">
+              <div class="card cardhover">
+                <div class="card-body">
+                  <a href="viewproduct.html?product=${key}"><img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;"></a> 
+                  <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
+                  <p class="card-text text-truncate">${_child.val().description}</p>
+                  <a id="requestBtn" class="btn btn-color" onClick="change('${key}', '${_child.val().posted_by}')">Request</a>
+                </div>
+              </div>
+            </div>
+          </div> -->
           </div>
-
         </div>
         <div class="spacing"></div>
+        <div style="background-image: url(images/bottomWave.png);background-repeat: no-repeat;  background-size: 100% 100%;">
+          <section class="container">
+            <div class="row g-0 flex-md-row flex-row-reverse" style="padding-top: 20vh;">
+                <div class="col-12 col-md-3">
+                  <a href="https://www.instagram.com/trade.extra/" target="_blank"><img src="images/TradeExtraInsta.jpg" style="width: 80%; height: 100%;" id="insta"></a>
+                    <!--<lottie-player src="https://assets1.lottiefiles.com/datafiles/nZgj7wTd56UtH6m/data.json" background="transparent"  speed="1"  style="width: 100%; height: 100%;"  loop  autoplay></lottie-player>-->
+                </div>
+                <div class="col-md-10 col-12 text-start ps-3" style="color: white;">
+                    <h2>Follow us on Instagram!</span></h2>
+                    <p>Help us encourage others to adopt a sustainable lifestyle by sharing it with your friends and family<3</p>
+                </div>
+            </div>
+          </section>
+        </div>
+        <div class="spacing" style="background-color: #005A7A"></div>
+        <!-- Copyright -->
+        <div class="text-center p-3 text-white" style="background-color: #005A7A">
+          © 2022 Copyright:
+          <a class="text-white" href="https://www.youtube.com/watch?v=xvFZjo5PgG0" target="_blank">pfd assignment 1</a>
+        </div>
+        <!-- Copyright -->
         <div class="toast-container position-fixed bottom-0 end-0 p-3">
           <div class="toast" role="alert" data-autohide="true" aria-live="assertive" aria-atomic="true">
             <div class="toast-header">
