@@ -28,21 +28,31 @@
     height: 60px;
     text-align: center;
     border-radius: 15px;
+    margin-top: 50vh;
+    margin-left: 6vh;
+    transform:rotate(45deg);
+      width:60px;
+  }
+
+  .diamond-shape-final{
+    background: #60EFAA;
+    height: 60px;
+    text-align: center;
+    border-radius: 15px;
+    margin-left: 6vh;
     transform:rotate(45deg);
       width:60px;
   }
   
 .vl {
-    border-left: 6px solid green;
-    height: 500px;
-    position: absolute;
-    left: 50%;
-    margin-left: -3px;
-    top: 0;
+    border-left: 2px solid #CACACA;
+    height: 370px;
+    margin-top: 7vh;
+    margin-left: 11.2vh;
 }
 
 .introblock{
-    height: 80vh;
+    height: 90vh;
     width: 100%;
     background-color: transparent;
     display: flex;

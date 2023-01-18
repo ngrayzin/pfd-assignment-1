@@ -745,7 +745,7 @@ function returnUser(userKey){
 
 }
 
-if(PATHNAME == "index.html"){
+if(PATHNAME != "donation.html" || PATHNAME != "userIndex.html" ){
   window.onscroll = function () {
     const header_navbar = document.querySelector(".navbar");
     const sticky = header_navbar.offsetTop;
