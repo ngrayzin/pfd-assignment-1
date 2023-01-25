@@ -317,6 +317,8 @@ p{
 }
 
 
+
+
 @media screen and (max-width: 766px) {
     .imageright {
         flex-direction: column-reverse;

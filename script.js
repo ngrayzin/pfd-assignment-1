@@ -375,10 +375,11 @@ function search() {
   input = document.getElementById("searchBar");
   filter = input.value.toUpperCase();
   div = document.getElementById("storeCards");
-  divCard = div.getElementsByTagName("div");
+  divCard = div.getElementsByClassName("card-full");
   for (i = 0; i < divCard.length; i++) {
-    a = divCard[i].getElementsByTagName("h5")[0];
+    a = divCard[i].getElementsByTagName("b")[0];
     //b = divCard[i].getElementsByTagName("p")[0];
+    console.log(a);
     txtValue = a.textContent || a.innerText; //|| b.textContent || b.innerText;
     if (txtValue.toUpperCase().indexOf(filter) > -1) {
       divCard[i].style.display = "";
