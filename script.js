@@ -274,6 +274,9 @@ if (PATHNAME == "userIndex.html") {
   var scores = document.getElementById("score");
   var exp = document.getElementById("XP");
   var userLevel = document.getElementById("userLevel");
+  var lvl5 = document.getElementById("5");
+  var lvl15 = document.getElementById("15");
+  var lvl30 = document.getElementById("30");
   const userId = localStorage.getItem("uid");
   const dbRef = ref_database(getDatabase());
   var user = [];
@@ -289,6 +292,15 @@ if (PATHNAME == "userIndex.html") {
       console.log(data);
       exp.innerText = data[1] + "/" + data[2];
       userLevel.innerText = "Level " + data[0];
+      if(lvl >= 5){
+        lvl5.classList.remove("not-achieved");
+      }
+      if(lvl >= 15){
+        lvl15.classList.remove("not-achieved");
+      }
+      if(lvl >= 30){
+        lvl30.classList.remove("not-achieved");
+      }
       if(snapshot.val().cancelled != null){
         alert("Your request for "+ snapshot.val().cancelled + " had been cancelled by the poster");
         const notify = {};
@@ -299,26 +311,7 @@ if (PATHNAME == "userIndex.html") {
   });
   displayProductByUser(userId);
   calculatePoints(userId);
-
-  /*let reward = document.querySelectorAll("#rewardBtn");
-  let collect = document.querySelectorAll("#collect");
-  for(var i = 0; i< reward.length; i++){
-    reward[i].addEventListener("click", ()=> {
-      var value = collect[i];
-      console.log(value);
-      console.log(points);
-      console.log(point);
-      if(collect[i].innerHTML == "1 point" && points >= 1){
-        alert("claimed!");
-      }
-      else if(collect[i].innerHTML == "2 point" && points >= 2){
-        alert("claimed!")
-      }
-      else{
-        alert("not enought points")
-      }
-    });  
-  }*/
+  
 }
 
 function progressBar(currentExp, lvl) {
@@ -368,6 +361,10 @@ function progressBar(currentExp, lvl) {
     return data;
   }
 }
+
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip();   
+});
 
 window.search = search;
 function search() {
@@ -565,12 +562,25 @@ function readProductData() {
 window.claimProduct = claimProduct;
 function claimProduct(key) {
   const claimBtn = document.getElementById("claimBtn");
-  const updates = {};
   claimBtn.addEventListener("click", () => {
     const updates = {};
     updates['/product/' + key + '/claimed/'] = true;
-    update(ref_database(db), updates);
-    location.reload();
+    update(ref_database(db), updates).then(()=>{
+      var userId = auth.currentUser.uid;
+      const dbRef = ref_database(getDatabase())
+        get(child(dbRef, "users/" + userId)).then((snapshot) => {
+          if (snapshot.exists()) {
+            var s = snapshot.val().score;
+            var xp = snapshot.val().currentExp;
+            const score = {};
+            score[`/users/${userId}/currentExp`] = xp + 40;
+            score[`/users/${userId}/score`] = s + 300;
+            update(ref_database(db), score).then(() => {
+              location.reload();
+            });
+          }
+        });
+    })
   })
 }
 
@@ -579,20 +589,58 @@ function displayProductByUser(uid) {
   //console.log(uid);
   var productExist = false;
   var requestExist = false;
+  var requestedExist = false;
   var productName = "";
   const storeItems = document.getElementById("productList");
   const requesters = document.getElementById("requests");
-  const requestCount = document.getElementById("requestCount");
+  const r = document.getElementById("requested");
+  const requestCount = document.getElementById("requestCount"); 
+  const requesterCount = document.getElementById("requesterCount");
   const productCount = document.querySelectorAll("[id='productPosted']");//document.getElementById("productPosted"); 
   const productClaimed = document.getElementById("productClaimed");
+  var donateOnce = document.getElementById("donateOnce");
+  var donate5 = document.getElementById("donate5");
+  var claimOnce = document.getElementById("claimOnce");
+  var claim5 = document.getElementById("claim5");
+  var r1 = document.getElementById("r1");
+  var r5 = document.getElementById("r5");
   let asd = document.getElementById("empty");
   const dbRef = ref_database(getDatabase());
   var request = 0;
   var posted = 0;
   var claimed = 0;
+  var requester = 0;
   get(child(dbRef, "product")).then((snapshot) => {
     snapshot.forEach(function (_child) {
-      if (_child.val().posted_by == uid) {
+      if (_child.val().requested_by == uid) {
+        requester += 1;
+        requestedExist = true;
+        var requestedhtml = `
+            <div class="card-full">
+            <div class="card cardhover">
+              <div class="card-header">
+      
+              </div>
+              <div class="card-body">
+                <div class="row justify-content-between">
+                  <div class="col-2">
+                    <img src="images/default.jpg" alt="" width="42" height="42" class="rounded-circle">
+                  </div>
+                  <div class="col-3">
+                    <img src="images/waiting.png" height ="38" width="38"/></a>
+                  </div>
+                </div>
+                <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
+                <p class="card-text text-truncate">${_child.val().description}</p>
+                <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px;">
+              </div>
+            </div>
+          </div>
+        `
+        r.innerHTML += requestedhtml;
+        requesterCount.innerHTML = requester;
+      }
+      else if (_child.val().posted_by == uid) {
         posted++;
         var key = _child.key;
         //childkeys.push([key,_child.val().product_name,_child.val().description]);
@@ -686,14 +734,14 @@ function displayProductByUser(uid) {
                   <img src="images/default.jpg" class="img-fluid" style="width: auto;height:40px;border-radius: 13%;"/>
                 </div>
                 <div class="col center-block text-center pt-2">
-                  <h5>${username} requested for ${productName}</h5>
+                  <h5>${username} requested for ${_child.val().product_name}</h5>
                 </div>
                 <div class="col-md-1 center-block text-center offset-lg-5 offset-md-1 pt-2">
                   <button type="button" class="btn btn-success btn-sm">Chat</button>
                 </div>
                 <div class="col-md-1 center-block text-center pt-2">
-                  <button type="button" class="btn btn-success btn-sm disabled">Accept</button>
-                </div>
+                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#claim" onclick="claimProduct('${_child.key}')">Accept</button>
+              </div>
                 <div class="col-md-1 center-block text-center pt-2">
                   <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancel" onclick="cancelRequest('${user}','${_child.key}','${productName}')">Cancel</button>
                 </div>
@@ -711,6 +759,24 @@ function displayProductByUser(uid) {
         }
       }
     })
+    if(posted >= 1){
+      donateOnce.classList.remove("not-achieved");
+    }
+    if(posted >= 5){
+      donate5.classList.remove("not-achieved");
+    }
+    if(claimed >= 1){
+      claimOnce.classList.remove("not-achieved");
+    }
+    if(claimed >= 5){
+      claim5.classList.remove("not-achieved");
+    }
+    if(requester >= 1){
+      r1.classList.remove("not-achieved");
+    }
+    if(requester >= 5){
+      r5.classList.remove("not-achieved");
+    }
     for (var i = 0; i < productCount.length; i++) {
       productCount[i].innerHTML = posted; // <-- whatever you need to do here.
       //productCount.innerHTML = posted;
@@ -721,6 +787,13 @@ function displayProductByUser(uid) {
                     <h5>Wow how empty...</h5>
                   </div>`
       storeItems.innerHTML += empty;
+    }
+    if (requestedExist == false) {
+      var empty = `<div style="text-align: center;">
+                    <img src="images/SPOILER_unknown.png" height="200px" width="auto">
+                    <h5>Wow how empty...</h5>
+                  </div>`
+      r.innerHTML += empty;
     }
   }).catch((error) => {
     console.error(error);
@@ -774,6 +847,11 @@ function change(key, poster) {
     }
     else {
       update(ref_database(db), updates).then(() => {
+        // const achievements = {};
+        // achievements[`/users/${userId}/requester`] += 1;
+        // update(ref_database(db), achievements).then(() => {
+        //   window.location.href = "store.html" + '?deleteSuccess=1';
+        // });
         window.location.href = "store.html" + '?deleteSuccess=1';
       });
       //location.reload();
