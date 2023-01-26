@@ -1,3 +1,4 @@
+var userIdKey = "";
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, browserSessionPersistence, setPersistence} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-auth.js";
@@ -235,7 +236,7 @@ if (PATHNAME == "viewproduct.html"){
         $("#pdcon").text("condition: " + list[i][5]);
         returnUser(list[i][6]);
         requestBtn.addEventListener("click", function(){ change(product,list[i][6]); });
-        chatBtn.addEventListener("click", function(){ openChat(product,list[i][6]); });
+        chatBtn.addEventListener("click", function(){ localStorage.setItem("msging", list[i][6]);});
       }
   }
 }
@@ -661,41 +662,81 @@ function reveal() {
   }
 }
 
-function openChat(userId)
+if(PATHNAME == "chat.html")
 {
-  location.href = "chat.html";
-  retrieveMessages(userId);
+  retrieveMessages();
+  const msgForm = document.getElementById("messageForm");
+  msgForm.addEventListener("submit", () => {
+    const msgInput = document.getElementById("msg-input").value;
+    writeMessage(msgInput);
+  });
 }
 
-function writeMessage(userId, message) {
-  const currentId = auth.currentUser.uid;
-  const chatId = userId + currentId;
+// function openChat(userId)
+// {
+//   location.href = "chat.html";
+//   retrieveMessages(userId);
+//   const msgForm = document.getElementById("messageForm");
+//   //const msgBtn = document.getElementById("msg-btn");
+//   const msgBtn = document.querySelector("msg-btn");
+//   //const msgScreen = document.getElementById("messages"); 
+//   //const msgForm = document.getElementById("messageForm");
+//   //const msgBtn = document.getElementById("msg-btn").addEventListener("click", writeMessage(userId), false);
+//   // window.alert();
+//    msgForm.addEventListener("submit", () => {
+//     window.alert();
+//     const msgInput = document.getElementById("msg-input");
+//     writeMessage(userId, msgInput);
+//    });
+// };
+
+function writeMessage(message) {
+  // const msgScreen = document.getElementById("messages"); 
+  // const msgForm = document.getElementById("messageForm");
+  // const msgBtn = document.getElementById("msg-btn");
+  // msgForm.addEventListener("submit", function() {
+  //     window.alert();
+  //     const msgInput = document.getElementById("msg-input");
+  // })
+  const userIdentity = localStorage.getItem("uid");
+  const userMsg = localStorage.getItem("msging");
+  window.alert(userMsg);
+  window.alert(userIdentity);
+  const chatId = userMsg + userIdentity;
   const currentDate = Date().toLocaleString().replace(",","").replace(/:.. /," ");
-  set(ref_database(db, 'messages/' + chatId), {
-    sender: currentId,
-    receiver: userId,
-    msg: message,
+  push(ref_database(db, 'messages/' + chatId), {
     dateAndTime: currentDate,
+    receiver: userMsg,
+    sender: userIdentity,
+    messagingMsg: message
 
   }).then(() => {
     location.reload();
   });
 }
-function retrieveMessages(userId)
+function retrieveMessages()
 {
-  const currentId = auth.currentUser.uid;
-  const chatId = userId + currentId;
+  const dbRef = ref_database(getDatabase());
+  const userIdentify = localStorage.getItem("uid");
+  const userMsgg = localStorage.getItem("msging");
+  //const currentId = auth.currentUser.uid;
+  //const chatId = userIdentify + userId;
   //Array to store messages containing the same chat id
   const msgs = [];
   get(child(dbRef, "messages")).then((snapshot) => {
-    var i = 1;
-    //Appending children into array if the chatId matches
-    snapshot.forEach(function(_child){
-      if(_child.key == (userId + currentId) || _child.key == (currentId + userId)){
-        msg.push(_child);
-      }
-    })
-  })
+    if (snapshot.exists)
+    {
+      var i = 1;
+      //Appending children into array if the chatId matches
+      snapshot.forEach(function(_child){
+        if(_child.key == (userMsgg + userIdentify) || _child.key == (userIdentify + userMsgg)){
+          msgs.push(_child);
+        }
+      })
+      window.alert(msgs);
+      //console.log(msgs);
+    }
+  }) 
   //Sorting array of messages by DateTime
   msgs.sort(function(a, b) {
     return b[3].date.getTime() - a[3].date.getTime();
@@ -707,7 +748,7 @@ function retrieveMessages(userId)
 
   for( var i = 0; i < msgs.length; i++)
   {
-    if(msgs[i].sender == currentId)
+    if(msgs[i].sender == userIdentify)
     {
       const msg = `<li class="msg my"}"><span class = "msg-span">
                     <i class = "name"></i>${msgs[i].msg}
@@ -725,11 +766,23 @@ function retrieveMessages(userId)
       msgScreen.innerHTML += msg;
       document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
     }
-  }
-  chatBtn.addEventListener("click", function(){ 
-    const msgInput = document.getElementById("msg-input"); 
-    writeMessage(userId, msgInput); 
-  });
+  };
+  // msgForm.addEventListener("submit", (e)=> {
+  //   window.alert();
+  //   e.preventDefault();
+  // });
+  // msgBtn.onclick = function(){
+  //   window.alert();
+  // }
+  // msgForm.addEventListener("submit", function() {
+  //   window.alert();
+  //   const msgInput = document.getElementById("msg-input"); 
+  //    writeMessage(userId, msgInput);
+  // })
+  // msgBtn.addEventListener("click", function(){ 
+  //   const msgInput = document.getElementById("msg-input"); 
+  //   writeMessage(userId, msgInput); 
+  // });
 }
 
 //set(ref_database(db, 'product/' + user.uid + name)
