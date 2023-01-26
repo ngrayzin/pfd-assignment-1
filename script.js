@@ -1,9 +1,9 @@
 var userIdKey = "";
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, browserSessionPersistence, setPersistence} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-auth.js";
-import { getDatabase, ref as ref_database, set, onValue, get, child, push, update} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-database.js";
-import { getStorage, ref as ref_storage, uploadBytes, getDownloadURL} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-storage.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, browserSessionPersistence, setPersistence, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-auth.js";
+import { getDatabase, ref as ref_database, set, onValue, get, child, push, update, runTransaction } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-database.js";
+import { getStorage, ref as ref_storage, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-storage.js";
 import { getMessaging } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-messaging.js";
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -27,6 +27,7 @@ const app = initializeApp(firebaseConfig);
 
 const db = getDatabase();
 const storage = getStorage();
+const provider = new GoogleAuthProvider();
 
 let PATHNAME = "";
 let FIRSTPATHNAME = "";
@@ -52,7 +53,7 @@ onAuthStateChanged(auth, (user) => {
     // User is signed in, see docs for a list of available properties
     // https://firebase.google.com/docs/reference/js/firebase.User
     const uid = user.uid;
-    localStorage.setItem("uid",uid);
+    localStorage.setItem("uid", uid);
     //loggedIn.style.display = "block"
     btn.innerText = "Log out"
     btn.addEventListener("click", () => {
@@ -79,7 +80,7 @@ onAuthStateChanged(auth, (user) => {
     donate.addEventListener("click", () => {
       myModal.show();
     });
-    if(PATHNAME == "donation.html" || PATHNAME == "userIndex.html"){
+    if (PATHNAME == "donation.html" || PATHNAME == "userIndex.html") {
       location.href = "index.html";
     }
   }
@@ -88,6 +89,7 @@ onAuthStateChanged(auth, (user) => {
 var button1 = document.getElementById("loginbutton");
 var button2 = document.getElementById("signupbutton");
 var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('exampleModal'));
+var googleBtn = document.getElementById("googleLogin");
 
 button1.addEventListener("click", (e) => {
   e.preventDefault();
@@ -97,35 +99,35 @@ button1.addEventListener("click", (e) => {
   var password = document.getElementById("exampleInputPassword1").value
   var errormsg = document.getElementsByClassName("errormsg")
   setPersistence(auth, browserSessionPersistence)
-  .then(() => {
-    // Existing and future Auth states are now persisted in the current
-    // session only. Closing the window would clear any existing state even
-    // if a user forgets to sign out.
-    // ...
-    // New sign-in will be persisted with session persistence.
-    return signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      // Signed in 
-      const user = userCredential.user;
-      $('#overlay').fadeOut();
-      inputField.reset();
-      myModal.hide();
-      location.href = "userIndex.html";
-    })
+    .then(() => {
+      // Existing and future Auth states are now persisted in the current
+      // session only. Closing the window would clear any existing state even
+      // if a user forgets to sign out.
+      // ...
+      // New sign-in will be persisted with session persistence.
+      return signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Signed in 
+          const user = userCredential.user;
+          $('#overlay').fadeOut();
+          inputField.reset();
+          myModal.hide();
+          location.href = "userIndex.html";
+        })
 
+        .catch((error) => {
+          $('#overlay').fadeOut();
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          alert(errorMessage);
+          inputField.reset();
+        });
+    })
     .catch((error) => {
-      $('#overlay').fadeOut();
+      // Handle Errors here.
       const errorCode = error.code;
       const errorMessage = error.message;
-      alert(errorMessage);
-      inputField.reset();
     });
-  })
-  .catch((error) => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-  });
 
 })
 
@@ -138,40 +140,67 @@ button2.addEventListener("click", (e) => {
   var name = document.getElementById("name").value
   var errormsg = document.getElementsByClassName("errormsg")
   setPersistence(auth, browserSessionPersistence)
-  .then(() => {
-    // Existing and future Auth states are now persisted in the current
-    // session only. Closing the window would clear any existing state even
-    // if a user forgets to sign out.
-    // ...
-    // New sign-in will be persisted with session persistence.
-    return createUserWithEmailAndPassword(auth, email, password)
-    .then(async (userCredential) => {
-      const user = userCredential.user;
-      writeUserData(user.uid, name, email);
-      inputField.reset();
+    .then(() => {
+      // Existing and future Auth states are now persisted in the current
+      // session only. Closing the window would clear any existing state even
+      // if a user forgets to sign out.
+      // ...
+      // New sign-in will be persisted with session persistence.
+      return createUserWithEmailAndPassword(auth, email, password)
+        .then(async (userCredential) => {
+          const user = userCredential.user;
+          writeUserData(user.uid, name, email);
+          inputField.reset();
+        })
+        .catch((error) => {
+          localStorage.clear();
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          alert(errorMessage);
+          $('#overlay').fadeOut();
+          inputField.reset();
+        });
     })
     .catch((error) => {
-      localStorage.clear();
+      // Handle Errors here.
       const errorCode = error.code;
       const errorMessage = error.message;
-      alert(errorMessage);
-      $('#overlay').fadeOut();
-      inputField.reset();
+      console.log(errorMessage);
+      console.log(errorMessage);
     });
-  })
-  .catch((error) => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-  });
+})
+
+googleBtn.addEventListener("click", (e) => {
+  e.preventDefault
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+      // The signed-in user info.
+      const user = result.user;
+      console.log(user);
+      writeUserData(user.uid, user.displayName, user.email)
+      // ...
+    }).catch((error) => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // The email of the user's account used.
+      //const email = error.customData.email;
+      // The AuthCredential type that was used.
+      const credential = GoogleAuthProvider.credentialFromError(error);
+      // ...
+    });
 })
 
 
-if(PATHNAME == "donation.html"){
+
+if (PATHNAME == "donation.html") {
   const inputFieldp = document.getElementById("donateForm");
   const submit = document.getElementById("psub");
   const breadcrumb = document.getElementById("breadcrumb");
-  submit.addEventListener("click", (e)=> {
+  submit.addEventListener("click", (e) => {
     e.preventDefault();
     $('#overlay').fadeIn();
     var done = false;
@@ -181,24 +210,24 @@ if(PATHNAME == "donation.html"){
     var loctext = document.getElementById("location").options[document.getElementById("location").selectedIndex].text;
     var context = document.getElementById("condition").options[document.getElementById("condition").selectedIndex].text;
     var img = document.getElementById("image").files[0];
-    var imgname = ""; 
+    var imgname = "";
     //console.log(img.name);
-    if(img){
+    if (img) {
       imgname = img.name;
       const storageRef = ref_storage(storage, img.name);
       uploadBytes(storageRef, img).then((snapshot) => {
         console.log('Uploaded a blob or file!');
-        getDownloadURL(storageRef, img).then(function(url) {
-            if(url){
-              writeProductData(nname, user, loctext, context, ddesc, url)
-            }
-            else{
-              writeProductData(nname, user, loctext, context, ddesc, imgname)
-            }
+        getDownloadURL(storageRef, img).then(function (url) {
+          if (url) {
+            writeProductData(nname, user, loctext, context, ddesc, url)
+          }
+          else {
+            writeProductData(nname, user, loctext, context, ddesc, imgname)
+          }
         });
       });
     }
-    else{
+    else {
       writeProductData(nname, user, loctext, context, ddesc, imgname)
     }
     inputFieldp.reset();
@@ -206,26 +235,26 @@ if(PATHNAME == "donation.html"){
 }
 
 
-if (PATHNAME == "store.html"){
+if (PATHNAME == "store.html") {
   const urlParams = new URLSearchParams(window.location.search);
   const deleteSuccess = urlParams.get('deleteSuccess');
   if (deleteSuccess === '1') {
     // The page was just reloaded, display the toast:
     //console.log($('.toast').toast('show'))
-    $(document).ready(function(){
+    $(document).ready(function () {
       $('.toast').toast('show');
-      });
+    });
   }
   //
   readProductData();
 }
 
-if (PATHNAME == "viewproduct.html"){
+if (PATHNAME == "viewproduct.html") {
   var requestBtn = document.getElementById("requestBtn");
   var chatBtn = document.getElementById("chatBtn");
   const urlParams = new URLSearchParams(window.location.search);
   const product = urlParams.get('product');
-  const list =JSON.parse(localStorage.getItem('list'));
+  const list = JSON.parse(localStorage.getItem('list'));
   for (let i = 0; i < list.length; i++) {
       var item = list[i][0];
       if (item == product) {
@@ -241,81 +270,184 @@ if (PATHNAME == "viewproduct.html"){
   }
 }
 
-if(PATHNAME == "userIndex.html"){
+if (PATHNAME == "userIndex.html") {
+  var data = []
+  var scores = document.getElementById("score");
+  var exp = document.getElementById("XP");
+  var userLevel = document.getElementById("userLevel");
+  var lvl5 = document.getElementById("5");
+  var lvl15 = document.getElementById("15");
+  var lvl30 = document.getElementById("30");
   const userId = localStorage.getItem("uid");
-  //var point = document.getElementById("noOfVouch").innerHTML;
+  const dbRef = ref_database(getDatabase());
+  var user = [];
+  get(child(dbRef, "users/" + userId)).then((snapshot) => {
+    if (snapshot.exists()) {
+      var s = snapshot.val().score;
+      var xp = snapshot.val().currentExp;
+      var lvl = snapshot.val().level;
+      console.log(snapshot.val().score);
+      console.log(snapshot.val().level);
+      scores.innerText = s;
+      data = progressBar(xp, lvl);
+      console.log(data);
+      exp.innerText = data[1] + "/" + data[2];
+      userLevel.innerText = "Level " + data[0];
+      if(lvl >= 5){
+        lvl5.classList.remove("not-achieved");
+      }
+      if(lvl >= 15){
+        lvl15.classList.remove("not-achieved");
+      }
+      if(lvl >= 30){
+        lvl30.classList.remove("not-achieved");
+      }
+      if(snapshot.val().cancelled != null){
+        alert("Your request for "+ snapshot.val().cancelled + " had been cancelled by the poster");
+        const notify = {};
+        notify['/users/' + userId + '/cancelled'] = null;
+        update(ref_database(db), notify)
+      }
+    }
+  });
   displayProductByUser(userId);
   calculatePoints(userId);
-
-  /*let reward = document.querySelectorAll("#rewardBtn");
-  let collect = document.querySelectorAll("#collect");
-  for(var i = 0; i< reward.length; i++){
-    reward[i].addEventListener("click", ()=> {
-      var value = collect[i];
-      console.log(value);
-      console.log(points);
-      console.log(point);
-      if(collect[i].innerHTML == "1 point" && points >= 1){
-        alert("claimed!");
-      }
-      else if(collect[i].innerHTML == "2 point" && points >= 2){
-        alert("claimed!")
-      }
-      else{
-        alert("not enought points")
-      }
-    });  
-  }*/
+  
 }
 
-window.search= search;
-function search(){
+function progressBar(currentExp, lvl) {
+  var data = [];
+  var userId = auth.currentUser.uid;
+  var XP = document.getElementsByClassName("progress-bar")[0]
+  var total;
+  if (lvl >= 0 || lvl <= 10) {
+    total = 100;
+  }
+  else if (lvl >= 11 || lvl <= 20) {
+    total = 200;
+  }
+  else if (lvl >= 21 || lvl <= 30) {
+    total = 300;
+  }
+  else if (lvl >= 31 || lvl <= 40) {
+    total = 400;
+  }
+  else {
+    total = 500;
+  }
+  console.log(total);
+  console.log(currentExp);
+  if (currentExp >= total) {
+    lvl++;
+    currentExp = currentExp - total;
+    var startListening = function () {
+      const updates = {};
+      updates[`/users/${userId}/currentExp`] = currentExp;
+      updates[`/users/${userId}/level`] = lvl;
+      update(ref_database(db), updates).then(() => {
+        XP.style.width = (currentExp / total * 100) + "%";
+        alert("level up!");
+      })
+    }
+    data.push(lvl);
+    data.push(currentExp);
+    data.push(total);
+    startListening();
+    return data;
+  } else {
+    XP.style.width = (currentExp / total * 100) + "%";
+    data.push(lvl);
+    data.push(currentExp);
+    data.push(total);
+    return data;
+  }
+}
+
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip();   
+});
+
+window.search = search;
+function search() {
   var input, filter, div, divCard, a, b, i, txtValue;
   input = document.getElementById("searchBar");
   filter = input.value.toUpperCase();
   div = document.getElementById("storeCards");
-  divCard = div.getElementsByTagName("div");
+  divCard = div.getElementsByClassName("card-full");
   for (i = 0; i < divCard.length; i++) {
-      a = divCard[i].getElementsByTagName("h5")[0];
-      //b = divCard[i].getElementsByTagName("p")[0];
-      txtValue = a.textContent || a.innerText; //|| b.textContent || b.innerText;
-      if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        divCard[i].style.display = "";
-      } else {
-        divCard[i].style.display = "none";
-      }
+    a = divCard[i].getElementsByTagName("b")[0];
+    //b = divCard[i].getElementsByTagName("p")[0];
+    console.log(a);
+    txtValue = a.textContent || a.innerText; //|| b.textContent || b.innerText;
+    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+      divCard[i].style.display = "";
+    } else {
+      divCard[i].style.display = "none";
+    }
   }
 
 }
 
 // Save message to firebase
 function writeUserData(userId, name, email) {
-  set(ref_database(db, 'users/' + userId), {
-    username: name,
-    email: email,
-  }).then(() => {
-    $('#overlay').fadeOut();
-    myModal.hide();
-    location.href = "userIndex.html";
+  const dbRef = ref_database(getDatabase());
+  get(child(dbRef, "users/" + userId)).then((snapshot) => {
+    if (!snapshot.exists()) {
+      set(ref_database(db, 'users/' + userId), {
+        username: name,
+        email: email,
+        currentExp: 0,
+        level: 0,
+        score: 0,
+      }).then(() => {
+        $('#overlay').fadeOut();
+        myModal.hide();
+        location.href = "userIndex.html";
+      }).catch((error) => {
+        console.error(error);
+      });
+    }
+    else {
+      $('#overlay').fadeOut();
+      myModal.hide();
+      location.href = "userIndex.html";
+    }
+
   });
 }
 
-function writeProductData(name, user, location, condition, desc, img){
+function writeProductData(name, user, location, condition, desc, img) {
   const newPostKey = push(child(ref_database(db), 'product')).key;
   set(ref_database(db, 'product/' + newPostKey), {
     product_name: name,
     posted_by: user.uid,
-    location : location,
+    location: location,
     condition: condition,
     description: desc,
     image: img,
-    claimed : false,
-    requested : false,
+    claimed: false,
+    requested: false,
     requested_by: "",
   }).then(() => {
-    $('#overlay').fadeOut();
-    $('.p').toast('show');
-    return true;
+    var userId = auth.currentUser.uid;
+    const dbRef = ref_database(getDatabase());
+    get(child(dbRef, "users/" + userId)).then((snapshot) => {
+      if (snapshot.exists()) {
+        var s = snapshot.val().score;
+        var xp = snapshot.val().currentExp;
+        const updates = {};
+        updates[`/users/${userId}/currentExp`] = xp + 20;
+        updates[`/users/${userId}/score`] = s + 100;
+        update(ref_database(db), updates).then(() => {
+          $('#overlay').fadeOut();
+          $('.p').toast('show');
+          return true;
+        });
+        // console.log(snapshot.val().score);
+        // console.log(snapshot.val().level);
+      }
+
+    });
   });
 }
 
@@ -327,12 +459,12 @@ function calculatePoints(uid) {
   var vouch = document.getElementById("asdfgh");
   const dbRef = ref_database(getDatabase());
   get(child(dbRef, "product")).then((snapshot) => {
-    snapshot.forEach(function(_child){
-      if(_child.val().posted_by == uid){
+    snapshot.forEach(function (_child) {
+      if (_child.val().posted_by == uid) {
         var key = _child.key;
         //childkeys.push([key,_child.val().product_name,_child.val().description]);
         //console.log(key);
-        if(_child.val().claimed == true){
+        if (_child.val().claimed == true) {
           numberOfClaimed = numberOfClaimed + 1;
         }
       }
@@ -340,17 +472,17 @@ function calculatePoints(uid) {
     if (numberOfClaimed > 0) {
       //i = 1;
       var width = 0
-      
-      if (numberOfClaimed > 4){
-        while (numberOfClaimed >= 5){
+
+      if (numberOfClaimed > 4) {
+        while (numberOfClaimed >= 5) {
           noOfVouchers = noOfVouchers + 1;
           numberOfClaimed = numberOfClaimed - 4;
         }
-        width = numberOfClaimed*25;
+        width = numberOfClaimed * 25;
       }
       else {
-        width = numberOfClaimed*25;
-        if (width == 100){
+        width = numberOfClaimed * 25;
+        if (width == 100) {
           noOfVouchers += 1;
         }
       }
@@ -375,27 +507,37 @@ function calculatePoints(uid) {
 }
 
 var products = [];
-window.change= change;
-function readProductData(){
+window.change = change;
+function readProductData() {
   //var childkeys = []
   var productExists = false;
   var storeItems = document.getElementById("storeCards");
   const dbRef = ref_database(getDatabase());
   get(child(dbRef, "product")).then((snapshot) => {
-    snapshot.forEach(function(_child){
-      if(_child.val().requested == false && _child.val().claimed == false){
+    snapshot.forEach(function (_child) {
+      if (_child.val().requested == false && _child.val().claimed == false) {
         var key = _child.key;
         //childkeys.push([key,_child.val().product_name,_child.val().description]);
         //console.log(key);
-        products.push([key,_child.val().product_name,_child.val().description,_child.val().image,_child.val().location,_child.val().condition,_child.val().posted_by])
+        products.push([key, _child.val().product_name, _child.val().description, _child.val().image, _child.val().location, _child.val().condition, _child.val().posted_by])
         var html = `
         <div class="card-full">
           <div class="card cardhover">
+            <div class="card-header">
+    
+            </div>
             <div class="card-body">
-              <a href="viewproduct.html?product=${key}"><img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;"></a> 
+              <div class="row justify-content-between">
+                <div class="col-2">
+                  <img src="images/default.jpg" alt="" width="42" height="42" class="rounded-circle">
+                </div>
+                <div class="col-3">
+                  <a onClick="change('${key}', '${_child.val().posted_by}')"><img src="images/request.png" id="requestBtn" height ="42" width="42"/></a>
+                </div>
+              </div>
               <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
               <p class="card-text text-truncate">${_child.val().description}</p>
-              <a id="requestBtn" class="btn btn-color" onClick="change('${key}', '${_child.val().posted_by}')">Request</a>
+              <a href="viewproduct.html?product=${key}"><img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;"></a> 
             </div>
           </div>
         </div>
@@ -406,7 +548,7 @@ function readProductData(){
     })
     //console.log(products);
     localStorage.setItem("list", JSON.stringify(products));
-    if(productExists == false){
+    if (productExists == false) {
       var empty = `<div style="text-align: center;">
                     <img src="images/SPOILER_unknown.png" height="200px" width="auto">
                     <h5>Wow how empty...</h5>
@@ -419,79 +561,160 @@ function readProductData(){
 }
 
 window.claimProduct = claimProduct;
-function claimProduct(key){
+function claimProduct(key) {
   const claimBtn = document.getElementById("claimBtn");
-  const updates = {};
   claimBtn.addEventListener("click", () => {
     const updates = {};
     updates['/product/' + key + '/claimed/'] = true;
-    update(ref_database(db), updates);
-    location.reload();
+    update(ref_database(db), updates).then(()=>{
+      var userId = auth.currentUser.uid;
+      const dbRef = ref_database(getDatabase())
+        get(child(dbRef, "users/" + userId)).then((snapshot) => {
+          if (snapshot.exists()) {
+            var s = snapshot.val().score;
+            var xp = snapshot.val().currentExp;
+            const score = {};
+            score[`/users/${userId}/currentExp`] = xp + 40;
+            score[`/users/${userId}/score`] = s + 300;
+            update(ref_database(db), score).then(() => {
+              location.reload();
+            });
+          }
+        });
     })
+  })
 }
 
-window.modal=modal;
-function displayProductByUser(uid){
+window.modal = modal;
+function displayProductByUser(uid) {
   //console.log(uid);
   var productExist = false;
   var requestExist = false;
+  var requestedExist = false;
   var productName = "";
   const storeItems = document.getElementById("productList");
-  const requesters = document.getElementById("requests"); 
+  const requesters = document.getElementById("requests");
+  const r = document.getElementById("requested");
   const requestCount = document.getElementById("requestCount"); 
-  const productCount = document.getElementById("productPosted"); 
+  const requesterCount = document.getElementById("requesterCount");
+  const productCount = document.querySelectorAll("[id='productPosted']");//document.getElementById("productPosted"); 
   const productClaimed = document.getElementById("productClaimed");
-  let asd = document.getElementById("empty"); 
+  var donateOnce = document.getElementById("donateOnce");
+  var donate5 = document.getElementById("donate5");
+  var claimOnce = document.getElementById("claimOnce");
+  var claim5 = document.getElementById("claim5");
+  var r1 = document.getElementById("r1");
+  var r5 = document.getElementById("r5");
+  let asd = document.getElementById("empty");
   const dbRef = ref_database(getDatabase());
   var request = 0;
   var posted = 0;
   var claimed = 0;
+  var requester = 0;
   get(child(dbRef, "product")).then((snapshot) => {
-    snapshot.forEach(function(_child){
-      if(_child.val().posted_by == uid){
+    snapshot.forEach(function (_child) {
+      if (_child.val().requested_by == uid) {
+        requester += 1;
+        requestedExist = true;
+        var requestedhtml = `
+            <div class="card-full">
+            <div class="card cardhover">
+              <div class="card-header">
+      
+              </div>
+              <div class="card-body">
+                <div class="row justify-content-between">
+                  <div class="col-2">
+                    <img src="images/default.jpg" alt="" width="42" height="42" class="rounded-circle">
+                  </div>
+                  <div class="col-3">
+                    <img src="images/waiting.png" height ="38" width="38"/></a>
+                  </div>
+                </div>
+                <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
+                <p class="card-text text-truncate">${_child.val().description}</p>
+                <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px;">
+              </div>
+            </div>
+          </div>
+        `
+        r.innerHTML += requestedhtml;
+        requesterCount.innerHTML = requester;
+      }
+      else if (_child.val().posted_by == uid) {
         posted++;
         var key = _child.key;
         //childkeys.push([key,_child.val().product_name,_child.val().description]);
         //console.log(key);
-        if(_child.val().claimed == true){
+        if (_child.val().claimed == true) {
           claimed++;
           var html = `
           <div class="card-full">
-            <div class="card cardhover">
-              <div class="card-body">
-                <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;">
-                <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
-                <p class="card-text text-truncate">${_child.val().description}</p>
-                <a id="deleteBtn"class="btn btn-color">Claimed</a>
+          <div class="card cardhover">
+            <div class="card-header">
+    
+            </div>
+            <div class="card-body">
+              <div class="row justify-content-between">
+                <div class="col-2">
+                  <img src="images/default.jpg" alt="" width="42" height="42" class="rounded-circle">
+                </div>
+                <div class="col-3">
+                  <img src="images/claim.png" height ="42" width="42"/>
+                </div>
               </div>
+              <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
+              <p class="card-text text-truncate">${_child.val().description}</p>
+              <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px;"> 
             </div>
           </div>
+        </div>
           `
         }
-        else if(_child.val().claimed == false && _child.val().requested == true){
+        else if (_child.val().claimed == false && _child.val().requested == true) {
           productName = _child.val().product_name;
           var html = `
           <div class="card-full">
-            <div class="card cardhover">
-              <div class="card-body">
-                <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;">
-                <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
-                <p class="card-text text-truncate">${_child.val().description}</p>
-                <a id="deleteBtn"class="btn btn-color">Requested</a>
-              </div>
-            </div>
-          </div>
-          `
-        }
-        else{
-        var html = `
-        <div class="card-full">
           <div class="card cardhover">
+            <div class="card-header">
+    
+            </div>
             <div class="card-body">
-              <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px; cursor: pointer;">
+              <div class="row justify-content-between">
+                <div class="col-2">
+                  <img src="images/default.jpg" alt="" width="42" height="42" class="rounded-circle">
+                </div>
+                <div class="col-3">
+                  <img src="images/requested.png" height ="42" width="42"/>
+                </div>
+              </div>
               <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
               <p class="card-text text-truncate">${_child.val().description}</p>
-              <a id="deleteBtn" class="btn btn-color" onclick = "modal('${key}')" data-bs-toggle="modal" data-bs-target="#delete">Delete</a>
+              <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px;">
+            </div>
+          </div>
+        </div>
+          `
+        }
+        else {
+          var html = `
+        <div class="card-full">
+          <div class="card cardhover">
+            <div class="card-header">
+    
+            </div>
+            <div class="card-body">
+              <div class="row justify-content-between">
+                <div class="col-2">
+                  <img src="images/default.jpg" alt="" width="42" height="42" class="rounded-circle">
+                </div>
+                <div class="col-3">
+                  <a onclick ="modal('${key}')" data-bs-toggle="modal" data-bs-target="#delete"><img src="images/delete.png" id="deleteBtn" height ="42" width="42" style="cursor: pointer;"/></a>
+                </div>
+              </div>
+              <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
+              <p class="card-text text-truncate">${_child.val().description}</p>
+              <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px;">
             </div>
           </div>
         </div>
@@ -500,9 +723,10 @@ function displayProductByUser(uid){
         //onClick="deleteRef('${key}'
         storeItems.innerHTML += html;
         productExist = true;
-        if(_child.val().requested == true && _child.val().claimed == false){
+        if (_child.val().requested == true && _child.val().claimed == false) {
           asd.style.display = "none";
           onValue(ref_database(db, '/users/' + _child.val().requested_by), (snapshot) => {
+            var user = snapshot.key;
             var username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
             var rhtml = `
             <div class="alert alert-success mt-3 p-4">
@@ -511,21 +735,21 @@ function displayProductByUser(uid){
                   <img src="images/default.jpg" class="img-fluid" style="width: auto;height:40px;border-radius: 13%;"/>
                 </div>
                 <div class="col center-block text-center pt-2">
-                  <h5>${username} requested for ${productName}</h5>
+                  <h5>${username} requested for ${_child.val().product_name}</h5>
                 </div>
                 <div class="col-md-1 center-block text-center offset-lg-5 offset-md-1 pt-2">
                   <button type="button" class="btn btn-success btn-sm">Chat</button>
                 </div>
                 <div class="col-md-1 center-block text-center pt-2">
-                  <button type="button" class="btn btn-success btn-sm disabled">Accept</button>
-                </div>
+                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#claim" onclick="claimProduct('${_child.key}')">Accept</button>
+              </div>
                 <div class="col-md-1 center-block text-center pt-2">
-                  <button type="button" class="btn btn-danger btn-sm">Cancel</button>
+                  <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancel" onclick="cancelRequest('${user}','${_child.key}','${productName}')">Cancel</button>
                 </div>
               </div>
             </div>
             `
-            requesters.innerHTML +=  rhtml;
+            requesters.innerHTML += rhtml;
             request++;
             requestExist = true;
             requestCount.innerHTML = request;
@@ -536,20 +760,68 @@ function displayProductByUser(uid){
         }
       }
     })
-    productCount.innerHTML = posted;
-    if(productExist == false){
+    if(posted >= 1){
+      donateOnce.classList.remove("not-achieved");
+    }
+    if(posted >= 5){
+      donate5.classList.remove("not-achieved");
+    }
+    if(claimed >= 1){
+      claimOnce.classList.remove("not-achieved");
+    }
+    if(claimed >= 5){
+      claim5.classList.remove("not-achieved");
+    }
+    if(requester >= 1){
+      r1.classList.remove("not-achieved");
+    }
+    if(requester >= 5){
+      r5.classList.remove("not-achieved");
+    }
+    for (var i = 0; i < productCount.length; i++) {
+      productCount[i].innerHTML = posted; // <-- whatever you need to do here.
+      //productCount.innerHTML = posted;
+    }
+    if (productExist == false) {
       var empty = `<div style="text-align: center;">
                     <img src="images/SPOILER_unknown.png" height="200px" width="auto">
                     <h5>Wow how empty...</h5>
                   </div>`
       storeItems.innerHTML += empty;
     }
+    if (requestedExist == false) {
+      var empty = `<div style="text-align: center;">
+                    <img src="images/SPOILER_unknown.png" height="200px" width="auto">
+                    <h5>Wow how empty...</h5>
+                  </div>`
+      r.innerHTML += empty;
+    }
   }).catch((error) => {
     console.error(error);
   });
 }
 
-function modal(key){
+window.cancelRequest = cancelRequest;
+function cancelRequest(userID, productID, product_name) {
+  const cancelBtn = document.getElementById("cancelBtn");
+  cancelBtn.addEventListener("click", () => {
+    const updates = {};
+    updates['/product/' + productID + '/requested'] = false;
+    updates['/product/' + productID + '/requestedBy'] = "";
+    update(ref_database(db), updates)
+      .then(() => {
+        const notify = {};
+        notify['/users/' + userID + '/cancelled'] = product_name;
+        update(ref_database(db), notify)
+      })
+      .then(() => {
+        location.reload();
+      })
+  })
+}
+
+
+function modal(key) {
   //msg.show();
   const deleteBtn = document.getElementById("deleteBtn");
   deleteBtn.addEventListener("click", () => {
@@ -557,25 +829,30 @@ function modal(key){
     updates['/product/' + key] = null
     update(ref_database(db), updates);
     location.reload();
-    })
-  
+  })
+
 }
 
-function change(key,poster){
+function change(key, poster) {
   //console.log(key);
   //console.log(poster);
   var user = auth.currentUser;
-  if(user){
+  if (user) {
     var userId = auth.currentUser.uid;
-    const newPostKey = push(child(ref_database(db), 'product')).key;
+    //const newPostKey = push(child(ref_database(db), 'product')).key;
     const updates = {};
     updates['/product/' + key + '/requested/'] = true;
     updates['/product/' + key + '/requested_by/'] = userId;
-    if(poster == userId){
+    if (poster == userId) {
       alert("cant claim your own product");
     }
-    else{
-      update(ref_database(db), updates).then(() =>{
+    else {
+      update(ref_database(db), updates).then(() => {
+        // const achievements = {};
+        // achievements[`/users/${userId}/requester`] += 1;
+        // update(ref_database(db), achievements).then(() => {
+        //   window.location.href = "store.html" + '?deleteSuccess=1';
+        // });
         window.location.href = "store.html" + '?deleteSuccess=1';
       });
       //location.reload();
@@ -586,18 +863,19 @@ function change(key,poster){
       //window.location.replace(newpath);*/
     }
   }
-  else{
+  else {
     myModal.show();
     return false
-  } 
+  }
 }
+
 
 //return user name
 function returnName() {
   const userId = auth.currentUser.uid;
   return onValue(ref_database(db, '/users/' + userId), (snapshot) => {
     var username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
-    if(PATHNAME == "userIndex.html"){
+    if (PATHNAME == "userIndex.html") {
       document.getElementById("pdusername").innerText = username; //"Welcome back " + username+"!👋";
     }
   }, {
@@ -605,18 +883,70 @@ function returnName() {
   });
 }
 
-function returnUser(userKey){
+function returnUser(userKey) {
   return onValue(ref_database(db, '/users/' + userKey), (snapshot) => {
     var username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
     var email = (snapshot.val() && snapshot.val().email) || 'Anonymous';
     //pduser
-    $("#pduser").text("posted by: " +username);
+    $("#pduser").text("posted by: " + username);
   }, {
     onlyOnce: true
   });
 
 }
 
+if (PATHNAME == "index.html" || PATHNAME == "store.html" || PATHNAME == "") {
+  window.onscroll = function () {
+    const header_navbar = document.querySelector(".navbar");
+    const sticky = header_navbar.offsetTop;
+    const colour = document.querySelector(".fixed-top");
+
+    if (window.pageYOffset > sticky) {
+      header_navbar.classList.add("bg-light");
+      header_navbar.classList.add("shadow");
+      header_navbar.classList.add("scrolled");
+      header_navbar.classList.remove("navbar-custom");
+    } else {
+      //header_navbar.classList.remove("bg-light");
+      header_navbar.classList.remove("shadow");
+      colour.classList.remove("scrolled");
+      header_navbar.classList.remove("bg-light");
+      header_navbar.classList.add("navbar-custom");
+    }
+
+  };
+
+}
+
+if (PATHNAME == "store.html") {
+  window.onscroll = function () {
+    const header_navbar = document.querySelector(".navbar");
+    const sticky = header_navbar.offsetTop;
+    const colour = document.querySelector(".fixed-top");
+    const button = document.getElementById("btn");
+
+    if (window.pageYOffset > sticky) {
+      //when not on top
+      header_navbar.classList.add("bg-light");
+      header_navbar.classList.add("shadow");
+      header_navbar.classList.add("scrolled");
+      header_navbar.classList.remove("navbar-dark");
+      header_navbar.classList.add("navbar-light");
+      button.classList.remove("btn-outline-light");
+      button.classList.add("btn-outline-dark");
+    } else {
+      header_navbar.classList.remove("shadow");
+      colour.classList.remove("scrolled");
+      header_navbar.classList.remove("bg-light");
+      header_navbar.classList.add("navbar-dark");
+      header_navbar.classList.remove("navbar-light");
+      button.classList.remove("btn-outline-dark");
+      button.classList.add("btn-outline-light");
+    }
+
+  };
+
+}
 
 let toggle = document.getElementById("toggle");
 let signup = document.getElementById("signup");
@@ -738,11 +1068,11 @@ function retrieveMessages()
     }
   }) 
   //Sorting array of messages by DateTime
-  msgs.sort(function(a, b) {
+  msgs.sort(function (a, b) {
     return b[3].date.getTime() - a[3].date.getTime();
   });
 
-  const msgScreen = document.getElementById("messages"); 
+  const msgScreen = document.getElementById("messages");
   const msgForm = document.getElementById("messageForm");
   const msgBtn = document.getElementById("msg-btn");
 
@@ -757,8 +1087,7 @@ function retrieveMessages()
       msgScreen.innerHTML += msg;
       document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
     }
-    else
-    {
+    else {
       const msg = `<li class="msg"}"><span class = "msg-span">
                     <i class = "name"></i>${msgs[i].msg}
                     </span>
@@ -766,110 +1095,10 @@ function retrieveMessages()
       msgScreen.innerHTML += msg;
       document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
     }
-  };
-  // msgForm.addEventListener("submit", (e)=> {
-  //   window.alert();
-  //   e.preventDefault();
-  // });
-  // msgBtn.onclick = function(){
-  //   window.alert();
-  // }
-  // msgForm.addEventListener("submit", function() {
-  //   window.alert();
-  //   const msgInput = document.getElementById("msg-input"); 
-  //    writeMessage(userId, msgInput);
-  // })
-  // msgBtn.addEventListener("click", function(){ 
-  //   const msgInput = document.getElementById("msg-input"); 
-  //   writeMessage(userId, msgInput); 
-  // });
-}
-
-//set(ref_database(db, 'product/' + user.uid + name)
-
-/*const msgScreen = document.getElementById("messages"); 
-const msgForm = document.getElementById("messageForm");
-const msgInput = document.getElementById("msg-input"); 
-const msgBtn = document.getElementById("msg-btn");
-
-msgForm.addEventListener('submit', sendMessage);
-msgRef.on('child_added', updateMsgs);*/
-
-/*const updateMsgs = data =>{
-  const {email: userEmail , user, text} = data.val();
-  //Check the encrypting mode
-  var encryptMode = fetchJson();
-  var outputText = text;
-  
-  if(encryptMode == "nr"){
-    outputText = normalEncrypt(outputText);
-  }else if(encryptMode == "cr"){
-    outputText = crazyEncrypt(outputText);
   }
-  
-  //load messages
-  const msg = `<li class="${dataName == name ? "msg my": "msg"}"><span class = "msg-span">
-  <i class = "name">${name}: </i>${text}
-  </span>
-  </li>`
-  msgScreen.innerHTML += msg;
-  document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
-  //auto scroll to bottom
-}
-
-function sendMessage(e){
-  e.preventDefault();
-  const text = msgInput.value;
-    if(!text.trim()) return alert('Please type your message'); //no msg submitted
-    const msg = {
-        email,
-        name,
-        text: text
-    };
-    msgRef.push(msg);
-    msgInput.value = "";
-}*/
-
-/*function writemessage(userid, name, text){
-  set(ref_database(db, 'msg/' + userid), {
-    //index of the msg to find out order of msgs 
-    index: index,
-    name: name,
-    user: userid,
-    text : text,
+  chatBtn.addEventListener("click", function () {
+    const msgInput = document.getElementById("msg-input");
+    writeMessage(userId, msgInput);
   });
 }
-*/
 
-
-
-/*var products = [];
-var databaseRef = db.ref("product");
-databaseRef.on('child_added', function(snapshot) {
-  var product = snapshot.val()
-  products.push({
-    claimed: product.claimed, 
-    condition: product.condition,
-    description: product.description,
-    image: product.image,
-    posted_by: product.posted_by,
-    product_name: product.product_name
-  });
-});*/
-
-// if(PATHNAME == "viewproduct.html"){
-//   let content = ""
-//   for (var i = 0; i < products.length; i++) {
-//     content = `${content}<div class="card-full">
-//                             <div class="card">
-//                               <div class="card-body">
-//                                 <img src="images/20220108_194432.jpg" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px;">
-//                                 <h5 class="card-title pt-3"><b>${products[i].product_name}</b></h5>
-//                                 <p class="card-text">${products[i].description}</p>
-//                                 <a href="#" class="btn btn-color">Request</a>
-//                               </div>
-//                             </div>
-//                           </div>`
-//   }
-//   $("#storeCards div").html(content);
-// }
