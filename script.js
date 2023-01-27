@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, browserSessionPersistence, setPersistence, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-auth.js";
-import { getDatabase, ref as ref_database, set, onValue, get, child, push, update, runTransaction } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-database.js";
+import { getDatabase, ref as ref_database, set, onValue, get, child, push, update, runTransaction , query, orderByChild} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-database.js";
 import { getStorage, ref as ref_storage, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-storage.js";
 import { getMessaging } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-messaging.js";
 
@@ -279,17 +279,21 @@ if (PATHNAME == "userIndex.html") {
   var lvl30 = document.getElementById("30");
   const userId = localStorage.getItem("uid");
   const dbRef = ref_database(getDatabase());
+  var donateOnce = document.getElementById("donateOnce");
+  var donate5 = document.getElementById("donate5");
+  var claimOnce = document.getElementById("claimOnce");
+  var claim5 = document.getElementById("claim5");
+  var request1 = document.getElementById("r1");
+  var request5 = document.getElementById("r5");
   var user = [];
   get(child(dbRef, "users/" + userId)).then((snapshot) => {
     if (snapshot.exists()) {
       var s = snapshot.val().score;
       var xp = snapshot.val().currentExp;
       var lvl = snapshot.val().level;
-      console.log(snapshot.val().score);
-      console.log(snapshot.val().level);
       scores.innerText = s;
       data = progressBar(xp, lvl);
-      console.log(data);
+      var achievements = snapshot.val().achievement;
       exp.innerText = data[1] + "/" + data[2];
       userLevel.innerText = "Level " + data[0];
       if(lvl >= 5){
@@ -300,6 +304,24 @@ if (PATHNAME == "userIndex.html") {
       }
       if(lvl >= 30){
         lvl30.classList.remove("not-achieved");
+      }
+      if(achievements.r1 != null){
+        request1.classList.remove("not-achieved");
+      }
+      if(achievements.r5 != null){
+        request5.classList.remove("not-achieved");
+      }
+      if(achievements.c1 != null){
+        claimOnce.classList.remove("not-achieved");
+      }
+      if(achievements.c5 != null){
+        claim5.classList.remove("not-achieved");
+      }
+      if(achievements.p1 != null){
+        donateOnce.classList.remove("not-achieved");
+      }
+      if(achievements.p5 != null){
+        donate5.classList.remove("not-achieved");
       }
       if(snapshot.val().cancelled != null){
         alert("Your request for "+ snapshot.val().cancelled + " had been cancelled by the poster");
@@ -385,6 +407,27 @@ function search() {
     }
   }
 
+}
+
+if (PATHNAME == "leaderboard.html") {
+  loadLeaderboard();
+}
+
+
+function loadLeaderboard() {
+  const dbRef = ref_database(getDatabase());
+  var users = [];
+  get(child(dbRef, "users")).then((snapshot) => {
+    snapshot.forEach(function (_child) {
+      users.push(_child.val());
+      //console.log(_child.val());
+    });
+  }).then(()=>{
+    users.sort((a, b) => (a.score < b.score) ? 1 : -1) 
+    users.forEach(user => {
+      console.log(user.score + " " + user.username)
+    });
+  })
 }
 
 // Save message to firebase
@@ -596,14 +639,8 @@ function displayProductByUser(uid) {
   const r = document.getElementById("requested");
   const requestCount = document.getElementById("requestCount"); 
   const requesterCount = document.getElementById("requesterCount");
-  const productCount = document.querySelectorAll("[id='productPosted']");//document.getElementById("productPosted"); 
+  const productCount = document.querySelectorAll("[id='productPosted']");
   const productClaimed = document.getElementById("productClaimed");
-  var donateOnce = document.getElementById("donateOnce");
-  var donate5 = document.getElementById("donate5");
-  var claimOnce = document.getElementById("claimOnce");
-  var claim5 = document.getElementById("claim5");
-  var r1 = document.getElementById("r1");
-  var r5 = document.getElementById("r5");
   let asd = document.getElementById("empty");
   const dbRef = ref_database(getDatabase());
   var request = 0;
@@ -760,22 +797,34 @@ function displayProductByUser(uid) {
       }
     })
     if(posted >= 1){
-      donateOnce.classList.remove("not-achieved");
+      const p1 = {};
+      p1['/users/' + uid + '/achievement/p1'] = true;
+      update(ref_database(db), p1);
     }
     if(posted >= 5){
-      donate5.classList.remove("not-achieved");
+      const p5 = {};
+      p5['/users/' + uid + '/achievement/p5'] = true;
+      update(ref_database(db), p5);
     }
     if(claimed >= 1){
-      claimOnce.classList.remove("not-achieved");
+      const c1 = {};
+      c1['/users/' + uid + '/achievement/c1'] = true;
+      update(ref_database(db), c1);
     }
     if(claimed >= 5){
-      claim5.classList.remove("not-achieved");
+      const c5 = {};
+      c5['/users/' + uid + '/achievement/c5'] = true;
+      update(ref_database(db), c5);
     }
     if(requester >= 1){
-      r1.classList.remove("not-achieved");
+      const r1 = {};
+      r1['/users/' + uid + '/achievement/r1'] = true;
+      update(ref_database(db), r1);
     }
     if(requester >= 5){
-      r5.classList.remove("not-achieved");
+      const r5 = {};
+      r5['/users/' + uid + '/achievement/r1'] = true;
+      update(ref_database(db), r5);
     }
     for (var i = 0; i < productCount.length; i++) {
       productCount[i].innerHTML = posted; // <-- whatever you need to do here.
@@ -806,15 +855,14 @@ function cancelRequest(userID, productID, product_name) {
   cancelBtn.addEventListener("click", () => {
     const updates = {};
     updates['/product/' + productID + '/requested'] = false;
-    updates['/product/' + productID + '/requestedBy'] = "";
+    updates['/product/' + productID + '/requested_by'] = "";
     update(ref_database(db), updates)
       .then(() => {
         const notify = {};
         notify['/users/' + userID + '/cancelled'] = product_name;
-        update(ref_database(db), notify)
-      })
-      .then(() => {
-        location.reload();
+        update(ref_database(db), notify).then(() => {
+          location.reload();
+        })
       })
   })
 }

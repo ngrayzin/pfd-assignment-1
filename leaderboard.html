@@ -17,10 +17,10 @@
     />
 </head>
 <body>
-    <nav class="navbar navbar-expand-md navbar-light navbar-custom fixed-top px-3" id="navbar">
+    <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top shadow px-3" id="navbar">
         <div class="container">
           <a class="navbar-brand" href="#">
-            <img src="images/Logo.png" alt="Trade" height="36">
+            <img src="images/TradeIMG.png" alt="Trade" height="36">
           </a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -28,10 +28,10 @@
           <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
               <li class="nav-item">
-                <a class="nav-link active px-3" aria-current="page" href="index.html"id="hme">Home</a>
+                <a class="nav-link px-3" aria-current="page" href="userIndex.html" id="hme">Home</a>
               </li>
               <li class="nav-item"> 
-                <a class="nav-link px-3"  href="leaderboard.html">Leaderboard</a>
+                <a class="nav-link active px-3"  href="leaderboard.html">Leaderboard</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link px-3"  href="store.html">Store</a>
@@ -40,12 +40,8 @@
                 <a class="nav-link px-3" id="dtn">Donate</a>
               </li>
               <li class="nav-item px-2">
-                <button class="btn btn-outline-dark" type="button" id="btn">Login</button>
+                <button class="btn btn-outline-dark" id = "btn" type="button" style = "margin-top: 2px;margin-right: 1px; ">Login</button>
               </li>
-              <!--<li class="nav-item" id = "loggedIn">
-                <span class=" nav-item navbar-text" id = "Nameholder"></span>
-                <button class="btn btn-outline-dark" type="button" style = "margin-top: 2px;margin-left: 1px;" id="logout">Log out</button>
-              </li>-->
             </ul>
           </div>
         </div>
@@ -106,7 +102,7 @@
         Loading...
       </div>
       <!--style="background-image: url('https://img.freepik.com/free-vector/hand-drawn-minimal-background_23-2149006548.jpg?w=2000');background-size: 100% 100%; background-repeat: no-repeat;background-attachment: fixed;"-->
-      <section class = "quoteblock">
+      <!-- <section class = "quoteblock">
         <div class="container">
           <div class="row justify-content-between">
             <div class="col-md-6 text-start ms-sm-5 ps-sm-3">
@@ -122,123 +118,17 @@
                 </button>
               </a>
             </div>
-            <!-- <div class="col-md-6">
-              <img src="images/undraw_web_shopping_re_owap.svg" class="pb-5" width = "100%" height="100%" >
-            </div> -->
             <div class="col-md-6">       
               <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_ucmstmk4.json"  background="transparent"  speed="1"  style="width: auto; height: 100vh;z-index: 2;position: absolute;top: 1px;right:1px"  loop  autoplay></lottie-player>
             </div>
           </div>
-      </section>
-      <div class="instructionSection">
-        <section class = "row introblock conatiner ps-5 reveal" style="text-align:left;">
-          <div class="col-md-5" id="intro">
-            <img src="images/undraw_throw_down_ub-2-l.svg" width = "70%" height = 70%>
-          </div>
-          <div class = "col-md-2">
-            <div class="diamond-shape"></div>
-            <div class="vl"></div>
-          </div>
-          <div class="col-md-5">
-            <h2>Donate your <span class="main-color">Un-used items</span></h2>
-            <p style="line-height: 25px;" class="pe-3">
-              Do you have extra chargers at home lying
-              around in a corner of your cardboard? Fear not! 
-              Give away your un-used products e.g wires/
-              cables by posting it on this platform! Instead of 
-              throwing it away, putting it here may help
-              others get what they need.
-            </p>
-          </div>
+      </section> -->
+        <div class="spacing"></div>
+        <section class="container mt-5">
+            <h1><i class="bi bi-bar-chart-line"></i> Leaderboard</h1>
+            <p><i class="bi bi-people"></i> See how well you did against other players</p>
         </section>
-        <section class = "row introblock conatiner ps-5 reveal" style="text-align:right;">
-          <div class="col-md-5 text-end pe-3">
-            <h2>Take <span class="main-color">Any</span> Product For <span class="main-color">Free</span></h2> 
-            <p style="line-height: 25px;">
-              Broken cable? Worry not! Users are allowed to request any product for FREE. There is no need to pay for anything, just search and request for the item you want!
-            </p>
-          </div>
-          <div class = "col-md-2">
-            <div class="diamond-shape"></div>
-            <div class="vl"></div>
-          </div>
-          <div class="col-md-5">
-            <img src="images/undraw_web_shopping_re_owap.svg" class="pb-5" width = "70%" height="70%">
-          </div>
-        </section>
-        <section class = "row introblock conatiner ps-5 reveal" style="text-align:left;margin-top: 5vh;">
-          <div class="col-md-5">
-            <img src="images/undraw_online_wishes_dlmr.svg" width = "70%" height = 70% >
-          </div>
-          <div class = "col-md-2">
-            <div class="diamond-shape-final"></div>
-          </div>
-          <div class="col-md-5">
-            <h2><span class="main-color">Level up</span> and <span class="main-color">dominate</span> the leaderboard!</h2>
-            <p style="line-height: 25px;" class="pe-3">
-              Collect points for every product successfully given to someone else. Claim attractive rewards if you are top 3!
-            </p>
-          </div>
-        </section>
-        <!-- <section class = "introblock conatiner ps-4" id="intro"> 
-          <div style="text-align:left;">
-            <div class = "row mx-auto imageright reveal">
-              <div class="col-md-5 offset-md-2 py-5">
-                <h2>Donate your <span class="main-color">Un-used items</span></h2>
-                <p style="line-height: 25px;" class="pe-3">
-                  Do you have extra chargers at home lying
-                  around in a corner of your cardboard? Fear not! 
-                  Give away your un-used products e.g wires/
-                  cables by posting it on this platform! Instead of 
-                  throwing it away, putting it here may help
-                  others get what they need.
-                </p>
-              </div>
-              <div class="col-md-3 offset-md-1">
-                <img src="images/undraw_throw_down_ub-2-l.svg" width = "80%" height = 80% >
-              </div>
-            </div>
-          </div>
-        </section>
-        <section class = "introblock container">
-            <div style="text-align:right;">
-              <div class = "row mx-auto reveal">
-                <div class="col-md-3 offset-md-1">
-                  <img src="images/undraw_web_shopping_re_owap.svg" class="pb-5" width = "100%" height="100%">
-                </div>
-                <div class="col-md-5 offset-md-2 pt-5">
-                  <h2>Take <span class="main-color">Any</span> Product For <span class="main-color">Free</span></h2> 
-                  <p style="line-height: 25px;">
-                    Broken cable? Worry not! Users are allowed to request any product for FREE. There is no need to pay for anything, just search and request for the item you want!
-                  </p>
-                </div>
-              </div>
-        </section>
-        <section class = "introblock conatiner ps-4"> 
-          <div style="text-align:left;">
-            <div class = "row mx-auto imageright reveal">
-              <div class="col-md-5 offset-md-2 py-5">
-                <h2>Earn <span class="main-color">Rewards</span> and <span class="main-color">Prices</span></h2>
-                <p style="line-height: 25px;" class="pe-3">
-                  Collect points for every product successfully given to someone else. Claim attractive rewards and vouchers using the points collected.
-                </p>
-              </div>
-              <div class="col-md-3  offset-md-1">
-                <img src="images/undraw_online_wishes_dlmr.svg" width = "80%" height = 80% >
-              </div>
-            </div>
-          </div>
-        </section> -->
-      </div>
-      <img src="images/wave.png" class="pb-5" width = "100%" height="100%">
-      <section class=" overflow-auto text-center" style="line-height: 10vh;">
-        <h2>Ready to get started?</h2>
-        <p>Start donating now to help others and support sustainability!</p>
-        
-        <div class="text-center">
-            <button id="bannerBtn" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal" style="background-color: #60EFAA !important;border-radius: 100px !important;">Sign up here &#8594;</button>
-        </div>
-    </section>
+
     <div class="spacing"></div>
     <div style="background-image: url(images/bottomWave.png);background-repeat: no-repeat;  background-size: 100% 100%;">
       <section class="container">
