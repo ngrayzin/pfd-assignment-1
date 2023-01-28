@@ -497,6 +497,7 @@ function loadLeaderboard() {
   const dbRef = ref_database(getDatabase());
   var users = [];
   var dic = {};
+  var pics = {}
   get(child(dbRef, "users")).then((snapshot) => {
     snapshot.forEach(function (_child) {
       users.push(_child.val());
@@ -506,6 +507,10 @@ function loadLeaderboard() {
     var place = 1;
     users.sort((a, b) => (a.score < b.score) ? 1 : -1)
     users.forEach(user => {
+      var img = user.picture;
+      if(img == null){
+        img = "images/default.jpg"
+      }
       if(place == 1){
         const updates = {};
         updates[`/users/${dic[user.username]}/achievement/first`] = true
@@ -515,7 +520,7 @@ function loadLeaderboard() {
         `
         <tr>
           <th scope="row"><span class="badge first mt-1">1</span></th>
-          <td><p class="pt-1"><img src="images/default.jpg" alt="" width="30" height="30" class="rounded-circle me-4"> ${user.username}</p></td>
+          <td><p class="pt-1"><img src="${img}" alt="" width="30" height="30" class="rounded-circle me-4"> ${user.username}</p></td>
           <td><p class="pt-1">${user.score}</p></td>
           <td><p class="pt-1">${Math.ceil(carbon)}g</p></td>
         </tr>
@@ -530,7 +535,7 @@ function loadLeaderboard() {
         `
         <tr>
           <th scope="row"><span class="badge second mt-1">2</span></th>
-          <td><p class="pt-1"><img src="images/default.jpg" alt="" width="30" height="30" class="rounded-circle me-4"> ${user.username}</p></td>
+          <td><p class="pt-1"><img src="${img}" alt="" width="30" height="30" class="rounded-circle me-4"> ${user.username}</p></td>
           <td><p class="pt-1">${user.score}</p></td>
           <td><p class="pt-1">${Math.ceil(carbon)}g</p></td>
         </tr>
@@ -545,7 +550,7 @@ function loadLeaderboard() {
         `
         <tr>
         <th scope="row"><span class="badge thrid mt-1">3</span></th>
-          <td><p class="pt-1"><img src="images/default.jpg" alt="" width="30" height="30" class="rounded-circle me-4"> ${user.username}</p></td>
+          <td><p class="pt-1"><img src="${img}" alt="" width="30" height="30" class="rounded-circle me-4"> ${user.username}</p></td>
           <td><p class="pt-1">${user.score}</p></td>
           <td><p class="pt-1">${Math.ceil(carbon)}g</p></td>
         </tr>
@@ -557,7 +562,7 @@ function loadLeaderboard() {
         `
         <tr>
           <th scope="row"><span class="badge place mt-1">${place}</span></th>
-          <td><p class="pt-1"><img src="images/default.jpg" alt="" width="30" height="30" class="rounded-circle me-4"> ${user.username}</p></td>
+          <td><p class="pt-1"><img src="${img}" alt="" width="30" height="30" class="rounded-circle me-4"> ${user.username}</p></td>
           <td><p class="pt-1">${user.score}</p></td>
           <td><p class="pt-1">${Math.ceil(carbon)}g</p></td>
         </tr>
@@ -697,12 +702,20 @@ function readProductData() {
   var productExists = false;
   var storeItems = document.getElementById("storeCards");
   const dbRef = ref_database(getDatabase());
+  var dic = {};
+  get(child(dbRef, "users")).then((snapshot) => {
+    snapshot.forEach(function (_child) {
+      dic[_child.key] = _child.val().picture;
+    })
+  });
   get(child(dbRef, "product")).then((snapshot) => {
     snapshot.forEach(function (_child) {
       if (_child.val().requested == false && _child.val().claimed == false) {
         var key = _child.key;
-        //childkeys.push([key,_child.val().product_name,_child.val().description]);
-        //console.log(key);
+        var img = dic[_child.val().posted_by]
+        if(img == null){
+          img = "images/default.jpg";
+        }
         products.push([key, _child.val().product_name, _child.val().description, _child.val().image, _child.val().location, _child.val().condition, _child.val().posted_by])
         var html = `
         <div class="card-full">
@@ -713,7 +726,7 @@ function readProductData() {
             <div class="card-body">
               <div class="row justify-content-between">
                 <div class="col-2">
-                  <img src="images/default.jpg" alt="" width="42" height="42" class="rounded-circle">
+                  <img src="${img}" alt="" width="42" height="42" class="rounded-circle">
                 </div>
                 <div class="col-3">
                   <a onClick="change('${key}', '${_child.val().posted_by}')"><img src="images/request.png" id="requestBtn" height ="42" width="42"/></a>
@@ -789,9 +802,19 @@ function displayProductByUser(uid) {
   var posted = 0;
   var claimed = 0;
   var requester = 0;
+  var dic = {};
+  get(child(dbRef, "users")).then((snapshot) => {
+    snapshot.forEach(function (_child) {
+      dic[_child.key] = _child.val().picture;
+    })
+  });
   get(child(dbRef, "product")).then((snapshot) => {
     snapshot.forEach(function (_child) {
       if (_child.val().requested_by == uid && _child.val().claimed == false) {
+        var img = dic[_child.val().posted_by]
+        if(img == null){
+          img = "images/default.jpg";
+        }
         requester += 1;
         requestedExist = true;
         var requestedhtml = `
@@ -803,7 +826,7 @@ function displayProductByUser(uid) {
               <div class="card-body">
                 <div class="row justify-content-between">
                   <div class="col-2">
-                    <img src="images/default.jpg" alt="" width="42" height="42" class="rounded-circle">
+                    <img src="${img}" alt="" width="42" height="42" class="rounded-circle">
                   </div>
                   <div class="col-3">
                     <img src="images/waiting.png" height ="38" width="38"/></a>
@@ -820,11 +843,19 @@ function displayProductByUser(uid) {
         requesterCount.innerHTML = requester;
       }
       else if (_child.val().posted_by == uid) {
+        var img = dic[_child.val().posted_by]
+        if(img == null){
+          img = "images/default.jpg";
+        }
         posted++;
         var key = _child.key;
         //childkeys.push([key,_child.val().product_name,_child.val().description]);
         //console.log(key);
         if (_child.val().claimed == true) {
+          var img = dic[_child.val().posted_by]
+          if(img == null){
+            img = "images/default.jpg";
+          }
           claimed++;
           var html = `
           <div class="card-full">
@@ -835,7 +866,7 @@ function displayProductByUser(uid) {
             <div class="card-body">
               <div class="row justify-content-between">
                 <div class="col-2">
-                  <img src="images/default.jpg" alt="" width="42" height="42" class="rounded-circle">
+                  <img src="${img}" alt="" width="42" height="42" class="rounded-circle">
                 </div>
                 <div class="col-3">
                   <img src="images/claim.png" height ="42" width="42"/>
@@ -850,6 +881,10 @@ function displayProductByUser(uid) {
           `
         }
         else if (_child.val().claimed == false && _child.val().requested == true) {
+          var img = dic[_child.val().posted_by]
+          if(img == null){
+            img = "images/default.jpg";
+          }
           productName = _child.val().product_name;
           var html = `
           <div class="card-full">
@@ -860,7 +895,7 @@ function displayProductByUser(uid) {
             <div class="card-body">
               <div class="row justify-content-between">
                 <div class="col-2">
-                  <img src="images/default.jpg" alt="" width="42" height="42" class="rounded-circle">
+                  <img src="${img}" alt="" width="42" height="42" class="rounded-circle">
                 </div>
                 <div class="col-3">
                   <img src="images/requested.png" height ="42" width="42"/>
@@ -875,6 +910,10 @@ function displayProductByUser(uid) {
           `
         }
         else {
+          var img = dic[_child.val().posted_by]
+          if(img == null){
+            img = "images/default.jpg";
+          }
           var html = `
         <div class="card-full">
           <div class="card cardhover">
@@ -884,7 +923,7 @@ function displayProductByUser(uid) {
             <div class="card-body">
               <div class="row justify-content-between">
                 <div class="col-2">
-                  <img src="images/default.jpg" alt="" width="42" height="42" class="rounded-circle">
+                  <img src="${img}" alt="" width="42" height="42" class="rounded-circle">
                 </div>
                 <div class="col-3">
                   <a onclick ="modal('${key}')" data-bs-toggle="modal" data-bs-target="#delete"><img src="images/delete.png" id="deleteBtn" height ="42" width="42" style="cursor: pointer;"/></a>
@@ -902,6 +941,10 @@ function displayProductByUser(uid) {
         storeItems.innerHTML += html;
         productExist = true;
         if (_child.val().requested == true && _child.val().claimed == false) {
+          var img = dic[_child.val().posted_by]
+          if(img == null){
+            img = "images/default.jpg";
+          }
           asd.style.display = "none";
           onValue(ref_database(db, '/users/' + _child.val().requested_by), (snapshot) => {
             var user = snapshot.key;
@@ -910,7 +953,7 @@ function displayProductByUser(uid) {
             <div class="alert alert-success mt-3 p-4">
               <div class="row center-block justify-content-around">
                 <div class="col-md-1">
-                  <img src="images/default.jpg" class="img-fluid" style="width: auto;height:40px;border-radius: 13%;"/>
+                  <img src="${img}" class="img-fluid" style="width: auto;height:40px;border-radius: 13%;"/>
                 </div>
                 <div class="col center-block text-center pt-2">
                   <h5>${username} requested for ${_child.val().product_name}</h5>
@@ -1071,6 +1114,7 @@ function returnName() {
     onlyOnce: true
   });
 }
+
 
 function returnUser(userKey) {
   return onValue(ref_database(db, '/users/' + userKey), (snapshot) => {

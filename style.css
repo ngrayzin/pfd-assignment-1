@@ -305,6 +305,8 @@ p{
 }
 
 .not-achieved{
+    -webkit-filter:  grayscale(100%) brightness(60%) contrast(10000000%);
+    opacity: .3;
     filter: grayscale(100%);
 }
 
