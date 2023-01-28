@@ -293,6 +293,10 @@ if (PATHNAME == "userIndex.html") {
   var second = document.getElementById("2nd");
   var thrid = document.getElementById("3rd");
   var userImg = document.getElementById("userImg");
+  var achiv = document.getElementById("achieved");
+  var achiv1 = document.getElementById("achieved1");
+  var barbar = document.getElementById("progress-bar-currnt-achiv");
+  var achieved = 0;
   console.log(pic);
   get(child(dbRef, "users/" + userId)).then((snapshot) => {
     if (snapshot.exists()) {
@@ -329,39 +333,51 @@ if (PATHNAME == "userIndex.html") {
       userLevel.innerText = "Level " + data[0];
       if(lvl >= 5){
         lvl5.classList.remove("not-achieved");
+        achieved++;
       }
       if(lvl >= 15){
         lvl15.classList.remove("not-achieved");
+        achieved++
       }
       if(lvl >= 30){
         lvl30.classList.remove("not-achieved");
+        achieved++;
       }
       if(achievements.r1 != null){
         request1.classList.remove("not-achieved");
+        achieved++;
       }
       if(achievements.r5 != null){
         request5.classList.remove("not-achieved");
+        achieved++;
       }
       if(achievements.c1 != null){
         claimOnce.classList.remove("not-achieved");
+        achieved++;
       }
       if(achievements.c5 != null){
         claim5.classList.remove("not-achieved");
+        achieved++;
       }
       if(achievements.p1 != null){
         donateOnce.classList.remove("not-achieved");
+        achieved++;
       }
       if(achievements.p5 != null){
         donate5.classList.remove("not-achieved");
+        achieved++;
       }
       if(achievements.first != null){
         first.classList.remove("not-achieved");
+        achieved++;
       }
       if(achievements.second != null){
         second.classList.remove("not-achieved");
+        achieved++;
       }
       if(achievements.thrid != null){
         thrid.classList.remove("not-achieved");
+        achieved++;
       }
       if(snapshot.val().cancelled != null){
         alert("Your request for "+ snapshot.val().cancelled + " had been cancelled by the poster");
@@ -369,6 +385,9 @@ if (PATHNAME == "userIndex.html") {
         notify['/users/' + userId + '/cancelled'] = null;
         update(ref_database(db), notify)
       }
+      achiv.innerText = achieved;
+      achiv1.innerText = achieved + "/12";
+      barbar.style.width = (achieved / 12 * 100) + "%";
     }
   });
   displayProductByUser(userId);
