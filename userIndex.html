@@ -151,12 +151,16 @@
           </div>
         </div>
       <!--==========code starts below==========-->
-      <!-- https://bootdey.com/img/Content/avatar/avatar6.png -->
+      <div id="overlay" style="display:none;">
+        <div class="spinner"></div>
+        <br/>
+        Loading...
+      </div>
       <div class="spacing"></div>
       <section class="userPage">
         <div class="row userProfile ms-5 me-5" style="background-image: linear-gradient(#005B7B, #003856);color:#BBC3D7;">
-          <div class="col-md-3 col-sm-6">
-            <img src="images/default.jpg" class="img-fluid" style="width: auto;height: 210px;border-radius: 13%;"/>
+          <div class="col-md-3 col-sm-6" data-toggle="tooltip" title="click to change picture" id = "changeMe">
+            <input id="imgupload" type="file" accept="image/*" style="display:none"><img src="images/default.jpg" id="userImg" class="img-fluid" style="width: auto;height: 210px;border-radius: 13%;"/></input >
           </div>
           <div class="col-md-9 col-sm-6">
             <h1 id="pdusername" style="color: white;"></h1>

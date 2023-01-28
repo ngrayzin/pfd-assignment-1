@@ -53,12 +53,14 @@ onAuthStateChanged(auth, (user) => {
     // User is signed in, see docs for a list of available properties
     // https://firebase.google.com/docs/reference/js/firebase.User
     const uid = user.uid;
+    const pic = user.photoURL;
     localStorage.setItem("uid", uid);
+    localStorage.setItem("pic", pic);
     //loggedIn.style.display = "block"
     btn.innerText = "Log out"
     btn.addEventListener("click", () => {
       signOut(auth).then(() => {
-        //localStorage.clear();
+        localStorage.clear();
         myModal.hide();
       }).catch((error) => {
         // An error happened.
@@ -279,6 +281,7 @@ if (PATHNAME == "userIndex.html") {
   var lvl15 = document.getElementById("15");
   var lvl30 = document.getElementById("30");
   const userId = localStorage.getItem("uid");
+  const pic = localStorage.getItem("pic");
   const dbRef = ref_database(getDatabase());
   var donateOnce = document.getElementById("donateOnce");
   var donate5 = document.getElementById("donate5");
@@ -286,12 +289,39 @@ if (PATHNAME == "userIndex.html") {
   var claim5 = document.getElementById("claim5");
   var request1 = document.getElementById("r1");
   var request5 = document.getElementById("r5");
-  var user = [];
+  var first = document.getElementById("1st");
+  var second = document.getElementById("2nd");
+  var thrid = document.getElementById("3rd");
+  var userImg = document.getElementById("userImg");
+  console.log(pic);
   get(child(dbRef, "users/" + userId)).then((snapshot) => {
     if (snapshot.exists()) {
       var s = snapshot.val().score;
       var xp = snapshot.val().currentExp;
       var lvl = snapshot.val().level;
+      var picture = snapshot.val().picture;
+      if(pic != "null"){
+        if(picture == null){
+          userImg.src = pic
+          const updatePic = {};
+          updatePic['/users/' + userId + '/picture'] = pic;
+          update(ref_database(db), updatePic);
+        }
+        else{
+          if(picture != null){
+            userImg.src = picture;
+          }else{
+            userImg.src = "images/default.jpg"
+          }
+        }
+      }
+      else if(pic == "null"){
+        if(picture != null){
+          userImg.src = picture;
+        }else{
+          userImg.src = "images/default.jpg"
+        }
+      }
       scores.innerText = s;
       data = progressBar(xp, lvl);
       var achievements = snapshot.val().achievement;
@@ -324,6 +354,15 @@ if (PATHNAME == "userIndex.html") {
       if(achievements.p5 != null){
         donate5.classList.remove("not-achieved");
       }
+      if(achievements.first != null){
+        first.classList.remove("not-achieved");
+      }
+      if(achievements.second != null){
+        second.classList.remove("not-achieved");
+      }
+      if(achievements.thrid != null){
+        thrid.classList.remove("not-achieved");
+      }
       if(snapshot.val().cancelled != null){
         alert("Your request for "+ snapshot.val().cancelled + " had been cancelled by the poster");
         const notify = {};
@@ -334,7 +373,7 @@ if (PATHNAME == "userIndex.html") {
   });
   displayProductByUser(userId);
   calculatePoints(userId);
-  
+  changePic(userId);
 }
 
 function progressBar(currentExp, lvl) {
@@ -389,6 +428,44 @@ $(document).ready(function(){
   $('[data-toggle="tooltip"]').tooltip();   
 });
 
+function changePic(uid){
+  var press = document.getElementById("changeMe");
+  var press1 = document.getElementById("imgupload");
+  var imgname = "";
+  press.addEventListener("click", () => {
+    $('#imgupload').trigger('click')
+    press1.addEventListener("change", function(){
+      var file = press1.files[0];
+      $('#overlay').fadeIn();
+      if (file) {
+        imgname = file.name;
+        console.log(imgname);
+        const storageRef = ref_storage(storage, file.name);
+        uploadBytes(storageRef, file).then((snapshot) => {
+          console.log('Uploaded a blob or file!');
+          getDownloadURL(storageRef, file).then(function (url) {
+            if (url) {
+              const updatePic = {};
+              updatePic['/users/' + uid + '/picture'] = url;
+              update(ref_database(db), updatePic).then(()=>{
+                location.reload();
+              })
+            }
+            else {
+              alert("upload failed");
+              $('#overlay').fadeOut();
+            }
+          });
+        });
+      }
+      else {
+        alert("upload failed");
+        $('#overlay').fadeOut();
+      }
+    });
+  })
+}
+
 window.search = search;
 function search() {
   var input, filter, div, divCard, a, b, i, txtValue;
@@ -416,19 +493,83 @@ if (PATHNAME == "leaderboard.html") {
 
 
 function loadLeaderboard() {
+  var leaderboard = document.getElementById("leaderboard");
   const dbRef = ref_database(getDatabase());
   var users = [];
+  var dic = {};
   get(child(dbRef, "users")).then((snapshot) => {
     snapshot.forEach(function (_child) {
       users.push(_child.val());
-      //console.log(_child.val());
+      dic[_child.val().username] = _child.key
     });
   }).then(()=>{
-    users.sort((a, b) => (a.score < b.score) ? 1 : -1) 
+    var place = 1;
+    users.sort((a, b) => (a.score < b.score) ? 1 : -1)
     users.forEach(user => {
-      console.log(user.score + " " + user.username)
+      if(place == 1){
+        const updates = {};
+        updates[`/users/${dic[user.username]}/achievement/first`] = true
+        update(ref_database(db), updates)
+        var carbon = (user.score/1000)*200;
+        leaderboard.innerHTML += 
+        `
+        <tr>
+          <th scope="row"><span class="badge first mt-1">1</span></th>
+          <td><p class="pt-1"><img src="images/default.jpg" alt="" width="30" height="30" class="rounded-circle me-4"> ${user.username}</p></td>
+          <td><p class="pt-1">${user.score}</p></td>
+          <td><p class="pt-1">${Math.ceil(carbon)}g</p></td>
+        </tr>
+        `
+      }
+      else if(place == 2){
+        const updates = {};
+        updates[`/users/${dic[user.username]}/achievement/second`] = true
+        update(ref_database(db), updates)
+        var carbon = (user.score/1000)*200;
+        leaderboard.innerHTML += 
+        `
+        <tr>
+          <th scope="row"><span class="badge second mt-1">2</span></th>
+          <td><p class="pt-1"><img src="images/default.jpg" alt="" width="30" height="30" class="rounded-circle me-4"> ${user.username}</p></td>
+          <td><p class="pt-1">${user.score}</p></td>
+          <td><p class="pt-1">${Math.ceil(carbon)}g</p></td>
+        </tr>
+        `
+      }
+      else if(place == 3){
+        const updates = {};
+        updates[`/users/${dic[user.username]}/achievement/thrid`] = true
+        update(ref_database(db), updates)
+        var carbon = (user.score/1000)*200;
+        leaderboard.innerHTML += 
+        `
+        <tr>
+        <th scope="row"><span class="badge thrid mt-1">3</span></th>
+          <td><p class="pt-1"><img src="images/default.jpg" alt="" width="30" height="30" class="rounded-circle me-4"> ${user.username}</p></td>
+          <td><p class="pt-1">${user.score}</p></td>
+          <td><p class="pt-1">${Math.ceil(carbon)}g</p></td>
+        </tr>
+        `
+      }
+      else{
+        var carbon = (user.score/1000)*200;
+        leaderboard.innerHTML += 
+        `
+        <tr>
+          <th scope="row"><span class="badge place mt-1">${place}</span></th>
+          <td><p class="pt-1"><img src="images/default.jpg" alt="" width="30" height="30" class="rounded-circle me-4"> ${user.username}</p></td>
+          <td><p class="pt-1">${user.score}</p></td>
+          <td><p class="pt-1">${Math.ceil(carbon)}g</p></td>
+        </tr>
+        `
+      }
+      place++;
     });
   })
+}
+
+function getKeyByValue(object, value) {
+  return Object.keys(object).find(key => object[key] === value);
 }
 
 // Save message to firebase
@@ -650,7 +791,7 @@ function displayProductByUser(uid) {
   var requester = 0;
   get(child(dbRef, "product")).then((snapshot) => {
     snapshot.forEach(function (_child) {
-      if (_child.val().requested_by == uid) {
+      if (_child.val().requested_by == uid && _child.val().claimed == false) {
         requester += 1;
         requestedExist = true;
         var requestedhtml = `
