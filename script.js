@@ -42,6 +42,18 @@ console.log(FIRSTPATHNAME);
 
 const auth = getAuth();
 
+const dbRef = ref_database(getDatabase());
+var dic = {};
+var names = {};
+get(child(dbRef, "users")).then((snapshot) => {
+  snapshot.forEach(function (_child) {
+    dic[_child.key] = _child.val().picture;
+    names[_child.key] = _child.val().username;
+  })
+}), {
+  onlyOnce: true
+};
+
 onAuthStateChanged(auth, (user) => {
   var notLoggedIn = document.getElementById("notLoggedIn");
   //var loggedIn = document.getElementById("Nameholder");
@@ -516,7 +528,6 @@ function loadLeaderboard() {
   const dbRef = ref_database(getDatabase());
   var users = [];
   var dic = {};
-  var pics = {}
   get(child(dbRef, "users")).then((snapshot) => {
     snapshot.forEach(function (_child) {
       users.push(_child.val());
@@ -539,7 +550,7 @@ function loadLeaderboard() {
         `
         <tr>
           <th scope="row"><span class="badge first mt-1">1</span></th>
-          <td><p class="pt-1"><img src="${img}" alt="" width="30" height="30" class="rounded-circle me-4"> ${user.username}</p></td>
+          <td><p class="pt-1"><img src="${img}" alt="" width="30" height="30" class="rounded-circle me-3"> ${user.username}</p></td>
           <td><p class="pt-1">${user.score}</p></td>
           <td><p class="pt-1">${Math.ceil(carbon)}g</p></td>
         </tr>
@@ -554,7 +565,7 @@ function loadLeaderboard() {
         `
         <tr>
           <th scope="row"><span class="badge second mt-1">2</span></th>
-          <td><p class="pt-1"><img src="${img}" alt="" width="30" height="30" class="rounded-circle me-4"> ${user.username}</p></td>
+          <td><p class="pt-1"><img src="${img}" alt="" width="30" height="30" class="rounded-circle me-3"> ${user.username}</p></td>
           <td><p class="pt-1">${user.score}</p></td>
           <td><p class="pt-1">${Math.ceil(carbon)}g</p></td>
         </tr>
@@ -569,7 +580,7 @@ function loadLeaderboard() {
         `
         <tr>
         <th scope="row"><span class="badge thrid mt-1">3</span></th>
-          <td><p class="pt-1"><img src="${img}" alt="" width="30" height="30" class="rounded-circle me-4"> ${user.username}</p></td>
+          <td><p class="pt-1"><img src="${img}" alt="" width="30" height="30" class="rounded-circle me-3"> ${user.username}</p></td>
           <td><p class="pt-1">${user.score}</p></td>
           <td><p class="pt-1">${Math.ceil(carbon)}g</p></td>
         </tr>
@@ -581,7 +592,7 @@ function loadLeaderboard() {
         `
         <tr>
           <th scope="row"><span class="badge place mt-1">${place}</span></th>
-          <td><p class="pt-1"><img src="${img}" alt="" width="30" height="30" class="rounded-circle me-4"> ${user.username}</p></td>
+          <td><p class="pt-1"><img src="${img}" alt="" width="30" height="30" class="rounded-circle me-3"> ${user.username}</p></td>
           <td><p class="pt-1">${user.score}</p></td>
           <td><p class="pt-1">${Math.ceil(carbon)}g</p></td>
         </tr>
@@ -720,13 +731,6 @@ function readProductData() {
   //var childkeys = []
   var productExists = false;
   var storeItems = document.getElementById("storeCards");
-  const dbRef = ref_database(getDatabase());
-  var dic = {};
-  get(child(dbRef, "users")).then((snapshot) => {
-    snapshot.forEach(function (_child) {
-      dic[_child.key] = _child.val().picture;
-    })
-  });
   get(child(dbRef, "product")).then((snapshot) => {
     snapshot.forEach(function (_child) {
       if (_child.val().requested == false && _child.val().claimed == false) {
@@ -777,27 +781,42 @@ function readProductData() {
 }
 
 window.claimProduct = claimProduct;
-function claimProduct(key) {
+function claimProduct(key, requesterUid) {
   const claimBtn = document.getElementById("claimBtn");
   claimBtn.addEventListener("click", () => {
+    var userId = auth.currentUser.uid;
+    const dbRef = ref_database(getDatabase())
     const updates = {};
-    updates['/product/' + key + '/claimed/'] = true;
-    update(ref_database(db), updates).then(()=>{
-      var userId = auth.currentUser.uid;
-      const dbRef = ref_database(getDatabase())
-        get(child(dbRef, "users/" + userId)).then((snapshot) => {
-          if (snapshot.exists()) {
-            var s = snapshot.val().score;
-            var xp = snapshot.val().currentExp;
-            const score = {};
-            score[`/users/${userId}/currentExp`] = xp + 40;
-            score[`/users/${userId}/score`] = s + 300;
-            update(ref_database(db), score).then(() => {
-              location.reload();
-            });
-          }
-        });
-    })
+    if(userId == requesterUid){
+      updates['/product/' + key + '/collected/'] = true;
+      //updates['/product/' + key + '/requested_by/'] = "";
+      get(child(dbRef, "users/" + userId)).then((snapshot) => {
+        if (snapshot.exists()) {
+          var s = snapshot.val().score;
+          var xp = snapshot.val().currentExp;
+          updates[`/users/${userId}/currentExp`] = xp + 40;
+          updates[`/users/${userId}/score`] = s + 300;
+          update(ref_database(db), updates).then(() => {
+            location.reload();
+          });
+        }
+      });
+    }
+    else{
+      updates['/product/' + key + '/claimed/'] = true;
+      //updates['/product/' + key + '/requested_by/'] = "";
+      get(child(dbRef, "users/" + userId)).then((snapshot) => {
+        if (snapshot.exists()) {
+          var s = snapshot.val().score;
+          var xp = snapshot.val().currentExp;
+          updates[`/users/${userId}/currentExp`] = xp + 40;
+          updates[`/users/${userId}/score`] = s + 300;
+          update(ref_database(db), updates).then(() => {
+            location.reload();
+          });
+        }
+      });
+    }
   })
 }
 
@@ -807,7 +826,6 @@ function displayProductByUser(uid) {
   var productExist = false;
   var requestExist = false;
   var requestedExist = false;
-  var productName = "";
   const storeItems = document.getElementById("productList");
   const requesters = document.getElementById("requests");
   const r = document.getElementById("requested");
@@ -821,42 +839,38 @@ function displayProductByUser(uid) {
   var posted = 0;
   var claimed = 0;
   var requester = 0;
-  var dic = {};
-  get(child(dbRef, "users")).then((snapshot) => {
-    snapshot.forEach(function (_child) {
-      dic[_child.key] = _child.val().picture;
-    })
-  });
   get(child(dbRef, "product")).then((snapshot) => {
     snapshot.forEach(function (_child) {
-      if (_child.val().requested_by == uid && _child.val().claimed == false) {
+      if (_child.val().requested_by == uid && _child.val().collected == null) {
+        console.log(_child.key + "Asda")
         var img = dic[_child.val().posted_by]
         if(img == null){
           img = "images/default.jpg";
         }
+        var username = names[_child.val().posted_by];
         requester += 1;
         requestedExist = true;
         var requestedhtml = `
-            <div class="card-full">
-            <div class="card cardhover">
-              <div class="card-header">
-      
-              </div>
-              <div class="card-body">
-                <div class="row justify-content-between">
-                  <div class="col-2">
-                    <img src="${img}" alt="" width="42" height="42" class="rounded-circle">
-                  </div>
-                  <div class="col-3">
-                    <img src="images/waiting.png" height ="38" width="38"/></a>
-                  </div>
-                </div>
-                <h5 class="card-title text-truncate pt-3"><b>${_child.val().product_name}</b></h5>
-                <p class="card-text text-truncate">${_child.val().description}</p>
-                <img src="${_child.val().image}" class="card-img-top pt-1" alt="..." height="170px" width="auto" style="border-radius:5px;">
-              </div>
+        <div class="alert alert-dark mt-3">
+          <div class="row g-5 pt-1">
+            <div class="col-md-2">
+              <img src="${_child.val().image}" height="120px" width="auto" style="border-radius: 5px;">
+            </div>
+            <div class="col-md-3 d-grid gap-2 pb-5 me-2">
+              <h5>${_child.val().product_name}</h5>
+              <button class="btn btn-outline-warning disabled" style="background-color: #FCECD9 !important; color: black !important;">Pending Request</button>
+            </div>
+            <div class="col-md-3">
+              <p>Posted by: </p>
+              <p><img src="${img}" class="img-fluid rounded-circle me-3" style="width: auto;height:40px;border-radius: 100px;"/>${username}</p>
+            </div>
+            <div class="col-md-3 d-grid gap-2 pb-3">
+              <button type="button" class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#claim" onclick="claimProduct('${_child.key}', '${_child.val().requested_by}')">Accept</button>
+              <button type="button" class="btn btn-outline-primary btn-sm">Chat</button>
+              <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancel" onclick="cancelRequest('${_child.val().requested_by}','${_child.key}','${_child.val().product_name}')">Cancel</button>
             </div>
           </div>
+        </div>
         `
         r.innerHTML += requestedhtml;
         requesterCount.innerHTML = requester;
@@ -904,7 +918,6 @@ function displayProductByUser(uid) {
           if(img == null){
             img = "images/default.jpg";
           }
-          productName = _child.val().product_name;
           var html = `
           <div class="card-full">
           <div class="card cardhover">
@@ -960,31 +973,31 @@ function displayProductByUser(uid) {
         storeItems.innerHTML += html;
         productExist = true;
         if (_child.val().requested == true && _child.val().claimed == false) {
-          var img = dic[_child.val().posted_by]
+          var img = dic[_child.val().requested_by]
           if(img == null){
             img = "images/default.jpg";
           }
           asd.style.display = "none";
           onValue(ref_database(db, '/users/' + _child.val().requested_by), (snapshot) => {
-            var user = snapshot.key;
             var username = (snapshot.val() && snapshot.val().username) || 'Anonymous';
             var rhtml = `
-            <div class="alert alert-success mt-3 p-4">
-              <div class="row center-block justify-content-around">
-                <div class="col-md-1">
-                  <img src="${img}" class="img-fluid" style="width: auto;height:40px;border-radius: 13%;"/>
+            <div class="alert alert-dark mt-3">
+              <div class="row g-5 pt-1">
+                <div class="col-md-2">
+                  <img src="${_child.val().image}" height="120px" width="auto" style="border-radius: 5px;">
                 </div>
-                <div class="col center-block text-center pt-2">
-                  <h5>${username} requested for ${_child.val().product_name}</h5>
+                <div class="col-md-3 d-grid gap-2 pb-5 me-2">
+                  <h5>${_child.val().product_name}</h5>
+                  <button class="btn btn-outline-warning disabled" style="background-color: #FCECD9 !important; color: black !important;">Pending Request</button>
                 </div>
-                <div class="col-md-1 center-block text-center offset-lg-5 offset-md-1 pt-2">
-                  <button type="button" class="btn btn-success btn-sm">Chat</button>
+                <div class="col-md-3">
+                  <p>Requested by: </p>
+                  <p><img src="${img}" class="img-fluid rounded-circle me-3" style="width: auto;height:40px;border-radius: 100px;"/>${username}</p>
                 </div>
-                <div class="col-md-1 center-block text-center pt-2">
-                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#claim" onclick="claimProduct('${_child.key}')">Accept</button>
-              </div>
-                <div class="col-md-1 center-block text-center pt-2">
-                  <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancel" onclick="cancelRequest('${user}','${_child.key}','${productName}')">Cancel</button>
+                <div class="col-md-3 d-grid gap-2 pb-3">
+                  <button type="button" class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#claim" onclick="claimProduct('${_child.key}','${ _child.val().requested_by}')">Accept</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm">Chat</button>
+                  <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancel" onclick="cancelRequest('${_child.val().requested_by}','${_child.key}','${_child.val().product_name}')">Cancel</button>
                 </div>
               </div>
             </div>

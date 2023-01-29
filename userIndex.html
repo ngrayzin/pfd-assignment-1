@@ -278,6 +278,7 @@
               <img src="images/SPOILER_unknown.png" height="200px" width="auto">
               <h5>Wow how empty...</h5>
             </div>
+            <!-- here is where the request are it will replace html here -->
           </div>
         </div>
       </section>
@@ -286,8 +287,8 @@
           <h2>Requested <span class="badge bg-secondary" id="requesterCount">0</span></h2>
           <hr>
           <br>
-          <div class="card-group cards container g-4 mx-auto justify-content-center" id="requested">
-
+          <div id="requested">
+            <!-- what the user requested will go here -->
           </div>
         </div>
       </section>
@@ -302,131 +303,6 @@
           </div>
         </div>
       </section>
-      <!-- <section class="container" id="">
-        <div class="spacing"></div>
-        <h3 style="text-align: center;">Requests:</h3>
-        <br>
-        <div id="empty"style="text-align: center;">
-          <img src="images/SPOILER_unknown.png" height="200px" width="auto">
-          <h5>Wow how empty...</h5>
-        </div>
-        <table class="table mx-auto" style="text-align: center;">
-          <tbody id="requests">
-            here is where the requests are
-          </tbody>
-        </table>
-        
-      </section> -->
-      <!-- <div class="spacing"></div>
-      <h3 style="text-align: center;">Current Points:</h3>
-      <div class="spacing"></div>
-      <section class="container">
-        <div id="myProgress">
-          <div id="fullBar">
-            <div id="myBar"></div>
-          </div>
-        </div>
-        <br>
-        <h5 style="text-align: center;" id="asdfgh">Number of vouchers that can be claimed:</h5>
-      </section>
-      <div class="spacing"></div>
-      <div class="row g-4 mx-auto">
-        <div class="col">
-          <div class="card h-100" style="width: 18rem;">
-            <img src="images/fairprice.png" class="card-img-top" alt="...">
-            <div class="card-body">
-              <h5 class="card-title">NTUC voucher</h5>
-              <p class="card-title"><i class="bi bi-cash-coin"></i> 10 gift card</p>
-              <br>
-              <p class="card-text 1" id="collect">1 point</p>
-              <a id="rewardBtn"class="btn btn-color">Claim</a>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card" style="width: 18rem;">
-            <img src="images/fairprice.png" class="card-img-top" alt="...">
-            <div class="card-body">
-              <h5 class="card-title">NTUC voucher</h5>
-              <p class="card-title"><i class="bi bi-cash-coin"></i> 25 gift card</p>
-              <br>
-              <p class="card-text 2" id="collect">2 point</p>
-              <a id="rewardBtn"class="btn btn-color">Claim</a>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card pt-4" style="width: 18rem;">
-            <img src="images/Google_Play-Logo.wine.png" class="card-img-top pt-4" alt="...">
-            <div class="card-body mt-5">
-              <h5 class="card-title mt-1">Google Play card</h5>
-              <p class="card-title"><i class="bi bi-cash-coin"></i> 10 gift card</p>
-              <br>
-              <p class="card-text 1" id="collect">1 point</p>
-              <a id="rewardBtn"class="btn btn-color">Claim</a>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card pt-4" style="width: 18rem;">
-            <img src="images/Google_Play-Logo.wine.png" class="card-img-top pt-4" alt="...">
-            <div class="card-body mt-5">
-              <h5 class="card-title mt-1">Google Play card</h5>
-              <p class="card-title"><i class="bi bi-cash-coin"></i> 25 gift card</p>
-              <br>
-              <p class="card-text 2" id="collect">2 point</p>
-              <a id="rewardBtn"class="btn btn-color">Claim</a>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card" style="width: 18rem;">
-            <img src="images/visa.png" class="card-img-top" alt="...">
-            <div class="card-body">
-              <h5 class="card-title">VISA</h5>
-              <p class="card-title"><i class="bi bi-cash-coin"></i> 10 free credit</p>
-              <br>
-              <p class="card-text 1" id="collect">1 point</p>
-              <a id="rewardBtn"class="btn btn-color">Claim</a>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card" style="width: 18rem;">
-            <img src="images/visa.png" class="card-img-top" alt="...">
-            <div class="card-body">
-              <h5 class="card-title">VISA</h5>
-              <p class="card-title"><i class="bi bi-cash-coin"></i> 25 free credit</p>
-              <br>
-              <p class="card-text 2" id="collect">2 point</p>
-              <a id="rewardBtn"class="btn btn-color">Claim</a>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card" style="width: 18rem;">
-            <img src="images/mastercard.png" class="card-img-top" alt="...">
-            <div class="card-body">
-              <h5 class="card-title">MasterCard</h5>
-              <p class="card-title"><i class="bi bi-cash-coin"></i> 10 free credit</p>
-              <br>
-              <p class="card-text 1" id="collect">1 point</p>
-              <a id="rewardBtn"class="btn btn-color">Claim</a>
-            </div>
-          </div>
-        </div>
-      <div class="col">
-        <div class="card" style="width: 18rem;">
-          <img src="images/mastercard.png" class="card-img-top" alt="...">
-          <div class="card-body">
-            <h5 class="card-title">MasterCard</h5>
-            <p class="card-title"><i class="bi bi-cash-coin"></i> 25 free credit</p>
-            <br>
-            <p class="card-text 2" id="collect">2 point</p>
-            <a id="rewardBtn"class="btn btn-color">Claim</a>
-          </div>
-        </div>
-      </div> -->
       <div class="spacing"></div>
       <div style="background-image: url(images/bottomWave.png);background-repeat: no-repeat;  background-size: 100% 100%;">
         <section class="container">
