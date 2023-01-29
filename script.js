@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, browserSessionPersistence, setPersistence, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-auth.js";
-import { getDatabase, ref as ref_database, set, onValue, get, child, push, update, runTransaction } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-database.js";
+import { getDatabase, ref as ref_database, set, onValue, get, child, push, update, runTransaction , query, orderByChild} from "https://www.gstatic.com/firebasejs/9.13.0/firebase-database.js";
 import { getStorage, ref as ref_storage, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-storage.js";
 import { getMessaging } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-messaging.js";
 
@@ -52,12 +52,14 @@ onAuthStateChanged(auth, (user) => {
     // User is signed in, see docs for a list of available properties
     // https://firebase.google.com/docs/reference/js/firebase.User
     const uid = user.uid;
+    const pic = user.photoURL;
     localStorage.setItem("uid", uid);
+    localStorage.setItem("pic", pic);
     //loggedIn.style.display = "block"
     btn.innerText = "Log out"
     btn.addEventListener("click", () => {
       signOut(auth).then(() => {
-        //localStorage.clear();
+        localStorage.clear();
         myModal.hide();
       }).catch((error) => {
         // An error happened.
@@ -278,28 +280,103 @@ if (PATHNAME == "userIndex.html") {
   var lvl15 = document.getElementById("15");
   var lvl30 = document.getElementById("30");
   const userId = localStorage.getItem("uid");
+  const pic = localStorage.getItem("pic");
   const dbRef = ref_database(getDatabase());
-  var user = [];
+  var donateOnce = document.getElementById("donateOnce");
+  var donate5 = document.getElementById("donate5");
+  var claimOnce = document.getElementById("claimOnce");
+  var claim5 = document.getElementById("claim5");
+  var request1 = document.getElementById("r1");
+  var request5 = document.getElementById("r5");
+  var first = document.getElementById("1st");
+  var second = document.getElementById("2nd");
+  var thrid = document.getElementById("3rd");
+  var userImg = document.getElementById("userImg");
+  var achiv = document.getElementById("achieved");
+  var achiv1 = document.getElementById("achieved1");
+  var barbar = document.getElementById("progress-bar-currnt-achiv");
+  var achieved = 0;
+  console.log(pic);
   get(child(dbRef, "users/" + userId)).then((snapshot) => {
     if (snapshot.exists()) {
       var s = snapshot.val().score;
       var xp = snapshot.val().currentExp;
       var lvl = snapshot.val().level;
-      console.log(snapshot.val().score);
-      console.log(snapshot.val().level);
+      var picture = snapshot.val().picture;
+      if(pic != "null"){
+        if(picture == null){
+          userImg.src = pic
+          const updatePic = {};
+          updatePic['/users/' + userId + '/picture'] = pic;
+          update(ref_database(db), updatePic);
+        }
+        else{
+          if(picture != null){
+            userImg.src = picture;
+          }else{
+            userImg.src = "images/default.jpg"
+          }
+        }
+      }
+      else if(pic == "null"){
+        if(picture != null){
+          userImg.src = picture;
+        }else{
+          userImg.src = "images/default.jpg"
+        }
+      }
       scores.innerText = s;
       data = progressBar(xp, lvl);
-      console.log(data);
+      var achievements = snapshot.val().achievement;
       exp.innerText = data[1] + "/" + data[2];
       userLevel.innerText = "Level " + data[0];
       if(lvl >= 5){
         lvl5.classList.remove("not-achieved");
+        achieved++;
       }
       if(lvl >= 15){
         lvl15.classList.remove("not-achieved");
+        achieved++
       }
       if(lvl >= 30){
         lvl30.classList.remove("not-achieved");
+        achieved++;
+      }
+      if(achievements.r1 != null){
+        request1.classList.remove("not-achieved");
+        achieved++;
+      }
+      if(achievements.r5 != null){
+        request5.classList.remove("not-achieved");
+        achieved++;
+      }
+      if(achievements.c1 != null){
+        claimOnce.classList.remove("not-achieved");
+        achieved++;
+      }
+      if(achievements.c5 != null){
+        claim5.classList.remove("not-achieved");
+        achieved++;
+      }
+      if(achievements.p1 != null){
+        donateOnce.classList.remove("not-achieved");
+        achieved++;
+      }
+      if(achievements.p5 != null){
+        donate5.classList.remove("not-achieved");
+        achieved++;
+      }
+      if(achievements.first != null){
+        first.classList.remove("not-achieved");
+        achieved++;
+      }
+      if(achievements.second != null){
+        second.classList.remove("not-achieved");
+        achieved++;
+      }
+      if(achievements.thrid != null){
+        thrid.classList.remove("not-achieved");
+        achieved++;
       }
       if(snapshot.val().cancelled != null){
         alert("Your request for "+ snapshot.val().cancelled + " had been cancelled by the poster");
@@ -307,11 +384,14 @@ if (PATHNAME == "userIndex.html") {
         notify['/users/' + userId + '/cancelled'] = null;
         update(ref_database(db), notify)
       }
+      achiv.innerText = achieved;
+      achiv1.innerText = achieved + "/12";
+      barbar.style.width = (achieved / 12 * 100) + "%";
     }
   });
   displayProductByUser(userId);
   calculatePoints(userId);
-  
+  changePic(userId);
 }
 
 function progressBar(currentExp, lvl) {
@@ -366,6 +446,44 @@ $(document).ready(function(){
   $('[data-toggle="tooltip"]').tooltip();   
 });
 
+function changePic(uid){
+  var press = document.getElementById("changeMe");
+  var press1 = document.getElementById("imgupload");
+  var imgname = "";
+  press.addEventListener("click", () => {
+    $('#imgupload').trigger('click')
+    press1.addEventListener("change", function(){
+      var file = press1.files[0];
+      $('#overlay').fadeIn();
+      if (file) {
+        imgname = file.name;
+        console.log(imgname);
+        const storageRef = ref_storage(storage, file.name);
+        uploadBytes(storageRef, file).then((snapshot) => {
+          console.log('Uploaded a blob or file!');
+          getDownloadURL(storageRef, file).then(function (url) {
+            if (url) {
+              const updatePic = {};
+              updatePic['/users/' + uid + '/picture'] = url;
+              update(ref_database(db), updatePic).then(()=>{
+                location.reload();
+              })
+            }
+            else {
+              alert("upload failed");
+              $('#overlay').fadeOut();
+            }
+          });
+        });
+      }
+      else {
+        alert("upload failed");
+        $('#overlay').fadeOut();
+      }
+    });
+  })
+}
+
 window.search = search;
 function search() {
   var input, filter, div, divCard, a, b, i, txtValue;
@@ -385,6 +503,96 @@ function search() {
     }
   }
 
+}
+
+if (PATHNAME == "leaderboard.html") {
+  loadLeaderboard();
+}
+
+
+function loadLeaderboard() {
+  var leaderboard = document.getElementById("leaderboard");
+  const dbRef = ref_database(getDatabase());
+  var users = [];
+  var dic = {};
+  var pics = {}
+  get(child(dbRef, "users")).then((snapshot) => {
+    snapshot.forEach(function (_child) {
+      users.push(_child.val());
+      dic[_child.val().username] = _child.key
+    });
+  }).then(()=>{
+    var place = 1;
+    users.sort((a, b) => (a.score < b.score) ? 1 : -1)
+    users.forEach(user => {
+      var img = user.picture;
+      if(img == null){
+        img = "images/default.jpg"
+      }
+      if(place == 1){
+        const updates = {};
+        updates[`/users/${dic[user.username]}/achievement/first`] = true
+        update(ref_database(db), updates)
+        var carbon = (user.score/1000)*200;
+        leaderboard.innerHTML += 
+        `
+        <tr>
+          <th scope="row"><span class="badge first mt-1">1</span></th>
+          <td><p class="pt-1"><img src="${img}" alt="" width="30" height="30" class="rounded-circle me-4"> ${user.username}</p></td>
+          <td><p class="pt-1">${user.score}</p></td>
+          <td><p class="pt-1">${Math.ceil(carbon)}g</p></td>
+        </tr>
+        `
+      }
+      else if(place == 2){
+        const updates = {};
+        updates[`/users/${dic[user.username]}/achievement/second`] = true
+        update(ref_database(db), updates)
+        var carbon = (user.score/1000)*200;
+        leaderboard.innerHTML += 
+        `
+        <tr>
+          <th scope="row"><span class="badge second mt-1">2</span></th>
+          <td><p class="pt-1"><img src="${img}" alt="" width="30" height="30" class="rounded-circle me-4"> ${user.username}</p></td>
+          <td><p class="pt-1">${user.score}</p></td>
+          <td><p class="pt-1">${Math.ceil(carbon)}g</p></td>
+        </tr>
+        `
+      }
+      else if(place == 3){
+        const updates = {};
+        updates[`/users/${dic[user.username]}/achievement/thrid`] = true
+        update(ref_database(db), updates)
+        var carbon = (user.score/1000)*200;
+        leaderboard.innerHTML += 
+        `
+        <tr>
+        <th scope="row"><span class="badge thrid mt-1">3</span></th>
+          <td><p class="pt-1"><img src="${img}" alt="" width="30" height="30" class="rounded-circle me-4"> ${user.username}</p></td>
+          <td><p class="pt-1">${user.score}</p></td>
+          <td><p class="pt-1">${Math.ceil(carbon)}g</p></td>
+        </tr>
+        `
+      }
+      else{
+        var carbon = (user.score/1000)*200;
+        leaderboard.innerHTML += 
+        `
+        <tr>
+          <th scope="row"><span class="badge place mt-1">${place}</span></th>
+          <td><p class="pt-1"><img src="${img}" alt="" width="30" height="30" class="rounded-circle me-4"> ${user.username}</p></td>
+          <td><p class="pt-1">${user.score}</p></td>
+          <td><p class="pt-1">${Math.ceil(carbon)}g</p></td>
+        </tr>
+        `
+      }
+      place++;
+    });
+  })
+}
+
+function getKeyByValue(object, value) {
+  return Object.keys(object).find(key => object[key] === value);
 }
 
 // Save message to firebase
@@ -512,12 +720,20 @@ function readProductData() {
   var productExists = false;
   var storeItems = document.getElementById("storeCards");
   const dbRef = ref_database(getDatabase());
+  var dic = {};
+  get(child(dbRef, "users")).then((snapshot) => {
+    snapshot.forEach(function (_child) {
+      dic[_child.key] = _child.val().picture;
+    })
+  });
   get(child(dbRef, "product")).then((snapshot) => {
     snapshot.forEach(function (_child) {
       if (_child.val().requested == false && _child.val().claimed == false) {
         var key = _child.key;
-        //childkeys.push([key,_child.val().product_name,_child.val().description]);
-        //console.log(key);
+        var img = dic[_child.val().posted_by]
+        if(img == null){
+          img = "images/default.jpg";
+        }
         products.push([key, _child.val().product_name, _child.val().description, _child.val().image, _child.val().location, _child.val().condition, _child.val().posted_by])
         var html = `
         <div class="card-full">
@@ -528,7 +744,7 @@ function readProductData() {
             <div class="card-body">
               <div class="row justify-content-between">
                 <div class="col-2">
-                  <img src="images/default.jpg" alt="" width="42" height="42" class="rounded-circle">
+                  <img src="${img}" alt="" width="42" height="42" class="rounded-circle">
                 </div>
                 <div class="col-3">
                   <a onClick="change('${key}', '${_child.val().posted_by}')"><img src="images/request.png" id="requestBtn" height ="42" width="42"/></a>
@@ -596,23 +812,27 @@ function displayProductByUser(uid) {
   const r = document.getElementById("requested");
   const requestCount = document.getElementById("requestCount"); 
   const requesterCount = document.getElementById("requesterCount");
-  const productCount = document.querySelectorAll("[id='productPosted']");//document.getElementById("productPosted"); 
+  const productCount = document.querySelectorAll("[id='productPosted']");
   const productClaimed = document.getElementById("productClaimed");
-  var donateOnce = document.getElementById("donateOnce");
-  var donate5 = document.getElementById("donate5");
-  var claimOnce = document.getElementById("claimOnce");
-  var claim5 = document.getElementById("claim5");
-  var r1 = document.getElementById("r1");
-  var r5 = document.getElementById("r5");
   let asd = document.getElementById("empty");
   const dbRef = ref_database(getDatabase());
   var request = 0;
   var posted = 0;
   var claimed = 0;
   var requester = 0;
+  var dic = {};
+  get(child(dbRef, "users")).then((snapshot) => {
+    snapshot.forEach(function (_child) {
+      dic[_child.key] = _child.val().picture;
+    })
+  });
   get(child(dbRef, "product")).then((snapshot) => {
     snapshot.forEach(function (_child) {
-      if (_child.val().requested_by == uid) {
+      if (_child.val().requested_by == uid && _child.val().claimed == false) {
+        var img = dic[_child.val().posted_by]
+        if(img == null){
+          img = "images/default.jpg";
+        }
         requester += 1;
         requestedExist = true;
         var requestedhtml = `
@@ -624,7 +844,7 @@ function displayProductByUser(uid) {
               <div class="card-body">
                 <div class="row justify-content-between">
                   <div class="col-2">
-                    <img src="images/default.jpg" alt="" width="42" height="42" class="rounded-circle">
+                    <img src="${img}" alt="" width="42" height="42" class="rounded-circle">
                   </div>
                   <div class="col-3">
                     <img src="images/waiting.png" height ="38" width="38"/></a>
@@ -641,11 +861,19 @@ function displayProductByUser(uid) {
         requesterCount.innerHTML = requester;
       }
       else if (_child.val().posted_by == uid) {
+        var img = dic[_child.val().posted_by]
+        if(img == null){
+          img = "images/default.jpg";
+        }
         posted++;
         var key = _child.key;
         //childkeys.push([key,_child.val().product_name,_child.val().description]);
         //console.log(key);
         if (_child.val().claimed == true) {
+          var img = dic[_child.val().posted_by]
+          if(img == null){
+            img = "images/default.jpg";
+          }
           claimed++;
           var html = `
           <div class="card-full">
@@ -656,7 +884,7 @@ function displayProductByUser(uid) {
             <div class="card-body">
               <div class="row justify-content-between">
                 <div class="col-2">
-                  <img src="images/default.jpg" alt="" width="42" height="42" class="rounded-circle">
+                  <img src="${img}" alt="" width="42" height="42" class="rounded-circle">
                 </div>
                 <div class="col-3">
                   <img src="images/claim.png" height ="42" width="42"/>
@@ -671,6 +899,10 @@ function displayProductByUser(uid) {
           `
         }
         else if (_child.val().claimed == false && _child.val().requested == true) {
+          var img = dic[_child.val().posted_by]
+          if(img == null){
+            img = "images/default.jpg";
+          }
           productName = _child.val().product_name;
           var html = `
           <div class="card-full">
@@ -681,7 +913,7 @@ function displayProductByUser(uid) {
             <div class="card-body">
               <div class="row justify-content-between">
                 <div class="col-2">
-                  <img src="images/default.jpg" alt="" width="42" height="42" class="rounded-circle">
+                  <img src="${img}" alt="" width="42" height="42" class="rounded-circle">
                 </div>
                 <div class="col-3">
                   <img src="images/requested.png" height ="42" width="42"/>
@@ -696,6 +928,10 @@ function displayProductByUser(uid) {
           `
         }
         else {
+          var img = dic[_child.val().posted_by]
+          if(img == null){
+            img = "images/default.jpg";
+          }
           var html = `
         <div class="card-full">
           <div class="card cardhover">
@@ -705,7 +941,7 @@ function displayProductByUser(uid) {
             <div class="card-body">
               <div class="row justify-content-between">
                 <div class="col-2">
-                  <img src="images/default.jpg" alt="" width="42" height="42" class="rounded-circle">
+                  <img src="${img}" alt="" width="42" height="42" class="rounded-circle">
                 </div>
                 <div class="col-3">
                   <a onclick ="modal('${key}')" data-bs-toggle="modal" data-bs-target="#delete"><img src="images/delete.png" id="deleteBtn" height ="42" width="42" style="cursor: pointer;"/></a>
@@ -723,6 +959,10 @@ function displayProductByUser(uid) {
         storeItems.innerHTML += html;
         productExist = true;
         if (_child.val().requested == true && _child.val().claimed == false) {
+          var img = dic[_child.val().posted_by]
+          if(img == null){
+            img = "images/default.jpg";
+          }
           asd.style.display = "none";
           onValue(ref_database(db, '/users/' + _child.val().requested_by), (snapshot) => {
             var user = snapshot.key;
@@ -731,7 +971,7 @@ function displayProductByUser(uid) {
             <div class="alert alert-success mt-3 p-4">
               <div class="row center-block justify-content-around">
                 <div class="col-md-1">
-                  <img src="images/default.jpg" class="img-fluid" style="width: auto;height:40px;border-radius: 13%;"/>
+                  <img src="${img}" class="img-fluid" style="width: auto;height:40px;border-radius: 13%;"/>
                 </div>
                 <div class="col center-block text-center pt-2">
                   <h5>${username} requested for ${_child.val().product_name}</h5>
@@ -760,22 +1000,34 @@ function displayProductByUser(uid) {
       }
     })
     if(posted >= 1){
-      donateOnce.classList.remove("not-achieved");
+      const p1 = {};
+      p1['/users/' + uid + '/achievement/p1'] = true;
+      update(ref_database(db), p1);
     }
     if(posted >= 5){
-      donate5.classList.remove("not-achieved");
+      const p5 = {};
+      p5['/users/' + uid + '/achievement/p5'] = true;
+      update(ref_database(db), p5);
     }
     if(claimed >= 1){
-      claimOnce.classList.remove("not-achieved");
+      const c1 = {};
+      c1['/users/' + uid + '/achievement/c1'] = true;
+      update(ref_database(db), c1);
     }
     if(claimed >= 5){
-      claim5.classList.remove("not-achieved");
+      const c5 = {};
+      c5['/users/' + uid + '/achievement/c5'] = true;
+      update(ref_database(db), c5);
     }
     if(requester >= 1){
-      r1.classList.remove("not-achieved");
+      const r1 = {};
+      r1['/users/' + uid + '/achievement/r1'] = true;
+      update(ref_database(db), r1);
     }
     if(requester >= 5){
-      r5.classList.remove("not-achieved");
+      const r5 = {};
+      r5['/users/' + uid + '/achievement/r1'] = true;
+      update(ref_database(db), r5);
     }
     for (var i = 0; i < productCount.length; i++) {
       productCount[i].innerHTML = posted; // <-- whatever you need to do here.
@@ -806,15 +1058,14 @@ function cancelRequest(userID, productID, product_name) {
   cancelBtn.addEventListener("click", () => {
     const updates = {};
     updates['/product/' + productID + '/requested'] = false;
-    updates['/product/' + productID + '/requestedBy'] = "";
+    updates['/product/' + productID + '/requested_by'] = "";
     update(ref_database(db), updates)
       .then(() => {
         const notify = {};
         notify['/users/' + userID + '/cancelled'] = product_name;
-        update(ref_database(db), notify)
-      })
-      .then(() => {
-        location.reload();
+        update(ref_database(db), notify).then(() => {
+          location.reload();
+        })
       })
   })
 }
@@ -881,6 +1132,7 @@ function returnName() {
     onlyOnce: true
   });
 }
+
 
 function returnUser(userKey) {
   return onValue(ref_database(db, '/users/' + userKey), (snapshot) => {

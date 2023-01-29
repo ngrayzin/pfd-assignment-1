@@ -71,7 +71,6 @@
 }
 
 h1{
-    color: #2BC179;
     font-family: 'Orelega One', cursive;
 }
 
@@ -111,6 +110,47 @@ p{
     height: 30vh;
 }
 
+.first{
+    border-radius: 100px !important;
+    width: 30px;
+    height: 30px;
+    display: inline-flex !important;
+    align-items: center !important; 
+    justify-content: center !important;
+    background-color:  #f5cd75 !important;
+}
+
+.second{
+    border-radius: 100px !important;
+    width: 30px;
+    height: 30px;
+    display: inline-flex !important;
+    align-items: center !important; 
+    justify-content: center !important;
+    background-color:  rgba(0, 0, 0, 0.6) !important;
+}
+
+.thrid{
+    border-radius: 100px !important;
+    width: 30px;
+    height: 30px;
+    display: inline-flex !important;
+    align-items: center !important; 
+    justify-content: center !important;
+    background-color:  #c6906b !important;
+}
+
+.place{
+    border-radius: 100px !important;
+    width: 30px;
+    height: 30px;
+    display: inline-flex !important;
+    align-items: center !important; 
+    justify-content: center !important;
+    background-color:  #9f9f9f !important;
+}
+
+
 .reveal{
     position: relative;
     transform: translateY(-100px);
@@ -122,6 +162,7 @@ p{
     transform: translateY(0);
     opacity: 1;
   }
+
 
 .card{
     color: #FFFFFF !important;
@@ -264,6 +305,8 @@ p{
 }
 
 .not-achieved{
+    -webkit-filter:  grayscale(100%) brightness(60%) contrast(10000000%);
+    opacity: .3;
     filter: grayscale(100%);
 }
 

@@ -28,6 +28,9 @@
           <li class="nav-item">
             <a class="nav-link active px-3" aria-current="page" href="userIndex.html" id="hme">Home</a>
           </li>
+          <li class="nav-item"> 
+            <a class="nav-link px-3"  href="leaderboard.html">Leaderboard</a>
+          </li>
           <li class="nav-item">
             <a class="nav-link px-3"  href="store.html">Store</a>
           </li>
@@ -148,12 +151,16 @@
           </div>
         </div>
       <!--==========code starts below==========-->
-      <!-- https://bootdey.com/img/Content/avatar/avatar6.png -->
+      <div id="overlay" style="display:none;">
+        <div class="spinner"></div>
+        <br/>
+        Loading...
+      </div>
       <div class="spacing"></div>
       <section class="userPage">
         <div class="row userProfile ms-5 me-5" style="background-image: linear-gradient(#005B7B, #003856);color:#BBC3D7;">
-          <div class="col-md-3 col-sm-6">
-            <img src="images/default.jpg" class="img-fluid" style="width: auto;height: 210px;border-radius: 13%;"/>
+          <div class="col-md-3 col-sm-6" data-toggle="tooltip" title="click here to change profile picture" id = "changeMe">
+            <input id="imgupload" type="file" accept="image/*" style="display:none"><img src="images/default.jpg" id="userImg" class="img-fluid" style="width: auto;height: 210px;border-radius: 13%;"/></input >
           </div>
           <div class="col-md-9 col-sm-6">
             <h1 id="pdusername" style="color: white;"></h1>
@@ -198,10 +205,10 @@
           <hr>
           <br><br>
           <div class="col-md-6">
-            <h2 style="color: white;">Achievements <span class="badge bg-secondary">0</span></h2>
+            <h2 style="color: white;">Achievements <span class="badge bg-secondary" id="achieved">0</span></h2>
           </div>
           <div class="col-md-1 pt-2">
-            <h5>0/13</h5>
+            <h5 id="achieved1">0/13</h5>
           </div>
           <div class="col-md-5 pt-3">
             <div class="progress" style="height: 10px;" id="progress-bar-total-achiv">
