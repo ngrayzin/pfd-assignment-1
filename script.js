@@ -1,4 +1,3 @@
-var userIdKey = "";
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, browserSessionPersistence, setPersistence, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.13.0/firebase-auth.js";
@@ -1299,7 +1298,7 @@ function writeMessage(message) {
   window.alert(userIdentity);
   const chatId = userMsg + userIdentity;
   const currentDate = Date().toLocaleString().replace(",","").replace(/:.. /," ");
-  push(ref_database(db, 'messages/' + chatId), {
+  push(ref_database(db, 'messages/'), {
     dateAndTime: currentDate,
     receiver: userMsg,
     sender: userIdentity,
@@ -1321,49 +1320,47 @@ function retrieveMessages()
   get(child(dbRef, "messages")).then((snapshot) => {
     if (snapshot.exists)
     {
-      var i = 1;
       //Appending children into array if the chatId matches
       snapshot.forEach(function(_child){
-        if(_child.key == (userMsgg + userIdentify) || _child.key == (userIdentify + userMsgg)){
-          msgs.push(_child);
+        // if(_child.key == (userMsgg + userIdentify) || _child.key == (userIdentify + userMsgg)){
+        //   msgs.push(_child);
+        // }
+        if((_child.val().receiver == userIdentify || _child.val().receiver == userMsgg) && (_child.val().sender == userIdentify || _child.val().sender == userMsgg))
+        {
+          msgs.push([_child.val().dateAndTime, _child.val().messagingMsg, _child.val().receiver, _child.val().sender]);
         }
       })
-      window.alert(msgs);
-      //console.log(msgs);
     }
-  }) 
-  //Sorting array of messages by DateTime
-  msgs.sort(function (a, b) {
-    return b[3].date.getTime() - a[3].date.getTime();
-  });
+  }) .then(() => {
+    //Sorting array of messages by DateTime
+    msgs.sort(function (a, b) {
+      return b[0].date - a[0].date;
+    });
 
-  const msgScreen = document.getElementById("messages");
-  const msgForm = document.getElementById("messageForm");
-  const msgBtn = document.getElementById("msg-btn");
+    const msgScreen = document.getElementById("messages");
+    const msgForm = document.getElementById("messageForm");
+    const msgBtn = document.getElementById("msg-btn");
 
-  for( var i = 0; i < msgs.length; i++)
-  {
-    if(msgs[i].sender == userIdentify)
+    for( var i = 0; i < msgs.length; i++)
     {
-      const msg = `<li class="msg my"}"><span class = "msg-span">
-                    <i class = "name"></i>${msgs[i].msg}
-                    </span>
-                    </li>`
-      msgScreen.innerHTML += msg;
-      document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
+      if(msgs[i][3] == userIdentify)
+      {
+        const msg = `<li class="msg my"}"><span class = "msg-span">
+                      <i class = "name"></i>${msgs[i][1]}
+                      </span>
+                      </li>`
+        msgScreen.innerHTML += msg;
+        document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
+      }
+      else {
+        const msg = `<li class="msg"}"><span class = "msg-span">
+                      <i class = "name"></i>${msgs[i][1]}
+                      </span>
+                      </li>`
+        msgScreen.innerHTML += msg;
+        document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
+      }
     }
-    else {
-      const msg = `<li class="msg"}"><span class = "msg-span">
-                    <i class = "name"></i>${msgs[i].msg}
-                    </span>
-                    </li>`
-      msgScreen.innerHTML += msg;
-      document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
-    }
-  }
-  chatBtn.addEventListener("click", function () {
-    const msgInput = document.getElementById("msg-input");
-    writeMessage(userId, msgInput);
   });
 }
 
