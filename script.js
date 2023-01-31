@@ -220,8 +220,9 @@ if (PATHNAME == "donation.html") {
     var user = auth.currentUser;
     var nname = document.getElementById("productname").value;
     var ddesc = document.getElementById("desc").value;
-    var loctext = document.getElementById("location").options[document.getElementById("location").selectedIndex].text;
-    var context = document.getElementById("condition").options[document.getElementById("condition").selectedIndex].text;
+    var loctext = document.getElementById("locations").options[document.getElementById("locations").selectedIndex].text;
+    var context = document.querySelector('input[name = "condition"]:checked').value;
+    //var context = document.getElementById("condition").options[document.getElementById("condition").selectedIndex].text;
     var img = document.getElementById("image").files[0];
     var imgname = "";
     //console.log(img.name);
@@ -525,6 +526,7 @@ if (PATHNAME == "leaderboard.html") {
 function loadLeaderboard() {
   var leaderboard = document.getElementById("leaderboard");
   const dbRef = ref_database(getDatabase());
+  var card = document.getElementById("leaderboardCard");
   var users = [];
   var dic = {};
   get(child(dbRef, "users")).then((snapshot) => {
@@ -599,11 +601,59 @@ function loadLeaderboard() {
       }
       place++;
     });
-  })
-}
+    onAuthStateChanged(auth, (u) => {
+      if(u){
+        var p = 1;
+        users.forEach(user => {
+        console.log(user.username)
+          var img = user.picture;
+          if(img == null){
+            img = "images/default.jpg"
+          }
+          if(u.uid == dic[user.username]){
+            var position = "th";
+            if(p == 1){position = "st"}
+            else if(p == 2){position = "nd"}
+            else if(p == 3){position = "rd"}
+            var carbon = (user.score/1000)*200;
+            card.innerHTML = `
+              <h5><img src="${img}" alt="" width="60" height="60" class="rounded-circle me-3">${user.username}(you)</h5>
+              <br>
+              <div class="row mx-3 px-3">
+                <div class="col">
+                  <p class="fw-lighter">SCORE</p>
+                  <h5>${user.score}</h5>
+                </div>
+                <div class="col">
+                  <p class="fw-lighter">SAVED</p>
+                  <h5>${Math.ceil(carbon)}g</h5>
+                </div>
+                <div class="col">
+                  <p class="fw-lighter">POSITION</p>
+                  <h5>${p}${position}</h5>
+                </div>
+              </div>
+            `
+            return true;
+          }
+          p++;
+        });
+      }
+      else{
+        card.innerHTML = `
+        <div class="mx-5 px-5">
+          <br>
+          <h5>Login to see where you stand!</h5>
+          <br>
+          <button id="bannerBtn" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal" style="background-color: #60EFAA !important;border-radius: 100px !important;">Login here</button>
+          <br><br>
+        </div>
+        `
+        return false;
+      }
 
-function getKeyByValue(object, value) {
-  return Object.keys(object).find(key => object[key] === value);
+    });
+  })
 }
 
 // Save message to firebase
@@ -1159,7 +1209,7 @@ function returnUser(userKey) {
 
 }
 
-if (PATHNAME == "index.html" || PATHNAME == "store.html" || PATHNAME == "") {
+if (PATHNAME == "index.html" || PATHNAME == "store.html" || PATHNAME == "leaderboard.html" || PATHNAME == "") {
   window.onscroll = function () {
     const header_navbar = document.querySelector(".navbar");
     const sticky = header_navbar.offsetTop;

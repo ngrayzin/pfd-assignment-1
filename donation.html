@@ -102,64 +102,79 @@
         Loading...
       </div>
       <div class="spacing"></div>
-      <div style="margin-left:10%;margin-top:3%;">
-        <!-- <nav id= "breadcrumbholder"style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a id="breadcrumb">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Donate</li>
-          </ol>
-        </nav> -->
-      </div>
-      <section class="donation conatiner">
-        <form class="row g-3 mx-4" id="donateForm">
-          <div class="form-floating">
-            <input type="text" class="form-control" id="productname" placeholder="Product name">
-            <label for="floatingInput">Product name</label>
+      <section class="container mt-5">
+        <hr>
+        <h1><i class="bi bi-bar-chart-line"></i> Donatation Form</h1>
+      </section>
+      <form class="container" id="donateForm">
+        <!-- name -->
+        <hr class="pt-2 pb-2">
+        <div class="mb-3 ms-2 row">
+          <label for="productname" class="col-sm-2 col-form-label">Name</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="productname">
           </div>
-
-          <div class="col-md-6">
-            <div class="form-floating">
-              <select class="form-select" aria-label="Conditionplacename" id="condition">
-                <option selected>Brand new</option>
-                <option value="1">Lightly used</option>
-                <option value="2">Like new</option>
-                <option value="3">Well used</option>
-                <option value="4">Heavily used</option>
-              </select>
-              <label for="floatingSelect">Condition</label>
+        </div>
+        <!-- condition -->
+        <hr class="pt-2 pb-2">
+        <div class="mb-3 ms-2 row" id="conditions">
+          <label for="conditions" class="col-sm-2 col-form-label">Condition</label>
+          <div class="col-sm-10">
+            <div class="col-12">
+              <input type="radio" class="btn-check" name="condition" value="Brand new" id="brandNew" autocomplete="off" checked>
+              <label class="btn btn-outline-primary col-md-3 me-5" for="brandNew">Brand new</label>
+    
+              <input type="radio" class="btn-check" name="condition" value="Lightly used" id="likelyUsed" autocomplete="off">
+              <label class="btn btn-outline-primary col-md-3 me-5" for="likelyUsed">Lightly used</label>
+  
+              <input type="radio" class="btn-check" name="condition" value="Like new" id="likeNew" autocomplete="off">
+              <label class="btn btn-outline-primary col-md-3 me-5" for="likeNew">Like new</label>
+            </div>
+            <div class="col-12 mt-3">
+              <input type="radio" class="btn-check" name="condition" value="Well used" id="wellUsed" autocomplete="off">
+              <label class="btn btn-outline-primary col-md-3 me-5" for="wellUsed">Well used</label>
+    
+              <input type="radio" class="btn-check" name="condition" value="Heavily used" id="heavyUsed" autocomplete="off">
+              <label class="btn btn-outline-primary col-md-3 me-5" for="heavyUsed">Heavily used</label>
             </div>
           </div>
-
-          <div class="col-md-6">
-            <div class="form-floating">
-              <select class="form-select col-md-6" aria-label="dokonimo" id="location">
-                <option selected>Blk 22 food club</option>
-                <option value="1">Blk 51 makan place</option>
-                <option value="2">Blk 73 munch</option>
-                <option value="3">Ngee Ann bus stop (frontgate)</option>
-                <option value="4">Swimming pool (backgate)</option>
-              </select>
-              <label for="floatingSelect">Meeting Location</label>
-            </div>
+        </div>
+        <!-- location -->
+        <hr class="pt-2 pb-2">
+        <div class="mb-3 ms-2 row">
+          <label for="locations" class="col-sm-2 col-form-label">Location</label>
+          <div class="col-md-10">
+            <select class="form-select col-md-6" aria-label="dokonimo" id="locations">
+              <option selected>Blk 22 food club</option>
+              <option value="1">Blk 51 makan place</option>
+              <option value="2">Blk 73 munch</option>
+              <option value="3">Ngee Ann bus stop (frontgate)</option>
+              <option value="4">Swimming pool (backgate)</option>
+            </select>
           </div>
-
-          <div class="form-floating">
-            <textarea class="form-control" placeholder="Leave your product description here" id="desc" style="height: 100px"></textarea>
-            <label for="floatingTextarea2">Description</label>
+        </div>
+        <!-- description -->
+        <hr class="pt-2 pb-2">
+        <div class="mb-3 ms-2 row">
+          <label for="desc" class="col-sm-2 col-form-label">Description</label>
+          <div class="col-sm-10">
+            <textarea class="form-control" id="desc" style="height: 100px"></textarea>
           </div>
-          
-          <div class="mb-3">
-            <label for="formFile" class="form-label">Product image</label>
+        </div>
+        <!-- image -->
+        <hr class="pt-2 pb-2">
+        <div class="mb-3 ms-2 row">
+          <label for="image" class="col-sm-2 col-form-label">Product image</label>
+          <div class="col-sm-10">
             <input class="form-control" type="file" id="image" accept="image/*">
           </div>
-
-
-          <div class="col-12">
-            <button type="submit" class="btn btn-primary" id="psub">Submit</button>
-          </div>
-        </form>
-      </section>
-
+        </div>
+        <!-- submit -->
+        <div class="mb-3 ms-2 row">
+          <hr class="pt-2 pb-2">
+          <button type="submit" class="btn" id="psub" style="border-radius: 100px !important;background-image: linear-gradient(#32E8C2, #60EFAA) !important;">Submit</button>
+        </div>
+      </form>
       <div class="spacing"></div>
       <div style="background-image: url(images/bottomWave.png);background-repeat: no-repeat;  background-size: 100% 100%;">
         <section class="container">
