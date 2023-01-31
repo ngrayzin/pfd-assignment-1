@@ -66,6 +66,7 @@ onAuthStateChanged(auth, (user) => {
     const uid = user.uid;
     const pic = user.photoURL;
     localStorage.setItem("uid", uid);
+    sessionStorage.setItem("uid", uid);
     localStorage.setItem("pic", pic);
     //loggedIn.style.display = "block"
     btn.innerText = "Log out"
@@ -264,9 +265,10 @@ if (PATHNAME == "store.html") {
 
 function checkIfLoggedIn(productUser)
 {
-  var user = localStorage.getItem("uid");
+  //var user = localStorage.getItem("uid");
+  var user = sessionStorage.getItem("uid");
   //window.alert();
-  if(user == ""){
+  if(user == null){
     document.getElementById("chat-overlay").style.display = "block";
     var returnToStore = document.getElementById("chatError-btn");
     returnToStore.addEventListener("click", function(){
@@ -285,7 +287,7 @@ function checkIfLoggedIn(productUser)
       })
     }
     else{
-      location.href = "chat.html"
+      location.href = "chat.html";
     }
   }
 }
@@ -308,7 +310,7 @@ if (PATHNAME == "viewproduct.html") {
         $("#pdcon").text("condition: " + list[i][5]);
         returnUser(list[i][6]);
         requestBtn.addEventListener("click", function(){ change(product,list[i][6]); });
-        chatBtn.addEventListener("click", function(){ localStorage.setItem("msging", list[i][6]); checkIfLoggedIn(list[i][6]);});
+        chatBtn.addEventListener("click", function(){ sessionStorage.setItem("msging", list[i][6]); sessionStorage.setItem("displayError", 0); checkIfLoggedIn(list[i][6]);});
       }
   }
 }
@@ -895,7 +897,7 @@ function displayProductByUser(uid) {
             </div>
             <div class="col-md-3 d-grid gap-2 pb-3">
               <button type="button" class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#claim" onclick="claimProduct('${_child.key}', '${_child.val().requested_by}')">Accept</button>
-              <button type="button" class="btn btn-outline-primary btn-sm">Chat</button>
+              <button type="button" class="btn btn-outline-primary btn-sm" onclick="updateChatId('${_child.val().posted_by}')">Chat</button>
               <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancel" onclick="cancelRequest('${_child.val().requested_by}','${_child.key}','${_child.val().product_name}')">Cancel</button>
             </div>
           </div>
@@ -1025,7 +1027,7 @@ function displayProductByUser(uid) {
                 </div>
                 <div class="col-md-3 d-grid gap-2 pb-3">
                   <button type="button" class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#claim" onclick="claimProduct('${_child.key}','${ _child.val().requested_by}')">Accept</button>
-                  <button type="button" class="btn btn-outline-primary btn-sm">Chat</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm" onclick="updateChatId('${_child.val().requested_by}')">Chat</button>
                   <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancel" onclick="cancelRequest('${_child.val().requested_by}','${_child.key}','${_child.val().product_name}')">Cancel</button>
                 </div>
               </div>
@@ -1094,6 +1096,15 @@ function displayProductByUser(uid) {
     console.error(error);
   });
 }
+
+window.updateChatId = updateChatId;
+function updateChatId(userIden){
+  sessionStorage.setItem("msging", userIden); 
+  sessionStorage.setItem("displayError", 0);
+  var userident = sessionStorage.getItem("msging");
+  location.href = "chat.html";
+}
+
 
 window.cancelRequest = cancelRequest;
 function cancelRequest(userID, productID, product_name) {
@@ -1302,8 +1313,61 @@ function displayChatError(checkcondition){
 
 if(PATHNAME == "chat.html")
 {
+  var oppUser = sessionStorage.getItem("msging");
+  var checkLoop = false;
+  get(child(dbRef, "product")).then((snapshot) => {
+    snapshot.forEach(function (_child) {
+      if (_child.val().posted_by == oppUser && _child.val().collected == null && checkLoop == false) {
+        var img = dic[_child.val().posted_by];
+        if(img == null){
+          img = "images/default.jpg";
+        }
+        var userName = names[_child.val().posted_by];
+        const iconSpot = document.getElementById("iconChat");
+        const icon = `<div class="col-sm" style="margin-bottom: 5px; display: flex; flex-wrap: nowrap; align-items: center;">
+                        <img src="${img}" alt="" width="50" height="50" class="rounded-circle">
+                        <h4 style="margin-left: 8px;">${userName}</h4>
+                      </div>`;
+        iconSpot.innerHTML += icon;
+        retrieveMessages();
+        //var checkDisplayError = localStorage.getItem("displayError");
+        var checkDisplayError = sessionStorage.getItem("displayError");
+        if (checkDisplayError == 1){
+          displayChatError(1);
+        }
+        else{
+          displayChatError(0);
+        }
+        const msgForm = document.getElementById("messageForm");
+        msgForm.addEventListener("submit", () => {
+          const msgInput = document.getElementById("msg-input").value;
+          if(msgInput === "")
+          {
+            //localStorage.setItem("displayError", 1);
+            sessionStorage.setItem("displayError", 1);
+            location.reload();
+          }
+          else
+          {
+            //localStorage.setItem("displayError", 0);
+            sessionStorage.setItem("displayError", 0);
+            writeMessage(msgInput);
+          }
+        });
+        checkLoop = true;
+      }
+    })
+  })
+  /*
+  const iconSpot = document.getElementById("iconChat");
+  const icon = `<div class="col-2" style="margin-bottom: 5px;">
+                  <img src="${imageIcon}" alt="" width="60" height="60" class="rounded-circle">
+                  <h4>${nameofUser}</h4>
+                </div>`;
+  iconSpot.innerHTML += icon;
   retrieveMessages();
-  var checkDisplayError = localStorage.getItem("displayError");
+  //var checkDisplayError = localStorage.getItem("displayError");
+  var checkDisplayError = sessionStorage.getItem("displayError");
   if (checkDisplayError == 1){
     displayChatError(1);
   }
@@ -1315,15 +1379,17 @@ if(PATHNAME == "chat.html")
     const msgInput = document.getElementById("msg-input").value;
     if(msgInput === "")
     {
-      localStorage.setItem("displayError", 1);
+      //localStorage.setItem("displayError", 1);
+      sessionStorage.setItem("displayError", 1);
       location.reload();
     }
     else
     {
-      localStorage.setItem("displayError", 0);
+      //localStorage.setItem("displayError", 0);
+      sessionStorage.setItem("displayError", 0);
       writeMessage(msgInput);
     }
-  });
+  });*/
 }
 
 // function openChat(userId)
@@ -1352,10 +1418,12 @@ function writeMessage(message) {
   //     window.alert();
   //     const msgInput = document.getElementById("msg-input");
   // })
-  const userIdentity = localStorage.getItem("uid");
-  const userMsg = localStorage.getItem("msging");
-  window.alert(userMsg);
-  window.alert(userIdentity);
+  // const userIdentity = localStorage.getItem("uid");
+  // const userMsg = localStorage.getItem("msging");
+  const userIdentity = sessionStorage.getItem("uid");
+  const userMsg = sessionStorage.getItem("msging");
+  //window.alert(userMsg);
+  //window.alert(userIdentity);
   const chatId = userMsg + userIdentity;
   const currentDate = Date().toLocaleString().replace(",","").replace(/:.. /," ");
   push(ref_database(db, 'messages/'), {
@@ -1371,8 +1439,10 @@ function writeMessage(message) {
 function retrieveMessages()
 {
   const dbRef = ref_database(getDatabase());
-  const userIdentify = localStorage.getItem("uid");
-  const userMsgg = localStorage.getItem("msging");
+  // const userIdentify = localStorage.getItem("uid");
+  // const userMsgg = localStorage.getItem("msging");
+  const userIdentify = sessionStorage.getItem("uid");
+  const userMsgg = sessionStorage.getItem("msging");
   //const currentId = auth.currentUser.uid;
   //const chatId = userIdentify + userId;
   //Array to store messages containing the same chat id
@@ -1392,33 +1462,40 @@ function retrieveMessages()
       })
     }
   }) .then(() => {
-    //Sorting array of messages by DateTime
-    msgs.sort(function (a, b) {
-      return b[0].date - a[0].date;
-    });
-
     const msgScreen = document.getElementById("messages");
     const msgForm = document.getElementById("messageForm");
     const msgBtn = document.getElementById("msg-btn");
 
-    for( var i = 0; i < msgs.length; i++)
-    {
-      if(msgs[i][3] == userIdentify)
+    if(msgs.length == 0){
+      const displayMessage = `<h3 style="text-align: center; margin-top: 15px;">Start chatting by sending a message!</h3>`;
+      msgScreen.innerHTML += displayMessage;
+    }
+    else{
+      //Sorting array of messages by DateTime
+      msgs.sort(function (a, b) {
+        return b[0].date - a[0].date;
+      });
+
+
+      for( var i = 0; i < msgs.length; i++)
       {
-        const msg = `<li class="msg my"}"><span class = "msg-span">
-                      <i class = "name"></i>${msgs[i][1]}
-                      </span>
-                      </li>`
-        msgScreen.innerHTML += msg;
-        document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
-      }
-      else {
-        const msg = `<li class="msg"}"><span class = "msg-span">
-                      <i class = "name"></i>${msgs[i][1]}
-                      </span>
-                      </li>`
-        msgScreen.innerHTML += msg;
-        document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
+        if(msgs[i][3] == userIdentify)
+        {
+          const msg = `<li class="msg my"}"><span class = "msg-span">
+                        <i class = "name"></i>${msgs[i][1]}
+                        </span>
+                        </li>`
+          msgScreen.innerHTML += msg;
+          document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
+        }
+        else {
+          const msg = `<li class="msg"}"><span class = "msg-span">
+                        <i class = "name"></i>${msgs[i][1]}
+                        </span>
+                        </li>`
+          msgScreen.innerHTML += msg;
+          document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
+        }
       }
     }
   });
