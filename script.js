@@ -262,7 +262,37 @@ if (PATHNAME == "store.html") {
   readProductData();
 }
 
+function checkIfLoggedIn(productUser)
+{
+  var user = localStorage.getItem("uid");
+  //window.alert();
+  if(user == ""){
+    document.getElementById("chat-overlay").style.display = "block";
+    var returnToStore = document.getElementById("chatError-btn");
+    returnToStore.addEventListener("click", function(){
+      document.getElementById("chat-overlay").style.display = "none";
+      location.href = "store.html";
+      //a href in html causing the code in pathname = chat to run alr before waiting for button
+    })
+  }
+  else{
+    if(user == productUser){
+      document.getElementById("chat-overlay2").style.display = "block";
+      var returnToStore2 = document.getElementById("userError-btn");
+      returnToStore2.addEventListener("click", function(){
+        document.getElementById("chat-overlay2").style.display = "none";
+        location.href = "store.html";
+      })
+    }
+    else{
+      location.href = "chat.html"
+    }
+  }
+}
+
 if (PATHNAME == "viewproduct.html") {
+  document.getElementById("chat-overlay").style.display = "none";
+  document.getElementById("chat-overlay2").style.display = "none";
   var requestBtn = document.getElementById("requestBtn");
   var chatBtn = document.getElementById("chatBtn");
   const urlParams = new URLSearchParams(window.location.search);
@@ -278,7 +308,7 @@ if (PATHNAME == "viewproduct.html") {
         $("#pdcon").text("condition: " + list[i][5]);
         returnUser(list[i][6]);
         requestBtn.addEventListener("click", function(){ change(product,list[i][6]); });
-        chatBtn.addEventListener("click", function(){ localStorage.setItem("msging", list[i][6]);});
+        chatBtn.addEventListener("click", function(){ localStorage.setItem("msging", list[i][6]); checkIfLoggedIn(list[i][6]);});
       }
   }
 }
@@ -1393,3 +1423,10 @@ function retrieveMessages()
     }
   });
 }
+
+/*window.addEventListener('beforeunload', function (e) {
+  e.preventDefault();
+  localStorage.setItem("displayError", 0);
+  localStorage.setItem("uid", "");
+  localStorage.setItem("msging", "");
+});*/
