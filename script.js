@@ -182,7 +182,7 @@ button2.addEventListener("click", (e) => {
       console.log(errorMessage);
     });
 })
-
+/*
 googleBtn.addEventListener("click", (e) => {
   e.preventDefault
   signInWithPopup(auth, provider)
@@ -206,7 +206,7 @@ googleBtn.addEventListener("click", (e) => {
       // ...
     });
 })
-
+*/
 
 
 if (PATHNAME == "donation.html") {
@@ -1256,13 +1256,43 @@ function reveal() {
   }
 }
 
+function displayChatError(checkcondition){
+  var chatErrorMessage = document.getElementById("error-msg-chat");
+  if(checkcondition == 1 && chatErrorMessage.innerHTML.trim().length == 0)
+  {
+    const errorMsgg = `<p id = "chat-error">Unable to send empty message. Please try again.</p>`;
+    chatErrorMessage.innerHTML += errorMsgg;
+  }
+  else
+  {
+    chatErrorMessage.innerHTML = "";
+  }
+}
+
+
 if(PATHNAME == "chat.html")
 {
   retrieveMessages();
+  var checkDisplayError = localStorage.getItem("displayError");
+  if (checkDisplayError == 1){
+    displayChatError(1);
+  }
+  else{
+    displayChatError(0);
+  }
   const msgForm = document.getElementById("messageForm");
   msgForm.addEventListener("submit", () => {
     const msgInput = document.getElementById("msg-input").value;
-    writeMessage(msgInput);
+    if(msgInput === "")
+    {
+      localStorage.setItem("displayError", 1);
+      location.reload();
+    }
+    else
+    {
+      localStorage.setItem("displayError", 0);
+      writeMessage(msgInput);
+    }
   });
 }
 
@@ -1363,4 +1393,3 @@ function retrieveMessages()
     }
   });
 }
-

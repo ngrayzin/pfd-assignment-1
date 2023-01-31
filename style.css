@@ -488,6 +488,13 @@ li { cursor: pointer; }
     border: 2px solid #cccccc;
 }
 
+#chat-error{
+    color: red;
+    margin-left: 10%;
+    font-size: 13px;
+    height: 5px;
+}
+
 #chat{
     position: absolute;
     top: 110px;
@@ -523,24 +530,32 @@ li { cursor: pointer; }
     border-bottom-right-radius: 20px;
 }
 
+#submit-bar{
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+}
+
 #msg-input{
     padding: 10px;
     border-radius: 20px;
-    width: 85%;
+    width: 78%;
     margin-left: 2%;
 }
 
 #msg-btn{
-    width: 9%;
-    padding: 9px;
+    width: auto;
+    padding: 8px;
     border-radius: 20px;
     cursor: pointer;
-    background-color: rgb(5, 190, 144);
-    font-size: large;
+    background-color: rgb(0, 163, 108);
+    /* font-size: large; */
     color: white;
     font-weight: bold;
     border: none;
     margin-left: 1%;
+    overflow: hidden;
 }
 
 #msg-btn:hover{
@@ -549,6 +564,12 @@ li { cursor: pointer; }
 
 .msg{
     list-style-type: none;
+}
+
+#border-chat{
+    border: 5px solid black;
+    margin-left: 2%;
+    margin-right: 2%;
 }
 
 .msg-span{
