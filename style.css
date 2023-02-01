@@ -82,7 +82,7 @@
 	text-align:center;
 	box-shadow: 2px 2px 2px #999;
     transition: all .2s ease-in-out;
-    z-index: 3000;
+    z-index: 500;
 }
 
 .my-float{
