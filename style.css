@@ -489,7 +489,7 @@ li { cursor: pointer; }
 }
 
 #chat-error{
-    color: red;
+    color: 	red;
     margin-left: 10%;
     font-size: 13px;
     height: 5px;
@@ -499,6 +499,7 @@ li { cursor: pointer; }
     position: absolute;
     top: 110px;
     right: 250px;
+    font-size: larger;
 }
 
 #infoChat{
@@ -635,6 +636,24 @@ li { cursor: pointer; }
 /* Handle on hover */
 #chat-window::-webkit-scrollbar-thumb:hover {
     background:#2E5A88; 
+}
+
+.custom-img-button{
+    background-color: white;
+    border-radius: 20px;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin-left: 5px;
+    font-size: large;
+}
+
+.img-btn{
+    visibility: hidden; 
+    width: 10px;
 }
 
 #myBar {
