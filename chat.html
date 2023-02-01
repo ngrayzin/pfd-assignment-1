@@ -16,7 +16,7 @@
   <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top shadow px-3" id="navbar">
     <div class="container">
       <a class="navbar-brand" href="#">
-        <b>EDonate</b>
+        <img src="images/TradeIMG.png" alt="Trade" height="36">
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -24,15 +24,17 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a class="nav-link mx-2" aria-current="page" href="userIndex.html" id="hme">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active mx-2"  href="store.html">Store</a>
+            <a class="nav-link px-3" aria-current="page" href="userIndex.html" id="hme">Home</a>
           </li>
           <li class="nav-item"> 
-            <a class="nav-link mx-2" id="dtn">Donate</a>
+            <a class="nav-link px-3" href="leaderboard.html">Leaderboard</a>
           </li>
-          <span class=" nav-item navbar-text" id = "Nameholder"></span>
+          <li class="nav-item">
+            <a class="nav-link active px-3"  href="store.html">Store</a>
+          </li>
+          <li class="nav-item"> 
+            <a class="nav-link px-3" id="dtn">Donate</a>
+          </li>
           <li class="nav-item px-2">
             <button class="btn btn-outline-dark" id = "btn" type="button" style = "margin-top: 2px;margin-right: 1px; ">Login</button>
           </li>
@@ -89,11 +91,10 @@
         <!--==========code starts below==========-->
         <div class="spacing"></div>
         <section class="container" id="">
-            <div style="margin-left:5%;margin-top:3%;">
-              <h3>Chat Here!</h3>
+            <div id = "iconChat" style="margin-left:5%;margin-top:3%;">
             </div>
         </section>
-        <div class="card mb-3 productDetail">
+        <div id = "border-chat">
             <div class = "chat">
                 <div class = "chat-window" id = "chat-window">
                   <ul id = "messages">
@@ -109,12 +110,40 @@
                     </li> -->
                   </ul>
                   <form id = "messageForm" autocomplete="off">
-                    <input type = "text" id = "msg-input" placeholder="Enter a message">
-                    <button id = "msg-btn" type = "submit">Send</button>
+                    <div id = "submit-bar">
+                      <input type = "text" id = "msg-input" placeholder="Enter a message">
+                      <button id = "msg-btn" type = "submit">Send</button>
+                    </div>
+                    <div id = "error-msg-chat">
+                    </div>
                   </form>
                 </div>
             </div>
         </div>
+
+        <div class="spacing"></div>
+        <div style="background-image: url(images/bottomWave.png);background-repeat: no-repeat;  background-size: 100% 100%;">
+          <section class="container">
+            <div class="row g-0 flex-md-row flex-row-reverse" style="padding-top: 20vh;">
+                <div class="col-12 col-md-3">
+                  <a href="https://www.instagram.com/trade.extra/" target="_blank"><img src="images/TradeExtraInsta.jpg" style="width: 80%; height: 100%;" id="insta"></a>
+                    <!--<lottie-player src="https://assets1.lottiefiles.com/datafiles/nZgj7wTd56UtH6m/data.json" background="transparent"  speed="1"  style="width: 100%; height: 100%;"  loop  autoplay></lottie-player>-->
+                </div>
+                <div class="col-md-10 col-12 text-start ps-3" style="color: white;">
+                    <h2>Follow us on Instagram!</span></h2>
+                    <p>Help us encourage others to adopt a sustainable lifestyle by sharing it with your friends and family<3</p>
+                </div>
+            </div>
+          </section>
+        </div>
+        <div class="spacing" style="background-color: #005A7A"></div>
+        <!-- Copyright -->
+        <div class="text-center p-3 text-white" style="background-color: #005A7A">
+          © 2022 Copyright:
+          <a class="text-white" href="https://www.youtube.com/watch?v=xvFZjo5PgG0" target="_blank">pfd assignment 1</a>
+        </div>
+        <!-- Copyright -->
+        
     
 
 
