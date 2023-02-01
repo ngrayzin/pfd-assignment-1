@@ -1368,7 +1368,7 @@ function displayChatError(checkcondition){
   var chatErrorMessage = document.getElementById("error-msg-chat");
   if(checkcondition == 1 && chatErrorMessage.innerHTML.trim().length == 0)
   {
-    const errorMsgg = `<p id = "chat-error">Unable to send empty message. Please try again.</p>`;
+    const errorMsgg = `<strong id = "chat-error">Unable to send empty message. Please try again.</strong>`;
     chatErrorMessage.innerHTML += errorMsgg;
   }
   else
@@ -1391,8 +1391,8 @@ if(PATHNAME == "chat.html")
         }
         var userName = names[_child.val().posted_by];
         const iconSpot = document.getElementById("iconChat");
-        const icon = `<div class="col-sm" style="margin-bottom: 5px; display: flex; flex-wrap: nowrap; align-items: center;">
-                        <img src="${img}" alt="" width="50" height="50" class="rounded-circle">
+        const icon = `<div class="" id = "infoChat">
+                        <img src="${img}" alt="" width="50" height="50" class="rounded-circle" style = "margin-left: 3%">
                         <h4 style="margin-left: 8px;">${userName}</h4>
                       </div>`;
         iconSpot.innerHTML += icon;
@@ -1406,6 +1406,34 @@ if(PATHNAME == "chat.html")
           displayChatError(0);
         }
         const msgForm = document.getElementById("messageForm");
+        var imgnameC = "";
+        document.getElementById("myChatImg").onchange = function(){
+          const imgFile = document.getElementById("myChatImg").files[0];
+          if (imgFile) {
+            imgnameC = imgFile.name;
+            window.alert(imgFile);
+            const storageRef = ref_storage(storage, imgFile.name);
+            uploadBytes(storageRef, imgFile).then((snapshot) => {
+              //console.log('Uploaded a blob or file!');
+              getDownloadURL(storageRef, imgFile).then(function (url) {
+                if (url) {
+                  writeMessage("", url);
+                }
+                else {
+                  writeMessage("", imgnameC);
+                }
+              });
+            });
+          }
+          else {
+            window.alert("NO FILE FOUND");
+            writeMessage("", imgnameC);
+          }
+          msgForm.reset();
+          //document.getElementById("messageForm").submit();
+          sessionStorage.setItem("displayError", 0);
+          //writeMessage(msgInput);
+        };
         msgForm.addEventListener("submit", () => {
           const msgInput = document.getElementById("msg-input").value;
           if(msgInput === "")
@@ -1418,7 +1446,7 @@ if(PATHNAME == "chat.html")
           {
             //localStorage.setItem("displayError", 0);
             sessionStorage.setItem("displayError", 0);
-            writeMessage(msgInput);
+            writeMessage(msgInput, "");
           }
         });
         checkLoop = true;
@@ -1477,7 +1505,7 @@ if(PATHNAME == "chat.html")
 //    });
 // };
 
-function writeMessage(message) {
+function writeMessage(message, url) {
   // const msgScreen = document.getElementById("messages"); 
   // const msgForm = document.getElementById("messageForm");
   // const msgBtn = document.getElementById("msg-btn");
@@ -1493,15 +1521,30 @@ function writeMessage(message) {
   //window.alert(userIdentity);
   const chatId = userMsg + userIdentity;
   const currentDate = Date().toLocaleString().replace(",","").replace(/:.. /," ");
-  push(ref_database(db, 'messages/'), {
-    dateAndTime: currentDate,
-    receiver: userMsg,
-    sender: userIdentity,
-    messagingMsg: message
-
-  }).then(() => {
-    location.reload();
-  });
+  if(message === "" && url != ""){
+    push(ref_database(db, 'messages/'), {
+      dateAndTime: currentDate,
+      receiver: userMsg,
+      sender: userIdentity,
+      messagingMsg: "",
+      imgUrl: url,
+  
+    }).then(() => {
+      location.reload();
+    });
+  }
+  else if (url === "" && message != ""){
+    push(ref_database(db, 'messages/'), {
+      dateAndTime: currentDate,
+      receiver: userMsg,
+      sender: userIdentity,
+      messagingMsg: message,
+      imgUrl: "",
+  
+    }).then(() => {
+      location.reload();
+    });
+  }
 }
 function retrieveMessages()
 {
@@ -1524,7 +1567,7 @@ function retrieveMessages()
         // }
         if((_child.val().receiver == userIdentify || _child.val().receiver == userMsgg) && (_child.val().sender == userIdentify || _child.val().sender == userMsgg))
         {
-          msgs.push([_child.val().dateAndTime, _child.val().messagingMsg, _child.val().receiver, _child.val().sender]);
+          msgs.push([_child.val().dateAndTime, _child.val().messagingMsg, _child.val().receiver, _child.val().sender, _child.val().imgUrl]);
         }
       })
     }
@@ -1546,22 +1589,47 @@ function retrieveMessages()
 
       for( var i = 0; i < msgs.length; i++)
       {
-        if(msgs[i][3] == userIdentify)
+        if(msgs[i][4] != "")
         {
-          const msg = `<li class="msg my"}"><span class = "msg-span">
-                        <i class = "name"></i>${msgs[i][1]}
-                        </span>
-                        </li>`
-          msgScreen.innerHTML += msg;
-          document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
+          if(msgs[i][3] == userIdentify)
+          {
+            const msg = `<li class="msg my"}"><span class = "msg-span">
+                          <i class = "name"></i>
+                          <img src="${msgs[i][4]}">
+                          </span>
+                          </li>`
+            msgScreen.innerHTML += msg;
+            document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
+          }
+          else {
+            const msg = `<li class="msg"}"><span class = "msg-span">
+                          <i class = "name"></i>
+                          <img src="${msgs[i][4]}">
+                          </span>
+                          </li>`
+            msgScreen.innerHTML += msg;
+            document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
+          }
         }
-        else {
-          const msg = `<li class="msg"}"><span class = "msg-span">
-                        <i class = "name"></i>${msgs[i][1]}
-                        </span>
-                        </li>`
-          msgScreen.innerHTML += msg;
-          document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
+        else
+        {
+          if(msgs[i][3] == userIdentify)
+          {
+            const msg = `<li class="msg my"}"><span class = "msg-span">
+                          <i class = "name"></i>${msgs[i][1]}
+                          </span>
+                          </li>`
+            msgScreen.innerHTML += msg;
+            document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
+          }
+          else {
+            const msg = `<li class="msg"}"><span class = "msg-span">
+                          <i class = "name"></i>${msgs[i][1]}
+                          </span>
+                          </li>`
+            msgScreen.innerHTML += msg;
+            document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
+          }
         }
       }
     }
