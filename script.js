@@ -216,15 +216,24 @@ if (PATHNAME == "donation.html") {
   const breadcrumb = document.getElementById("breadcrumb");
   submit.addEventListener("click", (e) => {
     e.preventDefault();
-    $('#overlay').fadeIn();
-    var done = false;
+    const validImageTypes = ['image/gif', 'image/jpeg', 'image/png'];
     var user = auth.currentUser;
     var nname = document.getElementById("productname").value;
     var ddesc = document.getElementById("desc").value;
     var loctext = document.getElementById("locations").options[document.getElementById("locations").selectedIndex].text;
     var context = document.querySelector('input[name = "condition"]:checked').value;
-    //var context = document.getElementById("condition").options[document.getElementById("condition").selectedIndex].text;
     var img = document.getElementById("image").files[0];
+    if(nname == "" || ddesc == "" || img == null || loctext == "Open this select menu"){
+      inputFieldp.classList.add("was-validated");
+      return false;
+    }
+    if (!validImageTypes.includes(img['type'])) {
+      inputFieldp.classList.add("was-validated");
+      var text = document.getElementById("imgCheck");
+      text.innerText = "Please provide an image file";
+      return false;
+    }
+    $('#overlay').fadeIn();
     var imgname = "";
     //console.log(img.name);
     if (img) {
@@ -246,6 +255,7 @@ if (PATHNAME == "donation.html") {
       writeProductData(nname, user, loctext, context, ddesc, imgname)
     }
     inputFieldp.reset();
+    inputFieldp.classList.remove("was-validated");
   })
 }
 
