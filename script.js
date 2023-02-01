@@ -1374,8 +1374,8 @@ if(PATHNAME == "chat.html")
         }
         var userName = names[_child.val().posted_by];
         const iconSpot = document.getElementById("iconChat");
-        const icon = `<div class="col-sm" style="margin-bottom: 5px; display: flex; flex-wrap: nowrap; align-items: center;">
-                        <img src="${img}" alt="" width="50" height="50" class="rounded-circle">
+        const icon = `<div class="" id = "infoChat">
+                        <img src="${img}" alt="" width="50" height="50" class="rounded-circle" style = "margin-left: 3%">
                         <h4 style="margin-left: 8px;">${userName}</h4>
                       </div>`;
         iconSpot.innerHTML += icon;

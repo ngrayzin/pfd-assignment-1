@@ -501,6 +501,15 @@ li { cursor: pointer; }
     right: 250px;
 }
 
+#infoChat{
+    display: flex; 
+    flex-wrap: nowrap; 
+    align-items: center;
+    background-color: #49759C;
+    border-radius: 25px 25px 0px 0px;
+    height: 60px;
+}
+
 /*Chat box styling */
 .chat{
     width: 100%;
@@ -568,7 +577,7 @@ li { cursor: pointer; }
 
 #border-chat{
     border: 3px solid darkgray;
-    border-radius: 25px;
+    border-radius: 0px 0px 25px 25px;
     margin-left: 2%;
     margin-right: 2%;
     overflow: hidden;
