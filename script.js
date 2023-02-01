@@ -183,7 +183,7 @@ button2.addEventListener("click", (e) => {
       console.log(errorMessage);
     });
 })
-/*
+
 googleBtn.addEventListener("click", (e) => {
   e.preventDefault
   signInWithPopup(auth, provider)
@@ -207,7 +207,7 @@ googleBtn.addEventListener("click", (e) => {
       // ...
     });
 })
-*/
+
 
 
 if (PATHNAME == "donation.html") {
