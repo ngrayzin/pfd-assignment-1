@@ -259,7 +259,7 @@ if (PATHNAME == "donation.html") {
   })
 }
 
-if(PATHNAME == "index.html"){
+if(PATHNAME == "index.html" || PATHNAME == ""){
   var coll = document.getElementsByClassName("collapsible");
 var i;
 
