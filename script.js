@@ -1603,7 +1603,7 @@ function retrieveMessages()
         {
           if(msgs[i][3] == userIdentify)
           {
-            const msg = `<li class="msg my"}"><span class = "msg-span">
+            const msg = `<li class="msg my"><span class = "msg-span" style="width: 20%">
                           <i class = "name"></i>
                           <img src="${msgs[i][4]}" style = "height: auto; width: 100%;">
                           </span>
@@ -1612,7 +1612,7 @@ function retrieveMessages()
             document.getElementById("chat-window").scrollTop = document.getElementById("chat-window").scrollHeight;
           }
           else {
-            const msg = `<li class="msg"}"><span class = "msg-span">
+            const msg = `<li class="msg"><span class = "msg-span" style="width: 20%">
                           <i class = "name"></i>
                           <img src="${msgs[i][4]}" style = "height: auto; width: 100%;">
                           </span>
