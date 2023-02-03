@@ -1605,7 +1605,7 @@ function retrieveMessages()
           {
             const msg = `<li class="msg my"}"><span class = "msg-span">
                           <i class = "name"></i>
-                          <img src="${msgs[i][4]}">
+                          <img src="${msgs[i][4]}" style = "height: auto; width: 100%;">
                           </span>
                           </li>`
             msgScreen.innerHTML += msg;
@@ -1614,7 +1614,7 @@ function retrieveMessages()
           else {
             const msg = `<li class="msg"}"><span class = "msg-span">
                           <i class = "name"></i>
-                          <img src="${msgs[i][4]}">
+                          <img src="${msgs[i][4]}" style = "height: auto; width: 100%;">
                           </span>
                           </li>`
             msgScreen.innerHTML += msg;
