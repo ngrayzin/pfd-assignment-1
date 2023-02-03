@@ -1377,14 +1377,20 @@ if(PATHNAME == "chat.html")
 {
   var oppUser = sessionStorage.getItem("msging");
   var checkLoop = false;
-  get(child(dbRef, "product")).then((snapshot) => {
+  get(child(dbRef, "users")).then((snapshot) => {
     snapshot.forEach(function (_child) {
-      if (_child.val().posted_by == oppUser && _child.val().collected == null && checkLoop == false) {
-        var img = dic[_child.val().posted_by];
-        if(img == null){
+      if (_child.key == oppUser && checkLoop == false) {
+        var img;
+        if (_child.val().picture != "")
+        {
+          img = _child.val().picture;
+        }
+        //var img = dic[_child.val().posted_by];
+        else{
           img = "images/default.jpg";
         }
-        var userName = names[_child.val().posted_by];
+        //window.alert();
+        var userName = names[oppUser];
         const iconSpot = document.getElementById("iconChat");
         const icon = `<div class="" id = "infoChat">
                         <img src="${img}" alt="" width="50" height="50" class="rounded-circle" style = "margin-left: 3%">
