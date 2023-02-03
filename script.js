@@ -363,6 +363,7 @@ if (PATHNAME == "userIndex.html") {
   var achiv1 = document.getElementById("achieved1");
   var barbar = document.getElementById("progress-bar-currnt-achiv");
   var achieved = 0;
+  displayProductByUser(userId);
   get(child(dbRef, "users/" + userId)).then((snapshot) => {
     if (snapshot.exists()) {
       var s = snapshot.val().score;
@@ -455,7 +456,6 @@ if (PATHNAME == "userIndex.html") {
       barbar.style.width = (achieved / 12 * 100) + "%";
     }
   });
-  displayProductByUser(userId);
   calculatePoints(userId);
   changePic(userId);
 }
@@ -881,10 +881,10 @@ function claimProduct(key, requesterUid) {
           var xp = snapshot.val().currentExp;
           updates[`/users/${userId}/currentExp`] = xp + 40;
           updates[`/users/${userId}/score`] = s + 300;
-          update(ref_database(db), updates).then(() => {
-            location.reload();
-          });
+          update(ref_database(db), updates)
         }
+      }).then(() => {
+        location.reload();
       });
     }
     else{
@@ -896,10 +896,10 @@ function claimProduct(key, requesterUid) {
           var xp = snapshot.val().currentExp;
           updates[`/users/${userId}/currentExp`] = xp + 40;
           updates[`/users/${userId}/score`] = s + 300;
-          update(ref_database(db), updates).then(() => {
-            location.reload();
-          });
+          update(ref_database(db), updates)
         }
+      }).then(() => {
+        location.reload();
       });
     }
   })
@@ -922,12 +922,11 @@ function displayProductByUser(uid) {
   const dbRef = ref_database(getDatabase());
   var request = 0;
   var posted = 0;
-  var claimed = 0;
+  var claimeded = 0;
   var requester = 0;
   get(child(dbRef, "product")).then((snapshot) => {
     snapshot.forEach(function (_child) {
       if (_child.val().requested_by == uid && _child.val().collected == null) {
-        console.log(_child.key + "Asda")
         var img = dic[_child.val().posted_by]
         if(img == null){
           img = "images/default.jpg";
@@ -939,7 +938,7 @@ function displayProductByUser(uid) {
         <div class="alert alert-dark mt-3">
           <div class="row g-5 pt-1">
             <div class="col-md-2">
-              <img src="${_child.val().image}" height="120px" width="auto" style="border-radius: 5px;">
+              <img src="${_child.val().image}" height="120px" width="100px" style="border-radius: 5px;">
             </div>
             <div class="col-md-3 d-grid gap-2 pb-5 me-2">
               <h5>${_child.val().product_name}</h5>
@@ -961,11 +960,11 @@ function displayProductByUser(uid) {
         requesterCount.innerHTML = requester;
       }
       else if (_child.val().posted_by == uid) {
+        posted++;
         var img = dic[_child.val().posted_by]
         if(img == null){
           img = "images/default.jpg";
         }
-        posted++;
         var key = _child.key;
         //childkeys.push([key,_child.val().product_name,_child.val().description]);
         //console.log(key);
@@ -974,7 +973,7 @@ function displayProductByUser(uid) {
           if(img == null){
             img = "images/default.jpg";
           }
-          claimed++;
+          claimeded++;
           var html = `
           <div class="card-full">
           <div class="card cardhover">
@@ -1069,7 +1068,7 @@ function displayProductByUser(uid) {
             <div class="alert alert-dark mt-3">
               <div class="row g-5 pt-1">
                 <div class="col-md-2">
-                  <img src="${_child.val().image}" style="border-radius: 5px;">
+                  <img src="${_child.val().image}" height="120px" width="100px" style="border-radius: 5px;">
                 </div>
                 <div class="col-md-3 d-grid gap-2 pb-5 me-2">
                   <h5>${_child.val().product_name}</h5>
@@ -1091,13 +1090,14 @@ function displayProductByUser(uid) {
             request++;
             requestExist = true;
             requestCount.innerHTML = request;
-            productClaimed.innerHTML = claimed;
+            productClaimed.innerHTML = claimeded;
           });
           //returnUser(_child.val().requested_by);
           //$("#rName").text(name);
         }
       }
     })
+  }).then(()=>{
     if(posted >= 1){
       const p1 = {};
       p1['/users/' + uid + '/achievement/p1'] = true;
@@ -1108,12 +1108,12 @@ function displayProductByUser(uid) {
       p5['/users/' + uid + '/achievement/p5'] = true;
       update(ref_database(db), p5);
     }
-    if(claimed >= 1){
+    if(claimeded >= 1){
       const c1 = {};
       c1['/users/' + uid + '/achievement/c1'] = true;
       update(ref_database(db), c1);
     }
-    if(claimed >= 5){
+    if(claimeded >= 5){
       const c5 = {};
       c5['/users/' + uid + '/achievement/c5'] = true;
       update(ref_database(db), c5);
@@ -1146,7 +1146,8 @@ function displayProductByUser(uid) {
                   </div>`
       r.innerHTML += empty;
     }
-  }).catch((error) => {
+  })
+  .catch((error) => {
     console.error(error);
   });
 }
@@ -1209,7 +1210,7 @@ function change(key, poster) {
     updates['/product/' + key + '/requested/'] = true;
     updates['/product/' + key + '/requested_by/'] = userId;
     if (poster == userId) {
-      alert("cant claim your own product");
+      alert("cant request your own product");
     }
     else {
       update(ref_database(db), updates).then(() => {
