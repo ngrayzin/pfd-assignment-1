@@ -53,6 +53,29 @@ get(child(dbRef, "users")).then((snapshot) => {
   onlyOnce: true
 };
 
+function checkIfLoggedIn(productUser)
+{
+  //var user = sessionStorage.getItem("uid");
+  var user = auth.currentUser;
+  if(user != null){
+    if(user.uid == productUser){
+      document.getElementById("chat-overlay2").style.display = "block";
+      var returnToStore2 = document.getElementById("userError-btn");
+      returnToStore2.addEventListener("click", function(){
+        document.getElementById("chat-overlay2").style.display = "none";
+        location.href = "store.html";
+      })
+    }
+    else{
+      location.href = "chat.html";
+    }
+  }
+  else{
+    myModal.show();
+    return false;
+  }
+}
+
 onAuthStateChanged(auth, (user) => {
   var notLoggedIn = document.getElementById("notLoggedIn");
   //var loggedIn = document.getElementById("Nameholder");
@@ -94,7 +117,7 @@ onAuthStateChanged(auth, (user) => {
     donate.addEventListener("click", () => {
       myModal.show();
     });
-    if (PATHNAME == "donation.html" || PATHNAME == "userIndex.html") {
+    if (PATHNAME == "donation.html" || PATHNAME == "userIndex.html" || PATHNAME == "chat.html") {
       location.href = "index.html";
     }
   }
@@ -291,34 +314,6 @@ if (PATHNAME == "store.html") {
   readProductData();
 }
 
-function checkIfLoggedIn(productUser)
-{
-  //var user = localStorage.getItem("uid");
-  var user = sessionStorage.getItem("uid");
-  //window.alert();
-  if(user == null){
-    document.getElementById("chat-overlay").style.display = "block";
-    var returnToStore = document.getElementById("chatError-btn");
-    returnToStore.addEventListener("click", function(){
-      document.getElementById("chat-overlay").style.display = "none";
-      location.href = "store.html";
-      //a href in html causing the code in pathname = chat to run alr before waiting for button
-    })
-  }
-  else{
-    if(user == productUser){
-      document.getElementById("chat-overlay2").style.display = "block";
-      var returnToStore2 = document.getElementById("userError-btn");
-      returnToStore2.addEventListener("click", function(){
-        document.getElementById("chat-overlay2").style.display = "none";
-        location.href = "store.html";
-      })
-    }
-    else{
-      location.href = "chat.html";
-    }
-  }
-}
 
 if (PATHNAME == "viewproduct.html") {
   document.getElementById("chat-overlay").style.display = "none";
@@ -368,7 +363,6 @@ if (PATHNAME == "userIndex.html") {
   var achiv1 = document.getElementById("achieved1");
   var barbar = document.getElementById("progress-bar-currnt-achiv");
   var achieved = 0;
-  console.log(pic);
   get(child(dbRef, "users/" + userId)).then((snapshot) => {
     if (snapshot.exists()) {
       var s = snapshot.val().score;
@@ -486,8 +480,6 @@ function progressBar(currentExp, lvl) {
   else {
     total = 500;
   }
-  console.log(total);
-  console.log(currentExp);
   if (currentExp >= total) {
     lvl++;
     currentExp = currentExp - total;
@@ -813,21 +805,6 @@ function calculatePoints(uid) {
           noOfVouchers += 1;
         }
       }
-      //var id = setInterval(frame, 10);
-      /*function frame() {
-        if (width >= 100) {
-          clearInterval(id);
-          i = 0;
-        } else {
-          width++;
-          elem.style.width = width + "%";
-          elem.innerHTML = width + "%";
-        }
-      }*/
-      //elem.style.width = width + "%";
-      //elem.innerHTML = width + "%";
-      console.log(noOfVouchers);
-      console.log(numberOfClaimed);
     }
     //vouch.innerHTML = "Number of vouchers that can be claimed: " + noOfVouchers;
   })
@@ -1092,7 +1069,7 @@ function displayProductByUser(uid) {
             <div class="alert alert-dark mt-3">
               <div class="row g-5 pt-1">
                 <div class="col-md-2">
-                  <img src="${_child.val().image}" height="120px" width="auto" style="border-radius: 5px;">
+                  <img src="${_child.val().image}" style="border-radius: 5px;">
                 </div>
                 <div class="col-md-3 d-grid gap-2 pb-5 me-2">
                   <h5>${_child.val().product_name}</h5>
@@ -1186,17 +1163,24 @@ function updateChatId(userIden){
 window.cancelRequest = cancelRequest;
 function cancelRequest(userID, productID, product_name) {
   const cancelBtn = document.getElementById("cancelBtn");
+  var user = auth.currentUser.uid;
   cancelBtn.addEventListener("click", () => {
     const updates = {};
     updates['/product/' + productID + '/requested'] = false;
     updates['/product/' + productID + '/requested_by'] = "";
     update(ref_database(db), updates)
       .then(() => {
-        const notify = {};
-        notify['/users/' + userID + '/cancelled'] = product_name;
-        update(ref_database(db), notify).then(() => {
+        if(user == userID){
+          alert("Request cancelled");
           location.reload();
-        })
+        }
+        else{
+          const notify = {};
+          notify['/users/' + userID + '/cancelled'] = product_name;
+          update(ref_database(db), notify).then(() => {
+            location.reload();
+          })
+        }
       })
   })
 }
