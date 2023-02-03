@@ -94,7 +94,7 @@ onAuthStateChanged(auth, (user) => {
     donate.addEventListener("click", () => {
       myModal.show();
     });
-    if (PATHNAME == "donation.html" || PATHNAME == "userIndex.html") {
+    if (PATHNAME == "donation.html" || PATHNAME == "userIndex.html" || PATHNAME == "chat.html") {
       location.href = "index.html";
     }
   }
